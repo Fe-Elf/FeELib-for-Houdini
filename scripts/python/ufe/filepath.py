@@ -1,7 +1,7 @@
 # from io import TextIOWrapper
 # from io import TextIO
 import os
-# import ufe.string
+import ufe.string
 
 
 def splitext(__filepath: str) -> tuple[str, str]:

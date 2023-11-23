@@ -108,3 +108,8 @@ FeE::matchDirOrient
 
 FeE::inlinePoints::2.0
 FeE::inlinePoints
+pack_fee::1.0
+pack_fee
+volumeblur_fee
+FeE::groupByNebcount::2.0
+

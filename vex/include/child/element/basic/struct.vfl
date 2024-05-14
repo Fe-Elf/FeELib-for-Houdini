@@ -1,0 +1,51 @@
+
+#ifndef __STRUCT_VFL__
+#define __STRUCT_VFL__
+
+#include <struct.vfl>
+
+
+
+// struct for carrying information about our project file
+struct hipFile {
+	string base, ext;
+	int version = 1;
+
+	// you can create methods that operate on structs
+	// this method increases version by 1 and returns new version number
+	int incVersion() {
+		this.version++;
+		return this.version;
+	}
+
+	// inside of a struct function, you can refer to struct fields by name as if they 
+	// were variables (for example, base is a shortcut for this.base).
+	// this method writes to console window / terminal
+	void printName() {
+		printf("this file has name: %s_%03d.%s\n", base, version, ext);
+	}
+
+	// returns a string with full file name
+	string getFullName() {
+		return sprintf("%s_%03d.%s", this.base, this.version, this.ext);
+	}
+}
+
+// we can create functions that operate on our structs and use their methods
+int compareHipFiles(
+    hipFile A, B;
+    ) {
+	if (A->getFullName() == B->getFullName()) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
+
+
+
+
+#endif

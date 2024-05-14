@@ -1,0 +1,232 @@
+
+#ifndef __NORMAL_VFL__
+#define __NORMAL_VFL__
+
+#include <normal.vfl>
+
+/*
+#if 0
+    #include <normal.vfl>
+#else
+    function
+    vector primN_first(
+        const int geo;
+        const int primnum;
+        ) {
+        vector pos0 = point(geo, 'P', primpoint(geo, primnum, 0));
+        vector pos1 = point(geo, 'P', primpoint(geo, primnum, 1));
+        vector pos2 = point(geo, 'P', primpoint(geo, primnum, 2));
+        return normalize(cross(pos1 - pos2, pos0 - pos1));
+    }
+#endif
+*/
+
+
+
+#include <promoteattrib.vfl>
+
+
+
+
+
+
+
+function
+vector primN_avg(
+    const int geo;
+    const int primnum;
+    ) {
+	// this is houdini default way to find out prim normal
+    //int primpoints = primpoints(geo, primnum);
+    vector pos[] = primpointspos(geo, primnum);
+
+	vector dir[];
+	for (int i = 0; i < len(pos) - 1;) {
+		push(dir, pos[i] - pos[++i]);
+    }
+	push(dir, pos[-1] - pos[0]);
+	
+	vector primN = 0;
+	for (int i = 0; i < len(pos) - 1; ++i) {
+		primN += cross(dir[i+1], dir[i]);
+    }
+	primN += cross(dir[0], dir[-1]);
+
+    return normalize(primN);
+}
+
+function
+vector primN_first(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos0 = point(geo, 'P', primpoint(geo, primnum, 0));
+    vector pos1 = point(geo, 'P', primpoint(geo, primnum, 1));
+    vector pos2 = point(geo, 'P', primpoint(geo, primnum, 2));
+    return normalize(cross(pos1 - pos2, pos0 - pos1));
+}
+
+function
+vector primN_last(
+    const int geo;
+    const int primnum;
+    ) {
+    int primvertexcount = primvertexcount(geo, primnum);
+    vector pos0 = point(geo, 'P', primpoint(geo, primnum, primvertexcount-3));
+    vector pos1 = point(geo, 'P', primpoint(geo, primnum, primvertexcount-2));
+    vector pos2 = point(geo, 'P', primpoint(geo, primnum, primvertexcount-1));
+    return normalize(cross(pos1 - pos2, pos0 - pos1));
+}
+
+function
+vector primN(
+    const int geo;
+    const int primnum;
+    ) {
+    if ( hasprimattrib(geo, 'N') ) {
+        return prim(geo, 'N', primnum);
+    }
+    return primN_avg(geo, primnum);
+}
+
+function
+vector[] primN_avg(
+    const int geo;
+    const int primnums[];
+    ) {
+    int len = len(primnums);
+    vector result[];
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = primN_avg(geo, primnums[i]);
+    }
+    return result;
+}
+
+function
+vector[] primN_first(
+    const int geo;
+    const int primnums[];
+    ) {
+    int len = len(primnums);
+    vector result[];
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = primN_first(geo, primnums[i]);
+    }
+    return result;
+}
+
+function
+vector[] primN_last(
+    const int geo;
+    const int primnums[];
+    ) {
+    int len = len(primnums);
+    vector result[];
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = primN_last(geo, primnums[i]);
+    }
+    return result;
+}
+
+function
+vector[] primN(
+    const int geo;
+    const int primnums[];
+    ) {
+    return primN_avg(geo, primnums);
+}
+
+
+
+
+
+
+
+function
+vector hasprimattrib_autocalN(
+    const int geo;
+    const string Nattribname;
+    const int primnum;
+    ) {
+    if ( hasprimattrib(geo, Nattribname) ) {
+        return prim(geo, Nattribname, primnum);
+    } else {
+        if (Nattribname == 'N') {
+            warning('dont has attrib %s\nwill be auto calculate', Nattribname);
+            return primN(geo, primnum);
+        } else {
+            error('dont has attrib %s', Nattribname);
+            return 0;
+        }
+    }
+}
+
+
+
+
+
+
+
+function
+vector vertexN(
+    const int geo;
+    const int vtxnum;
+    ) {
+	// this is houdini default way to find out vertex normal
+    return primN(geo, vertexprim(geo, vtxnum));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function
+vector pointN(
+    const int geo;
+    const int ptnum;
+    ) {
+	// this is houdini default way to find out point normal
+    #if 1
+        vector result = 0;
+        int pointprims[] = pointprims(geo, ptnum);
+        foreach (int primnum; pointprims){
+            result += primN(geo, primnum);
+        }
+        return normalize(result);
+    #else
+        vector result = 0;
+        int pointvertices[] = pointvertices(geo, ptnum);
+        foreach (int vtxnum; pointvertices){
+            result += vertexN(geo, vtxnum);
+        }
+        return normalize(result);
+    #endif
+}
+
+function
+vector[] pointN(
+    const int geo;
+    const int ptnums[];
+    ) {
+    vector result[];
+    foreach (int ptnum; ptnums){
+        push(result, pointN(geo, ptnum));
+    }
+    return result;
+}
+
+
+
+#endif
+
+

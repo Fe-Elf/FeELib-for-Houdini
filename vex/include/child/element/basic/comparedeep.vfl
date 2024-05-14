@@ -1,0 +1,79 @@
+
+#ifndef __COMPAREDEEP_VFL__
+#define __COMPAREDEEP_VFL__
+
+#include <constant.vfl>
+#include <precompile.vfl>
+
+#include <comparedeep.vfl>
+
+
+
+
+
+
+
+
+
+
+function
+int cmp(
+    const float arg0, arg1;
+    const float threshold;
+    ) {
+    float diff = arg0 - arg1;
+    if (diff > threshold) {
+        return 1;
+    } else if (diff < -threshold) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+
+
+#define FUNCcmpif(type)\
+        function\
+        int cmp(\
+            const type arg0, arg1;\
+            ) {\
+            return int(sign(arg0 - arg1));\
+        }\
+
+DEFINEFUNCif(FUNCcmpif)
+
+#define FUNCcmpv0(type)\
+        function\
+        int cmp(\
+            const type arg0, arg1;\
+            ) {\
+            return cmp(length2(arg0), length2(arg1));\
+        }\
+
+DEFINEFUNCv(FUNCcmpv0)
+
+#define FUNCcmpv1(type)\
+        function\
+        int cmp(\
+            const type arg0, arg1;\
+            float threshold;\
+            ) {\
+            return cmp(length2(arg0), length2(arg1), threshold);\
+        }\
+
+DEFINEFUNCv(FUNCcmpv1)
+
+function
+int cmp(
+    const string arg0, arg1;
+    ) {
+    return cmp(len(arg0), len(arg1));
+}
+
+
+
+
+#endif
+
+

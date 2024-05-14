@@ -1,0 +1,208 @@
+
+#ifndef __RAY_VFL__
+#define __RAY_VFL__
+
+#include <precompile.vfl>
+
+#include <ray.vfl>
+
+
+
+
+
+#include <bboxdeep.vfl>
+#include <raydeep.vfl>
+
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    const float threshold;
+    ) {
+    return intersectdebug_all(geo, group, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw, tol, ttol, threshold);
+}
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    ) {
+    return intersectdebug_all(geo, group, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw, tol, ttol);
+}
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float threshold;
+    ) {
+    return intersectdebug_all(geo, group, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw, threshold);
+}
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    ) {
+    return intersectdebug_all(geo, group, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw);
+}
+
+
+
+
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    const float threshold;
+    ) {
+    return intersectdebug_all(geo, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw, tol, ttol, threshold);
+}
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    ) {
+    return intersectdebug_all(geo, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw, tol, ttol);
+}
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float threshold;
+    ) {
+    return intersectdebug_all(geo, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw, threshold);
+}
+
+function
+int intersectdebugbbox_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    ) {
+    return intersectdebug_all(geo, rayorig, getbbox_diameter(geo) * normalize(raydir), pos, prim, uvw);
+}
+
+
+function
+void intersectdebugbbox_visualize(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    const float threshold;
+    ) {
+    intersectdebug_visualize(geo, rayorig, getbbox_diameter(geo) * normalize(raydir), threshold);
+}
+
+
+
+
+
+
+
+#include <normal.vfl>
+
+function
+vector reflect(
+    const vector raydir;
+    const int geo;
+    const string Nattribname;
+    const int primnum;
+    ) {
+    return reflect(raydir, hasprimattrib_autocalN(geo, Nattribname, primnum));
+}
+
+function
+vector reflect(
+    const vector raydir;
+    const int geo;
+    const int primnum;
+    ) {
+    return reflect(raydir, geo, 'N', primnum);
+}
+
+
+
+
+
+
+function
+vector refract(
+    const vector raydir;
+    const int geo;
+    const string Nattribname;
+    const int primnum;
+    const float IOR;
+    ) {
+    return refract(raydir, hasprimattrib_autocalN(geo, Nattribname, primnum), IOR);
+}
+
+function
+vector refract(
+    const vector raydir;
+    const int geo;
+    const int primnum;
+    const float IOR;
+    ) {
+    return refract(raydir, geo, 'N', primnum, IOR);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

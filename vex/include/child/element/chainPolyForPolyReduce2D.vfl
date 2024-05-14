@@ -1,0 +1,22 @@
+
+#ifndef __chainPolyForPolyReduce2D_VFL__
+#define __chainPolyForPolyReduce2D_VFL__
+
+#if 1
+    #include <chainPolyForPolyReduce2D.vfl>
+#else
+#endif
+
+
+struct newPolyStruct
+{
+    int idx_prev;
+    int idx_next;
+    vector P, dir;
+    int scaleIdx_prev;
+    int scaleIdx_next;
+}
+
+
+
+#endif

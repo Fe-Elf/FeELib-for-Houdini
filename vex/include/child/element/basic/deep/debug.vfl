@@ -1,0 +1,27 @@
+
+#ifndef __DEBUG_VFL__
+#define __DEBUG_VFL__
+
+#include <debug.vfl>
+
+#define printf_once1(printf_once_msg, printf_once_msg0)\
+        print_once(sprintf(printf_once_msg, printf_once_msg0));\
+
+#define printf_once2(printf_once_msg, printf_once_msg0, printf_once_msg1)\
+        print_once(sprintf(printf_once_msg, printf_once_msg0, printf_once_msg1));\
+
+
+/*
+function
+void printf_once(
+    const string msg;
+    ) {
+    print_once(sprintf(msg));\
+}
+*/
+
+
+
+
+
+#endif

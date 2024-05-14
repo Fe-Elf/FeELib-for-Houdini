@@ -1,0 +1,356 @@
+
+#ifndef __TRIANGLECENTER_VFL__
+#define __TRIANGLECENTER_VFL__
+
+#include <trianglecenter.vfl>
+
+
+
+#include <triangleconstant.vfl>
+
+
+
+
+vector centroid(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return centroid(array(pos0, pos1, pos2));
+}
+
+
+
+
+
+
+
+
+
+
+vector incenter(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    float tri_length[] = tri_length(pos0, pos1, pos2);
+    float a = tri_length[0];
+    float b = tri_length[1];
+    float c = tri_length[2];
+
+    float a0 = pos0.x, a1 = pos0.y, a2 = pos0.z;
+    float b0 = pos1.x, b1 = pos1.y, b2 = pos1.z;
+    float c0 = pos2.x, c1 = pos2.y, c2 = pos2.z;
+    
+    return set(a*a0 + b*b0 + c*c0, a*a1 + b*b1 + c*c1, a*a2 + b*b2 + c*c2) / tri_C(pos0, pos1, pos2);
+}
+
+vector incenter(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return incenter(pos[0], pos[1], pos[2]);
+}
+
+float inradius(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    vector pos[] = array(pos0, pos1, pos2);
+    return 2 * area(pos) / perimeter(pos);
+}
+
+float inradius(
+    const int geo;
+    const int primnum;
+    ) {
+    return 2 * area(geo, primnum) / perimeter(geo, primnum);
+}
+
+void incircle(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    export vector center;
+    export float radius;
+    ) {
+    center = incenter(pos0, pos1, pos2);
+    radius = inradius(pos0, pos1, pos2);
+}
+
+void incircle(
+    const int geo;
+    const int primnum;
+    export vector center;
+    export float radius;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    incircle(pos[0], pos[1], pos[2], center, radius);
+}
+
+
+
+
+
+vector inscribedcircle_center(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return incenter(pos0, pos1, pos2);
+}
+
+vector inscribedcircle_center(
+    const int geo;
+    const int primnum;
+    ) {
+    return incenter(geo, primnum);
+}
+
+float inscribedcircle_radius(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return inradius(pos0, pos1, pos2);
+}
+
+float inscribedcircle_radius(
+    const int geo;
+    const int primnum;
+    ) {
+    return inradius(geo, primnum);
+}
+
+void inscribedcircle(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    export vector center;
+    export float radius;
+    ) {
+    incircle(pos0, pos1, pos2, center, radius);
+}
+
+void threepointcircle(
+    const int geo;
+    const int primnum;
+    export vector center;
+    export float radius;
+    ) {
+    incircle(geo, primnum, center, radius);
+}
+
+
+
+
+
+
+vector[] orthictriangle(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    vector foot0 = footpoint(pos0, pos1, pos2);
+    vector foot1 = footpoint(pos2, pos0, pos1);
+    vector foot2 = footpoint(pos1, pos2, pos0);
+    return array(foot0, foot1, foot2);
+}
+
+vector[] orthictriangle(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return orthictriangle(pos[0], pos[1], pos[2]);
+}
+
+vector orthocenter(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    vector orthictriangle[] = orthictriangle(pos0, pos1, pos2);
+    return incenter(orthictriangle[0], orthictriangle[1], orthictriangle[2]);
+    // vector orthocenter = orthocenter(pos0, pos1, pos2);
+}
+
+vector orthocenter(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return orthocenter(pos[0], pos[1], pos[2]);
+    // vector orthocenter = orthocenter(geo, primnum);
+}
+
+
+
+
+
+
+
+/*
+function
+vector circum(
+    vector a, b, c;
+    ) {
+    //shout out to wikipedia, i think there are more compact ones but i cant be arsed
+    vector center, alpha, beta, ab;
+    alpha = a - c;
+    beta = b - c;
+    ab = cross(alpha, beta);
+    center = (pow(length(alpha), 2) * beta) - (pow(length(beta), 2) * alpha);
+    center = cross(center, ab);
+    center = center / (2 * pow(length(ab), 2));
+    center += c;
+    return center;
+}
+*/
+vector circumcenter(
+    const vector pos0, pos1, pos2;
+    ) {
+    // https://www.zhihu.com/question/40422123/answer/95637252
+
+    float a1, b1, c1, d1,   a2, b2, c2, d2,   a3, b3, c3, d3;
+
+	float x1 = pos0.x, y1 = pos0.y, z1 = pos0.z;
+	float x2 = pos1.x, y2 = pos1.y, z2 = pos1.z;
+	float x3 = pos2.x, y3 = pos2.y, z3 = pos2.z;
+
+	a1 = (y1*z2 - y2*z1 - y1*z3 + y3*z1 + y2*z3 - y3*z2);
+	b1 = -(x1*z2 - x2*z1 - x1*z3 + x3*z1 + x2*z3 - x3*z2);
+	c1 = (x1*y2 - x2*y1 - x1*y3 + x3*y1 + x2*y3 - x3*y2);
+	d1 = -(x1*y2*z3 - x1*y3*z2 - x2*y1*z3 + x2*y3*z1 + x3*y1*z2 - x3*y2*z1);
+
+	a2 = 2 * (x2 - x1);
+	b2 = 2 * (y2 - y1);
+	c2 = 2 * (z2 - z1);
+	d2 = x1 * x1 + y1 * y1 + z1 * z1 - x2 * x2 - y2 * y2 - z2 * z2;
+
+	a3 = 2 * (x3 - x1);
+	b3 = 2 * (y3 - y1);
+	c3 = 2 * (z3 - z1);
+	d3 = x1 * x1 + y1 * y1 + z1 * z1 - x3 * x3 - y3 * y3 - z3 * z3;
+
+    vector center;
+	center[0] = -(b1*c2*d3 - b1*c3*d2 - b2*c1*d3 + b2*c3*d1 + b3*c1*d2 - b3*c2*d1)
+		      / (a1*b2*c3 - a1*b3*c2 - a2*b1*c3 + a2*b3*c1 + a3*b1*c2 - a3*b2*c1);
+	center[1] =  (a1*c2*d3 - a1*c3*d2 - a2*c1*d3 + a2*c3*d1 + a3*c1*d2 - a3*c2*d1)
+		      / (a1*b2*c3 - a1*b3*c2 - a2*b1*c3 + a2*b3*c1 + a3*b1*c2 - a3*b2*c1);
+	center[2] = -(a1*b2*d3 - a1*b3*d2 - a2*b1*d3 + a2*b3*d1 + a3*b1*d2 - a3*b2*d1)
+		      / (a1*b2*c3 - a1*b3*c2 - a2*b1*c3 + a2*b3*c1 + a3*b1*c2 - a3*b2*c1);
+
+	return center;
+    // vector circumcenter = circumcenter(pos0, pos1, pos2);
+    // vector circumcenter = circumcenter(pos[0], pos[1], pos[2]);
+}
+
+vector circumcenter(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return circumcenter(pos[0], pos[1], pos[2]);
+    // vector circumcenter = circumcenter(geo, primnum);
+}
+
+float circumradius(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return tri_abc(pos0, pos1, pos2) / tri_area(pos0, pos1, pos2) / 4;
+}
+
+float circumradius(
+    const int geo;
+    const int primnum;
+    ) {
+    return tri_abc(geo, primnum) / tri_area(geo, primnum) / 4;
+    /*
+    vector pos[] = primpointspos(geo, primnum);
+    return circumradius(pos[0], pos[1], pos[2]);
+    */
+}
+
+void circumcircle(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    export vector center;
+    export float radius;
+    ) {
+    center = circumcenter(pos0, pos1, pos2);
+    radius = circumradius(pos0, pos1, pos2);
+}
+
+void circumcircle(
+    const int geo;
+    const int primnum;
+    export vector center;
+    export float radius;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    circumcircle(pos[0], pos[1], pos[2], center, radius);
+}
+
+vector threepointcircle_center(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+	return circumcenter(pos0, pos1, pos2);
+}
+
+vector threepointcircle_center(
+    const int geo;
+    const int primnum;
+    ) {
+    return circumcenter(geo, primnum);
+}
+
+float threepointcircle_radius(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return circumradius(pos0, pos1, pos2);
+}
+
+float threepointcircle_radius(
+    const int geo;
+    const int primnum;
+    ) {
+    return circumradius(geo, primnum);
+    /*
+    vector pos[] = primpointspos(geo, primnum);
+    return threepointcircle_radius(pos[0], pos[1], pos[2]);
+    */
+}
+
+void threepointcircle(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    export vector center;
+    export float radius;
+    ) {
+    circumcircle(pos0, pos1, pos2, center, radius);
+}
+
+void threepointcircle(
+    const int geo;
+    const int primnum;
+    export vector center;
+    export float radius;
+    ) {
+    circumcircle(geo, primnum, center, radius);
+}
+
+
+
+
+#endif

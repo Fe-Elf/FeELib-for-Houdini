@@ -1,0 +1,90 @@
+
+#ifndef __FRACTAL_VFL__
+#define __FRACTAL_VFL__
+
+#include <fractal.vfl>
+
+#include <precompile.vfl>
+
+
+
+
+
+#define FUNCmandelbrot2d(type)\
+        function\
+        int mandelbrot2d(\
+            type pos;\
+            int n;\
+            int numiterations;\
+            ) {\
+            float x = pos.x, y = pos.y;\
+            for(int i = 0; i < numiterations; i++) {\
+                float temp = x*x - y*y + pos.x;\
+                y = 2*x*y + pos.y;\
+                x = temp;\
+                if(x*x + y*y > 4) {\
+                    return i;\
+                }\
+            }\
+            return numiterations;\
+        }\
+
+DEFINEFUNCv(FUNCmandelbrot2d)
+
+function
+int mandelbrot2d(
+    float x,y;
+    int n;
+    int numiterations;
+    ) {
+    return mandelbrot2d(set(x,y), n, numiterations);
+}
+
+function
+int mandelbrot3d(
+    vector pos;
+    int n;
+    int numiterations;
+    ) {
+    float x,y,z;
+    assign(x, y, z, pos);
+    for(int i = 0; i < numiterations; i++) {
+        float r = sqrt(x*x + y*y + z*z);
+        float theta = atan2(sqrt(x*x + y*y), z);
+        float phi = atan2(y, x);
+
+        x = pow(r, n) * sin(theta * n) * cos(phi * n) + pos.x;
+        y = pow(r, n) * sin(theta * n) * sin(phi * n) + pos.y;
+        z = pow(r, n) * cos(theta * n) + pos.z;
+        
+        if(x*x + y*y + z*z > 4) {
+            return i;
+        }
+    }
+    return numiterations;
+}
+
+function
+int mandelbrot3d(
+    float x,y,z;
+    int n;
+    int numiterations;
+    ) {
+    return mandelbrot3d(set(x,y,z), n, numiterations);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

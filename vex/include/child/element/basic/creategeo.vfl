@@ -1,0 +1,672 @@
+
+#ifndef __CREATEGEO_VFL__
+#define __CREATEGEO_VFL__
+
+#if 1
+    #include <creategeo.vfl>
+#else
+    function
+    int addprim(
+        int geo;
+        string type;
+        vector pos0;
+        vector pos1;
+        vector pos2;
+        vector pos3;
+        ) {
+        int
+            pt0 = addpoint(0, pos0),
+            pt1 = addpoint(0, pos1),
+            pt2 = addpoint(0, pos2),
+            pt3 = addpoint(0, pos3);
+        return addprim(geo, type, pt0, pt1, pt2, pt3);
+    }
+#endif
+
+
+
+
+
+function
+int addprim(
+    int pt0;
+    ) {
+    return addprim(0, "poly", pt0);
+}
+
+function
+int addprim(
+    int pt0;
+    int pt1;
+    ) {
+    return addprim(0, "poly", pt0, pt1);
+}
+
+function
+int addprim(
+    int pt0;
+    int pt1;
+    int pt2;
+    ) {
+    return addprim(0, "poly", pt0, pt1, pt2);
+}
+
+function
+int addprim(
+    int pt0;
+    int pt1;
+    int pt2;
+    int pt3;
+    ) {
+    return addprim(0, "poly", pt0, pt1, pt2, pt3);
+}
+
+function
+int addprim(
+    int pts[];
+    ) {
+    return addprim(0, "poly", pts);
+}
+
+function
+int addprim(
+    int geo;
+    int pts[];
+    ) {
+    return addprim(geo, "poly", pts);
+}
+
+
+
+
+function
+int addprim(
+    string type;
+    int pt0;
+    ) {
+    return addprim(0, type, pt0);
+}
+
+function
+int addprim(
+    string type;
+    int pt0;
+    int pt1;
+    ) {
+    return addprim(0, type, pt0, pt1);
+}
+
+function
+int addprim(
+    string type;
+    int pt0;
+    int pt1;
+    int pt2;
+    ) {
+    return addprim(0, type, pt0, pt1, pt2);
+}
+
+function
+int addprim(
+    string type;
+    int pt0;
+    int pt1;
+    int pt2;
+    int pt3;
+    ) {
+    return addprim(0, type, pt0, pt1, pt2, pt3);
+}
+
+function
+int addprim(
+    string type;
+    int pts[];
+    ) {
+    return addprim(0, type, pts);
+}
+
+
+
+function
+int addprim(
+    int geo;
+    string type;
+    vector pos0;
+    ) {
+    int
+        pt0 = addpoint(0, pos0);
+    return addprim(geo, type, pt0);
+}
+
+function
+int addprim(
+    int geo;
+    string type;
+    vector pos0;
+    vector pos1;
+    ) {
+    int
+        pt0 = addpoint(0, pos0),
+        pt1 = addpoint(0, pos1);
+    return addprim(geo, type, pt0, pt1);
+}
+
+function
+int addprim(
+    int geo;
+    string type;
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    ) {
+    int
+        pt0 = addpoint(0, pos0),
+        pt1 = addpoint(0, pos1),
+        pt2 = addpoint(0, pos2);
+    return addprim(geo, type, pt0, pt1, pt2);
+}
+
+function
+int addprim(
+    int geo;
+    string type;
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    vector pos3;
+    ) {
+    int
+        pt0 = addpoint(0, pos0),
+        pt1 = addpoint(0, pos1),
+        pt2 = addpoint(0, pos2),
+        pt3 = addpoint(0, pos3);
+    return addprim(geo, type, pt0, pt1, pt2, pt3);
+}
+
+function
+int addprim(
+    string type;
+    vector pos0;
+    ) {
+    return addprim(0, type, pos0);
+}
+
+function
+int addprim(
+    string type;
+    vector pos0;
+    vector pos1;
+    ) {
+    return addprim(0, type, pos0, pos1);
+}
+
+function
+int addprim(
+    string type;
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    ) {
+    return addprim(0, type, pos0, pos1, pos2);
+}
+
+function
+int addprim(
+    string type;
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    vector pos3;
+    ) {
+    return addprim(0, type, pos0, pos1, pos2, pos3);
+}
+
+function
+int addprim(
+    int geo;
+    string type;
+    vector poses[];
+    ) {
+    int pts[];
+    foreach(vector pos; poses){
+        push(pts, addpoint(geo, pos));
+    }
+    return addprim(geo, type, pts);
+}
+
+function
+int addprim(
+    string type;
+    vector poses[];
+    ) {
+    return addprim(0, type, poses);
+}
+
+function
+int addprim(
+    int geo;
+    vector poses[];
+    ) {
+    return addprim(geo, "poly", poses);
+}
+
+
+
+
+function
+int addprim(
+    int geo;
+    vector pos0;
+    ) {
+    return addprim(geo, "poly", pos0);
+}
+
+function
+int addprim(
+    int geo;
+    vector pos0;
+    vector pos1;
+    ) {
+    return addprim(geo, "poly", pos0, pos1);
+}
+
+function
+int addprim(
+    int geo;
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    ) {
+    return addprim(geo, "poly", pos0, pos1, pos2);
+}
+
+function
+int addprim(
+    int geo;
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    vector pos3;
+    ) {
+    return addprim(geo, "poly", pos0, pos1, pos2, pos3);
+}
+
+function
+int addprim(
+    vector pos0;
+    ) {
+    return addprim(0, "poly", pos0);
+}
+
+function
+int addprim(
+    vector pos0;
+    vector pos1;
+    ) {
+    return addprim(0, "poly", pos0, pos1);
+}
+
+function
+int addprim(
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    ) {
+    return addprim(0, "poly", pos0, pos1, pos2);
+}
+
+function
+int addprim(
+    vector pos0;
+    vector pos1;
+    vector pos2;
+    vector pos3;
+    ) {
+    return addprim(0, "poly", pos0, pos1, pos2, pos3);
+}
+
+function
+int addprim(
+    vector poses[];
+    ) {
+    return addprim(0, "poly", poses);
+}
+
+
+
+
+
+
+
+function
+int addpoly(
+    const int geo;
+    const int pts[];
+    ) {
+    return addprim(geo, pts);
+}
+
+function
+int addpoly(
+    const int pt0;
+    ) {
+    return addprim(pt0);
+}
+
+function
+int addpoly(
+    const int pt0, pt1;
+    ) {
+    return addprim(pt0, pt1);
+}
+
+function
+int addpoly(
+    const int pt0, pt1, pt2;
+    ) {
+    return addprim(pt0, pt1, pt2);
+}
+
+function
+int addpoly(
+    const int pt0, pt1, pt2, pt3;
+    ) {
+    return addprim(pt0, pt1, pt2, pt3);
+}
+
+function
+int addpoly(
+    const int pts[];
+    ) {
+    return addprim(pts);
+}
+
+
+
+
+function
+int addpoly(
+    const int geo;
+    const vector pos0;
+    ) {
+    return addprim(geo, pos0);
+}
+
+function
+int addpoly(
+    const int geo;
+    const vector pos0, pos1;
+    ) {
+    return addprim(geo, pos0, pos1);
+}
+
+function
+int addpoly(
+    const int geo;
+    const vector pos0, pos1, pos2;
+    ) {
+    return addprim(geo, pos0, pos1, pos2);
+}
+
+function
+int addpoly(
+    const int geo;
+    const vector pos0, pos1, pos2, pos3;
+    ) {
+    return addprim(geo, pos0, pos1, pos2, pos3);
+}
+
+function
+int addpoly(
+    int geo;
+    const vector poses[];
+    ) {
+    return addprim(geo, poses);
+}
+
+function
+int addpoly(
+    const vector pos0;
+    ) {
+    return addprim(pos0);
+}
+
+function
+int addpoly(
+    const vector pos0, pos1;
+    ) {
+    return addprim(pos0, pos1);
+}
+
+function
+int addpoly(
+    const vector pos0, pos1, pos2;
+    ) {
+    return addprim(pos0, pos1, pos2);
+}
+
+function
+int addpoly(
+    const vector pos0, pos1, pos2, pos3;
+    ) {
+    return addprim(pos0, pos1, pos2, pos3);
+}
+
+function
+int addpoly(
+    const vector poses[];
+    ) {
+    return addprim(poses);
+}
+
+
+
+
+
+
+
+
+int addline(
+    const int pt0;
+    ) {
+    return addprim(0, "polyline", pt0);
+}
+
+int addline(
+    const int pt0, pt1;
+    ) {
+    return addprim(0, "polyline", pt0, pt1);
+}
+
+int addline(
+    const int pt0, pt1, pt2;
+    ) {
+    return addprim(0, "polyline", pt0, pt1, pt2);
+}
+
+int addline(
+    const int pt0, pt1, pt2, pt3;
+    ) {
+    return addprim(0, "polyline", pt0, pt1, pt2, pt3);
+}
+
+int addline(
+    int geo;
+    const vector pos0;
+    ) {
+    return addprim(geo, "polyline", pos0);
+}
+
+int addline(
+    int geo;
+    const vector pos0, pos1;
+    ) {
+    return addprim(geo, "polyline", pos0, pos1);
+}
+
+int addline(
+    int geo;
+    const vector pos0, pos1, pos2;
+    ) {
+    return addprim(geo, "polyline", pos0, pos1, pos2);
+}
+
+int addline(
+    int geo;
+    const vector pos0, pos1, pos2, pos3;
+    ) {
+    return addprim(geo, "polyline", pos0, pos1, pos2, pos3);
+}
+
+int addline(
+    const vector pos0;
+    ) {
+    return addprim("polyline", pos0);
+}
+
+int addline(
+    const vector pos0, pos1;
+    ) {
+    return addprim("polyline", pos0, pos1);
+}
+
+int addline(
+    const vector pos0, pos1, pos2;
+    ) {
+    return addprim("polyline", pos0, pos1, pos2);
+}
+
+int addline(
+    const vector pos0, pos1, pos2, pos3;
+    ) {
+    return addprim("polyline", pos0, pos1, pos2, pos3);
+}
+
+int addquad_std(
+    ) {
+	vector
+        pos0 = {0,0,0},
+        pos1 = {1,0,0};
+	return addline(pos0, pos1);
+}
+
+
+
+
+
+
+
+
+
+
+
+int addtriangle(
+    const int pt0, pt1, pt2;
+    ) {
+    return addpoly(pt0, pt1, pt2);
+}
+
+int addtriangle(
+    const vector pos0, pos1, pos2;
+    ) {
+    return addpoly(pos0, pos1, pos2);
+}
+
+int addtriangle(
+    const vector pos[];
+    ) {
+    return addpoly(pos[0], pos[1], pos[2]);
+}
+
+int addtriangle_std(
+    ) {
+	vector
+        pos0 = {0,0,0},
+        pos1 = {0,0,1},
+        pos2 = {1,0,1};
+    return addtriangle(pos0, pos1, pos2);
+}
+
+
+
+
+
+
+
+
+
+
+int addquad(
+    const int pt0, pt1, pt2, pt3;
+    ) {
+    return addpoly(pt0, pt1, pt2, pt3);
+}
+
+int addquad(
+    const int geo;
+    const vector pos0, pos1, pos2, pos3;
+    ) {
+    return addpoly(geo, pos0, pos1, pos2, pos3);
+}
+
+int addquad(
+    const vector pos0, pos1, pos2, pos3;
+    ) {
+    return addpoly(pos0, pos1, pos2, pos3);
+}
+
+int addquad(
+    const vector pos[];
+    ) {
+    return addpoly(pos[0], pos[1], pos[2], pos[3]);
+}
+
+int addquad_std(
+    ) {
+	vector
+        pos0 = {0,0,0},
+        pos1 = {0,0,1},
+        pos2 = {1,0,1},
+        pos3 = {1,0,0};
+	return addquad(pos0,pos1,pos2,pos3);
+}
+
+
+
+
+
+
+
+
+
+
+
+function
+int[] addvertices(
+    const int geo;
+    const int primnum;
+    const int ptnums[];
+    ) {
+    int vertices[];
+    foreach (int ptnum; ptnums)
+        push(vertices, addvertex(geo, primnum, ptnum));
+    return vertices;
+}
+
+function
+int[] addvertices(
+    const int geo;
+    const int primnum;
+    const int ptnums[];
+    ) {
+    return addvertices(0, primnum, ptnums);
+}
+
+
+
+
+
+
+
+
+#endif

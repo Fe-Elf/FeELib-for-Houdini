@@ -1,0 +1,1359 @@
+
+#ifndef __MATHDEEP_VFL__
+#define __MATHDEEP_VFL__
+
+#include <precompile.vfl>
+
+#if 0
+    #include <mathdeep.vfl>
+#else
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// used in this HDAs
+// FeE Polygon Reduce 2D Longest Edges
+// FeE Convex Polygon Min Area / OpenCL1
+// FeE City Lot Generator
+// FeE Poly Expand 2D Simple
+
+#if 0
+
+function
+int lineIntersection2D(
+    vector pos0, pos1, pos2, pos3;
+    float THRESHOLD_INTERSECTION;
+    export vector outPos;
+    ) {
+    if ((pos3.x - pos2.x) * (pos0.y - pos2.y) - (pos3.y - pos2.y) * (pos0.x - pos2.x) == 0 && (pos1.x - pos0.x) * (pos0.y - pos2.y) - (pos1.y - pos0.y) * (pos0.x - pos2.x) == 0) return 2;//平行，不同一直线
+    if ((pos3.y - pos2.y) * (pos1.x - pos0.x) - (pos3.x - pos2.x) * (pos1.y - pos0.y) == 0) return 0;//平行
+
+    float k = ( (pos3.x - pos2.x) * (pos0.y - pos2.y) - (pos3.y - pos2.y) * (pos0.x - pos2.x) ) / ( (pos3.y - pos2.y) * (pos1.x - pos0.x) - (pos3.x - pos2.x) * (pos1.y - pos0.y) );
+    //k1 = ((pos1.x - pos0.x) * (pos0.y - pos2.y) - (pos1.y - pos0.y) * (pos0.x - pos2.x))/((pos3.y - pos2.y) * (pos1.x - pos0.x) - (pos3.x - pos2.x) * (pos1.y - pos0.y));
+    outPos.x = pos0.x + k * (pos1.x - pos0.x);
+    outPos.y = pos0.y + k * (pos1.y - pos0.y);
+    return 1;//有交点
+}
+
+#else
+
+    vector2 setPy0(vector vec)
+    {
+        return set(vec.x, vec.z);
+    }
+
+    float getPy0(vector pos0; vector pos1; vector2 result2d;)
+    {
+        vector2 pos20 = setPy0(pos0);
+        vector2 pos21 = setPy0(pos1);
+        float dist  = distance2(pos20, pos21);
+        float dist0 = distance2(pos20, result2d);
+        float dist1 = distance2(pos21, result2d);
+        #if 1
+            float bias = sqrt(dist0 / dist);
+            if (dist1 > dist0 && dist1 > dist)
+            {
+                bias *= -1;
+            }
+        #else
+            float bias;
+            if (dist0 < dist && dist1 < dist)
+            {
+                bias = dist0 / dist;
+                bias = sqrt(bias);
+            }
+            else if (dist1 > dist0)
+            {
+                bias = -sqrt(dist0 / dist);
+            }
+            else
+            {
+                bias = 1 + sqrt(dist1 / dist);
+            }
+        #endif
+        return lerp(pos0.y, pos1.y, bias);
+    }
+    
+    function
+    int lineIntersection2D(
+        const vector A, B, C, D;
+        float THRESHOLD_INTERSECTION;
+        export vector result;
+        ) {
+        /*
+        vector peadDir0 = B - A;
+        vector peadDir1 = D - C;
+        if ( dot(peadDir0, peadDir1) < THRESHOLD_INTERSECTION ) return 0;
+        */
+    
+        // Line AB represented as a1x + b1z = c1
+        float a1 = B.z - A.z;
+        float b1 = A.x - B.x;
+    
+        // Line CD represented as a2x + b2z = c2
+        float a2 = D.z - C.z;
+        float b2 = C.x - D.x;
+        
+        float determinant = a1 * b2 - a2 * b1;
+    
+        if ( abs(determinant) < THRESHOLD_INTERSECTION ) return 0;
+    
+        float c1 = a1 * A.x + b1 * A.z;
+        float c2 = a2 * C.x + b2 * C.z;
+    
+        vector2 result2d;
+        result2d.x = (b2 * c1 - b1 * c2) / determinant;
+        result2d.y = (a1 * c2 - a2 * c1) / determinant;
+    
+        // int segment = 2;
+        // if ( segment == 0 ) {
+        //     /*
+        //     vector A2 = (vector)(A.x, 0, A.z);
+        //     vector B2 = (vector)(B.x, 0, B.z);
+        //     vector C2 = (vector)(C.x, 0, C.z);
+        //     vector D2 = (vector)(D.x, 0, D.z);
+        //     */
+        // } else if ( segment == 1 ) {//segment
+        //     /*
+        //     #if 0
+        //         float THRESHOLD_INTERSECTION_f = THRESHOLD_INTERSECTION;
+        //         vector THRESHOLD_INTERSECTION_f3 = (vector)(THRESHOLD_INTERSECTION_f, THRESHOLD_INTERSECTION_f, THRESHOLD_INTERSECTION_f);
+        //         vector Min1 = componentMin(A, B) - THRESHOLD_INTERSECTION_f3;
+        //         vector Max1 = componentMax(A, B) + THRESHOLD_INTERSECTION_f3;
+        //         vector Min2 = componentMin(C, D) - THRESHOLD_INTERSECTION_f3;
+        //         vector Max2 = componentMax(C, D) + THRESHOLD_INTERSECTION_f3;
+        //     #else
+        //         vector Min1 = componentMin(A, B);
+        //         vector Max1 = componentMax(A, B);
+        //         vector Min2 = componentMin(C, D);
+        //         vector Max2 = componentMax(C, D);
+        //         Min1.x -= THRESHOLD_INTERSECTION;
+        //         Min1.y -= THRESHOLD_INTERSECTION;
+        //         Min1.z -= THRESHOLD_INTERSECTION;
+        //         Min2.x -= THRESHOLD_INTERSECTION;
+        //         Min2.y -= THRESHOLD_INTERSECTION;
+        //         Min2.z -= THRESHOLD_INTERSECTION;
+                
+        //         Max1.x += THRESHOLD_INTERSECTION;
+        //         Max1.y += THRESHOLD_INTERSECTION;
+        //         Max1.z += THRESHOLD_INTERSECTION;
+        //         Max2.x += THRESHOLD_INTERSECTION;
+        //         Max2.y += THRESHOLD_INTERSECTION;
+        //         Max2.z += THRESHOLD_INTERSECTION;
+        //     #endif
+        //     if ( !(  (x >= A.x) && (x <= Max1.x) && (z >= Min1.z) && (z <= Max1.z)   &&   (x >= Min2.x) && (x <= Max2.x) && (z >= Min2.z) && (z <= Max2.z)  ) ) return 0;
+        //     */
+        // } else {//ray0
+        // // } else if ( segment == 2 ) {//ray0
+        //     /*
+        //     int valid = 1;
+        //     if ( B.x > A.x ) {
+        //         valid = x > B.x;
+        //     } else {
+        //         valid = x <= B.x;
+        //     }
+        //     if ( valid ) {
+        //     */
+    
+        //     if ( !(  B.x > A.x == result2d.x > B.x  &&  B.z > A.z == result2d.y > B.z  &&  D.x > C.x == result2d.x > D.x  &&  D.z > C.z == result2d.y > D.z  ) ) return 0;
+        // }
+        //addpoint(0, utov(A2));
+        #if 1
+            float H1 = getPy0(A, B, result2d);
+            float H2 = getPy0(C, D, result2d);
+            result.y = (H1 + H2) * 0.5;
+        #endif
+        
+        result.x = result2d.x;
+        result.z = result2d.y;
+    
+        return 1;
+    }
+    
+#endif
+
+
+
+
+
+
+
+
+
+function
+float normaldistribution(
+    float x, mean, var;
+    ) {
+    return exp(pow(-(x-mean)/var, 2)/2) / var / sqrt(2*PI);
+}
+
+function
+float N(
+    float x, mean, var;
+    ) {
+    return exp(pow(-(x-mean)/var, 2)/2) / var / sqrt(2*PI);
+}
+
+
+/*
+function
+int distance(
+    int val0, val1;
+    ) {
+    return abs(val0 - val1);
+}
+
+function
+float distance(
+    float val0, val1;
+    ) {
+    return abs(val0 - val1);
+}
+
+
+*/
+
+function
+int length(
+    int val0;
+    ) {
+    return abs(val0);
+}
+/*
+function
+float length(
+    float val0;
+    ) {
+    return abs(val0);
+}
+*/
+function
+int sizeForSort(
+    int val0;
+    ) {
+    return val0;
+}
+
+function
+float sizeForSort(
+    float val0;
+    ) {
+    return val0;
+}
+
+function
+float sizeForSort(
+    vector2 val0;
+    ) {
+    return length2(val0);
+}
+
+function
+float sizeForSort(
+    vector val0;
+    ) {
+    return length2(val0);
+}
+
+function
+float sizeForSort(
+    vector4 val0;
+    ) {
+    return length2(val0);
+}
+
+#define FUNCdistance(type)\
+        function\
+        type distance(\
+            type val0, val1;\
+            ) {\
+            return abs(val0 - val1);\
+        }\
+
+DEFINEFUNCif(FUNCdistance)
+
+
+
+/*
+
+function
+int distance2(
+    int val0, val1;
+    ) {
+    int diff = val0 - val1;
+    return diff*diff;
+}
+
+function
+float distance2(
+    float val0, val1;
+    ) {
+    float diff = val0 - val1;
+    return diff*diff;
+}
+
+*/
+
+#define FUNCdistance2(type)\
+        function\
+        type distance2(\
+            type val0, val1;\
+            ) {\
+            type diff = val0 - val1;\
+            return diff*diff;\
+        }\
+
+DEFINEFUNCif(FUNCdistance2)
+
+#define FUNCbias(type)\
+        function\
+        type bias(\
+            type base, bias;\
+            ) {\
+            if (base <= 0) return 0;\
+            else if (base >= 1) return 1;\
+            else return bias / (((1.0 / base) - 2) * (1 - bias) + 1);\
+        }\
+
+DEFINEFUNCf(FUNCbias)
+
+#define FUNCgain(type)\
+        function\
+        type gain(\
+            type base, bias;\
+            ) {\
+            if (base < 0.5) return bias(2*base, gain) * 0.5;\
+            else return 1 - bias(2*(1-base), gain) * 0.5;\
+        }\
+
+DEFINEFUNCf(FUNCgain)
+
+#define FUNCargsize0(type)\
+        function\
+        int argsize(\
+            type value;\
+            ) {\
+            return 1;\
+        }\
+
+DEFINEFUNCifs(FUNCargsize0)
+
+#define FUNCargsize1(type)\
+        function\
+        int argsize(\
+            type value[];\
+            ) {\
+            return 1;\
+        }\
+
+DEFINEFUNCifs(FUNCargsize1)
+
+function
+int argsize(
+    vector2 value;
+    ) {
+    return 2;
+}
+
+function
+int argsize(
+    vector2 value[];
+    ) {
+    return 2;
+}
+
+function
+int argsize(
+    vector value;
+    ) {
+    return 3;
+}
+
+function
+int argsize(
+    vector value[];
+    ) {
+    return 3;
+}
+
+function
+int argsize(
+    vector4 value;
+    ) {
+    return 4;
+}
+
+function
+int argsize(
+    vector4 value[];
+    ) {
+    return 4;
+}
+
+function
+int argsize(
+    matrix value;
+    ) {
+    return 16;
+}
+
+function
+int argsize(
+    matrix value[];
+    ) {
+    return 16;
+}
+
+function
+int argsize(
+    matrix3 value;
+    ) {
+    return 9;
+}
+
+function
+int argsize(
+    matrix3 value[];
+    ) {
+    return 9;
+}
+
+function
+int argsize(
+    matrix2 value;
+    ) {
+    return 4;
+}
+
+function
+int argsize(
+    matrix2 value[];
+    ) {
+    return 4;
+}
+
+
+
+
+
+
+function
+int unit(
+    int value;
+    ) {
+    return 1;
+}
+
+#define FUNCunit(type)\
+        function\
+        type unit(\
+            type value;\
+            ) {\
+            return set(1.0);\
+        }\
+
+DEFINEFUNCfv(FUNCunit)
+
+
+
+
+
+
+
+
+#define FUNCsquare(type)\
+        function\
+        type square(\
+            type value;\
+            ) {\
+            return value * value;\
+        }\
+
+DEFINEFUNCifv(FUNCsquare)
+
+#define FUNCcubic(type)\
+        function\
+        type cubic(\
+            type value;\
+            ) {\
+            return value * value * value;\
+        }\
+
+DEFINEFUNCifv(FUNCcubic)
+
+#define FUNCcomplement(type)\
+        function\
+        type complement(\
+            type value;\
+            ) {\
+            return 1 - value;\
+        }\
+
+DEFINEFUNCfv(FUNCcomplement)
+
+
+
+#define FUNClog(type)\
+        function\
+        type log(\
+            type value0;\
+            type value1;\
+            ) {\
+            if(1)\
+                return log10(value1) / log10(value0);\
+            else\
+                return log(value1) / log(value0);\
+        }\
+
+DEFINEFUNCfv(FUNClog)
+
+#define FUNCln(type)\
+        function\
+        type ln(\
+            type value;\
+            ) {\
+            return log(value);\
+        }\
+
+DEFINEFUNCfv(FUNCln)
+
+
+
+
+#define FUNCdcosh(type)\
+        function\
+        type dcosh(\
+            type x;\
+            ) {\
+            return sinh(x);\
+        }\
+
+DEFINEFUNCfv(FUNCdcosh)
+
+#define FUNCdsinh(type)\
+        function\
+        type dsinh(\
+            type x;\
+            ) {\
+            return cosh(x);\
+        }\
+
+DEFINEFUNCfv(FUNCdsinh)
+
+#define FUNCdtanh(type)\
+        function\
+        type dtanh(\
+            type x;\
+            ) {\
+            return 1-square(tanh(x));\
+        }\
+
+DEFINEFUNCfv(FUNCdtanh)
+
+#define FUNCarcosh(type)\
+        function\
+        type arcosh(\
+            type x;\
+            ) {\
+            return log(x+sqrt(square(x)+1));\
+        }\
+
+DEFINEFUNCfv(FUNCarcosh)
+
+#define FUNCarsinh(type)\
+        function\
+        type arsinh(\
+            type x;\
+            ) {\
+            return log(x+sqrt(square(x)-1));\
+        }\
+
+DEFINEFUNCfv(FUNCarsinh)
+
+#define FUNCartanh(type)\
+        function\
+        type artanh(\
+            type x;\
+            ) {\
+            return log((1+x)/(1-x))/2;\
+        }\
+
+DEFINEFUNCfv(FUNCartanh)
+
+#define FUNCdarcosh(type)\
+        function\
+        type darcosh(\
+            type x;\
+            ) {\
+            return 1/sqrt(square(x)+1);\
+        }\
+
+DEFINEFUNCfv(FUNCdarcosh)
+
+#define FUNCdarsinh(type)\
+        function\
+        type darsinh(\
+            type x;\
+            ) {\
+            return 1/sqrt(square(x)-1);\
+        }\
+
+DEFINEFUNCfv(FUNCdarsinh)
+
+#define FUNCdartanh(type)\
+        function\
+        type dartanh(\
+            type x;\
+            ) {\
+            return 1/(1-square(x));\
+        }\
+
+DEFINEFUNCfv(FUNCdartanh)
+
+
+
+
+function
+float sincos(
+    float value;
+    ) {
+    return (value < 0) * sqrt(1 - square(value));
+}
+
+
+
+function
+float decfloor(float num;) {
+	return num - floor(num);
+}
+
+function
+vector2 decfloor(vector2 num;) {
+	return set(decfloor(num.x), decfloor(num.y));
+}
+
+function
+vector decfloor(vector num;) {
+	return set(decfloor(num.x), decfloor(num.y), decfloor(num.z));
+}
+
+function
+vector4 decfloor(vector4 num;) {
+	return set(decfloor(num.x), decfloor(num.y), decfloor(num.z), decfloor(num.w));
+}
+
+
+
+function
+float dectrunc(float num;){
+	return num - trunc(num);
+}
+
+function
+vector2 dectrunc(vector2 num;){
+	return set(dectrunc(num.x), dectrunc(num.y));
+}
+
+function
+vector dectrunc(vector num;){
+	return set(dectrunc(num.x), dectrunc(num.y), dectrunc(num.z));
+}
+
+function
+vector4 dectrunc(vector4 num;){
+	return set(dectrunc(num.x), dectrunc(num.y), dectrunc(num.z), dectrunc(num.w));
+}
+
+
+function
+vector pow(float b; vector e) {
+   return set(pow(b,e.x), pow(b,e.y), pow(b,e.z));
+}
+
+function
+vector pow(vector b,e;) {
+   return set(pow(b.x,e.x), pow(b.y,e.y), pow(b.z,e.z));
+}
+
+function
+vector4 pow(float b; vector4 e;) {
+   return set(pow(b,e.x), pow(b,e.y), pow(b,e.z), pow(b,e.w));
+}
+
+function
+vector4 pow(vector4 b,e;) {
+   return set(pow(b.x,e.x), pow(b.y,e.y), pow(b.z,e.z), pow(b.w,e.w));
+}
+
+#define FUNCpow(type)\
+        function\
+        type pow(\
+            const type num;\
+            const int exp;\
+            ) {\
+            if (exp == 0) {\
+                return 1;\
+            } else if (exp == 1) {\
+                return num;\
+            } else if (exp == 2) {\
+                return square(num);\
+            } else if (exp == 3) {\
+                return cubic(num);\
+            } else {\
+                /*type result = num;\
+                for (int i = 1; i < exp; ++i) {\
+                    result *= num;\
+                }\
+                return result;*/\
+                return type(pow(num, float(exp)));\
+            }\
+        }\
+
+DEFINEFUNCifv(FUNCpow)
+
+
+
+
+
+
+
+
+
+function
+int factorial(
+    const int n;
+    ) {
+    if ( n < 0 ) error("fee factorial: bad arg value");
+    int result = n;
+    for (int i = n-1; i > 1; --i) {
+        result *= i;
+    }
+	return max(result, 1);
+}
+
+function
+int combination(
+    const int n, m;
+    ) {
+    if ( n > m || n < 0 ) error("fee combination: bad arg value");
+    if ( n == 0 ) return 0;
+    int msn = m - n;
+    int cptn = n;
+    if ( cptn > msn ) cptn = msn;
+    int result = 1;
+    for (int i = 1; i <= cptn; ++i) {
+        result = result * (msn+i) / i; //先算乘法，因为(m-n+i)/i除不尽 //result *= (m-n+i) / i;
+    }
+	return result;
+}
+
+function
+int permutations(
+    const int n, m;
+    ) {
+    if ( n > m || n < 0 ) error("fee permutations: bad arg value");
+    if ( n == 0 ) return 0;
+    int msn = m - n;
+    int result = msn + 1;
+    for(int i = msn + 2; i <= m; ++i) {
+        result *= i;
+    }
+	return result;
+}
+
+
+/*
+
+function
+void cal(
+    ) {
+    fac[0]=1;
+    for(int i = 1; i <= P; ++i) {
+        fac[i] = fac[i-1] * i % P;
+    }
+}
+
+function
+int qpow(
+    int a, b;
+    ) {
+    int result = 1;
+    while ( b ) {
+        if ( b & 1 ) {
+            result = result * a % P;
+        }
+        b >>= 1;
+        a = a * a % P;
+    }
+    return result;
+}
+  
+function
+int C(
+    int n, m;
+    ) {
+    if ( n < m ) return 0;
+    return fac[n] * qpow(fac[n-m] * fac[m] % P, P-2) % P;
+}
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define FUNCceil(type)\
+        function\
+        type ceil(\
+            type value;\
+            int places;\
+            ) {\
+            places = pow(10, places);\
+            return ceil(value * places) / places;\
+        }\
+
+DEFINEFUNCfv(FUNCceil)
+
+#define FUNCfloor(type)\
+        function\
+        type floor(\
+            type value;\
+            int places;\
+            ) {\
+            places = pow(10, places);\
+            return floor(value * places) / places;\
+        }\
+
+DEFINEFUNCfv(FUNCfloor)
+
+#define FUNCrint(type)\
+        function\
+        type rint(\
+            type value;\
+            int places;\
+            ) {\
+            places = pow(10, places);\
+            return rint(value * places) / places;\
+        }\
+
+DEFINEFUNCfv(FUNCrint)
+
+#define FUNCround(type)\
+        function\
+        type round(\
+            type value;\
+            int places;\
+            ) {\
+            return rint(value, places);\
+        }\
+
+DEFINEFUNCfv(FUNCround)
+
+
+function
+float fit(
+    float value, omin, omax, nmin, nmax;
+    int clampin, clampout;
+    ) {
+    float result = value;
+    if (!clampin && result < omin) {
+        result += nmin - omin;
+    } else if (!clampout && result > omax) {
+        result += nmax - omax;
+    } else {
+        result = fit(result, omin, omax, nmin, nmax);
+    }
+    return result;
+}
+
+#define FUNCfit0(type)\
+        function\
+        type fit(\
+            type value, omin, omax, nmin, nmax;\
+            int clampin, clampout;\
+            ) {\
+            type result = value;\
+            for (int i = 0; i < argsize(value); ++i){\
+                if (!clampin && result[i] < omin[i]) {\
+                    result[i] += nmin[i] - omin[i];\
+                } else if (!clampout && result[i] > omax[i]) {\
+                    result[i] += nmax[i] - omax[i];\
+                } else {\
+                    result[i] = fit(result[i], omin[i], omax[i], nmin[i], nmax[i]);\
+                }\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCv(FUNCfit0)
+
+#define FUNCfit1(type)\
+        function\
+        type fit(\
+            type value, omin, omax;\
+            float nmin, nmax;\
+            int clampin, clampout;\
+            ) {\
+            type result = value;\
+            for (int i = 0; i < argsize(value); ++i){\
+                if (!clampin && result[i] < omin[i]) {\
+                    result[i] += nmin - omin[i];\
+                } else if (!clampout && result[i] > omax[i]) {\
+                    result[i] += nmax - omax[i];\
+                } else {\
+                    result[i] = fit(result[i], omin[i], omax[i], nmin, nmax);\
+                }\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCv(FUNCfit1)
+
+//众数
+function
+int mode(
+    const int arr[];
+    const int which;
+    export int times;
+    ) {
+    int mask[];
+    int len = len(arr);
+    resize(mask, len);
+    for (int i = 0; i < len; ++i) {
+        if ( mask[i] > 0 ) continue;
+        mask[i] = 1;
+        for (int j = i+1; j < len; ++j) {
+            if ( mask[j] > 0 || (arr[i] - arr[j]) != 0 ) continue;
+            mask[j] = 1;
+            ++mask[i];
+        }
+    }
+    times = max(mask);
+    int find[] = find(mask, times);
+    return arr[find[clamp(which, 0, len(find)-1)]];
+}
+
+function
+int mode(
+    const int arr[];
+    export int times;
+    ) {
+    int mask[];
+    int len = len(arr);
+    resize(mask, len);
+    for (int i = 0; i < len; ++i) {
+        if ( mask[i] > 0 ) continue;
+        mask[i] = 1;
+        for (int j = i+1; j < len; ++j) {
+            if ( mask[j] > 0 || (arr[i] - arr[j]) != 0 ) continue;
+            mask[j] = 1;
+            ++mask[i];
+        }
+    }
+    times = max(mask);
+    return arr[find(mask, times)];
+}
+
+function
+int mode(
+    const int arr[];
+    ) {
+    int mask[];
+    int len = len(arr);
+    resize(mask, len);
+    for (int i = 0; i < len; ++i) {
+        if ( mask[i] > 0 ) continue;
+        mask[i] = 1;
+        for (int j = i+1; j < len; ++j) {
+            if ( mask[j] > 0 || (arr[i] - arr[j]) != 0 ) continue;
+            mask[j] = 1;
+            ++mask[i];
+        }
+    }
+    return arr[find(mask, max(mask))];
+}
+
+//众数
+#define FUNCmode0(type)\
+        function\
+        type mode(\
+            const type arr[];\
+            const int which;\
+            export int times;\
+            const float tolerance;\
+            ) {\
+            if ( tolerance < 0 ) return 0;\
+            int mask[];\
+            int len = len(arr);\
+            resize(mask, len);\
+            for (int i = 0; i < len; ++i) {\
+                if ( mask[i] > 0 ) continue;\
+                mask[i] = 1;\
+                for (int j = i+1; j < len; ++j) {\
+                    if ( mask[j] > 0 || distance(arr[i], arr[j]) > tolerance ) continue;\
+                    mask[j] = 1;\
+                    ++mask[i];\
+                }\
+            }\
+            times = max(mask);\
+            int find[] = find(mask, times);\
+            return arr[find[clamp(which, 0, len(find)-1)]];\
+        }\
+
+DEFINEFUNCfv(FUNCmode0)
+
+#define FUNCmode1(type)\
+        function\
+        type mode(\
+            const type arr[];\
+            export int times;\
+            const float tolerance;\
+            ) {\
+            if ( tolerance < 0 ) return 0;\
+            int mask[];\
+            int len = len(arr);\
+            resize(mask, len);\
+            for (int i = 0; i < len; ++i) {\
+                if ( mask[i] > 0 ) continue;\
+                mask[i] = 1;\
+                for (int j = i+1; j < len; ++j) {\
+                    if ( mask[j] > 0 || distance(arr[i], arr[j]) > tolerance ) continue;\
+                    mask[j] = 1;\
+                    ++mask[i];\
+                }\
+            }\
+            times = max(mask);\
+            return arr[find(mask, times)];\
+        }\
+
+DEFINEFUNCfv(FUNCmode1)
+//you should use this function like this style //mode(arr, times, 0.0);
+
+#define FUNCmode2(type)\
+        function\
+        type mode(\
+            const type arr[];\
+            const float tolerance;\
+            ) {\
+            if ( tolerance < 0 ) return 0;\
+            int mask[];\
+            int len = len(arr);\
+            resize(mask, len);\
+            for (int i = 0; i < len; ++i) {\
+                if ( mask[i] > 0 ) continue;\
+                mask[i] = 1;\
+                for (int j = i+1; j < len; ++j) {\
+                    if ( mask[j] > 0 || distance(arr[i], arr[j]) > tolerance ) continue;\
+                    mask[j] = 1;\
+                    ++mask[i];\
+                }\
+            }\
+            return arr[find(mask, max(mask))];\
+        }\
+
+DEFINEFUNCfv(FUNCmode2)
+//you should use this function like this style //mode(arr, 0.0);
+
+#define FUNCmode01(type)\
+        function\
+        type mode(\
+            const type arr[];\
+            const int which;\
+            export int times;\
+            ) {\
+            return mode(arr, which, times, 0);\
+        }\
+
+DEFINEFUNCifv(FUNCmode01)
+
+#define FUNCmode11(type)\
+        function\
+        type mode(\
+            const type arr[];\
+            export int times;\
+            ) {\
+            return mode(arr, times, 0.0);\
+        }\
+
+DEFINEFUNCifv(FUNCmode11)
+
+#define FUNCmode21(type)\
+        function\
+        type mode(\
+            const type arr[];\
+            ) {\
+            return mode(arr, 0.0);\
+        }\
+
+DEFINEFUNCifv(FUNCmode21)
+
+
+
+
+#define FUNCefit010(type)\
+        function\
+        type efit01(\
+            type value;\
+            type nmin, nmax;\
+            ) {\
+            return efit(value, 0, 1, nmin, nmax);\
+        }\
+
+DEFINEFUNCfv(FUNCefit010)
+
+#define FUNCefit011(type)\
+        function\
+        type efit01(\
+            type value;\
+            float nmin, nmax;\
+            ) {\
+            return efit(value, 0, 1, nmin, nmax);\
+        }\
+
+DEFINEFUNCv(FUNCefit011)
+
+
+
+function
+vector2 chramp(
+    string channel;
+    vector2 value;
+    ) {
+    vector2 result;
+    result[0] = chramp(channel, value[0]);
+    result[1] = chramp(channel, value[1]);
+    return result;
+}
+
+function
+vector4 chramp(
+    string channel;
+    vector4 value;
+    ) {
+    vector4 result;
+    result[0] = chramp(channel, value[0]);
+    result[1] = chramp(channel, value[1]);
+    result[2] = chramp(channel, value[2]);
+    result[3] = chramp(channel, value[3]);
+    return result;
+}
+
+/*
+#define FUNCchramp0(type)\
+        function\
+        type chramp(\
+            string channel;\
+            type value;\
+            ) {\
+            type result;\
+            for (int i = 0; i < argsize(value); ++i){\
+                result[i] = chramp(channel, value[i]);\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCv(FUNCchramp0)
+*/
+
+#define FUNCchramp1(type)\
+        function\
+        type chramp(\
+            string channel;\
+            type value;\
+            float time;\
+            ) {\
+            type result;\
+            for (int i = 0; i < argsize(value); ++i){\
+                result[i] = chramp(channel, value[i], time);\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCv(FUNCchramp1)
+
+
+#define FUNCdec2bin(type)\
+        function\
+        int[] dec2bin(\
+            type dec;\
+            ) {\
+            int result[];\
+            while (dec) {\
+                push(result, dec % 2);\
+                dec /= 2;\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCi(FUNCdec2bin)
+
+
+
+
+#define FUNCweight(type)\
+        function\
+        type weight(\
+            type value;\
+            type min;\
+            type max;\
+            ) {\
+            return (value - max) / (min - max);\
+        }\
+
+DEFINEFUNCfv(FUNCweight)
+
+function
+vector orthogonolizedir(
+    vector dir;
+    ) {
+    vector absdir = abs(dir);
+    if ( absdir.x > absdir.y ) {
+        if ( absdir.x > absdir.z ) {
+            if ( dir.x > 0 ) {
+                return {1,0,0};
+            } else {
+                return {-1,0,0};
+            }
+        } else {
+            if ( dir.z > 0 ) {
+                return {0,0,1};
+            } else {
+                return {0,0,-1};
+            }
+        }
+    } else {
+        if ( absdir.y > absdir.z ) {
+            if ( dir.y > 0 ) {
+                return {0,1,0};
+            } else {
+                return {0,-1,0};
+            }
+        } else {
+            if ( dir.z > 0 ) {
+                return {0,0,1};
+            } else {
+                return {0,0,-1};
+            }
+        }
+    }
+}
+
+
+/*
+#define THRESHOLD_ConeAngle 1e-05
+inOrthoConeAngle(@N, THRESHOLD, 0, 0)
+*/
+function
+int inOrthoConeAngle(
+    vector dir;
+    vector threhsold;
+    int reversegroup;
+    ) {
+    vector ndir = normalize(dir);
+    return reversegroup != (( (abs(ndir.x) >= threhsold.x) + (abs(ndir.y) >= threhsold.y) + (abs(ndir.z) >= threhsold.z) ) == 1);
+}
+
+function
+int inOrthoConeAngle(
+    vector dir;
+    float threhsold;
+    int reversegroup;
+    ) {
+    vector ndir = normalize(dir);
+    return reversegroup != (( (abs(ndir.x) >= threhsold) + (abs(ndir.y) >= threhsold) + (abs(ndir.z) >= threhsold) ) == 1);
+}
+
+function
+int inOrthoConeAngle(
+    vector dir;
+    vector threhsold;
+    int reversegroup;
+    int isNormalized;
+    ) {
+    vector ndir = select(isNormalized, dir, normalize(dir));
+    return reversegroup != (( (abs(ndir.x) >= threhsold.x) + (abs(ndir.y) >= threhsold.y) + (abs(ndir.z) >= threhsold.z) ) == 1);
+}
+
+function
+int inOrthoConeAngle(
+    vector dir;
+    float threhsold;
+    int reversegroup;
+    int isNormalized;
+    ) {
+    vector ndir = select(isNormalized, dir, normalize(dir));
+    return reversegroup != (( (abs(ndir.x) >= threhsold) + (abs(ndir.y) >= threhsold) + (abs(ndir.z) >= threhsold) ) == 1);
+}
+
+
+function
+float[] create_pdf_custom(
+    float values[];
+    ) {
+    float min = min(values);
+    int len = len(values);
+    for (int i = 0; i < len; ++i) {
+        values[i] -= min;
+    }
+    float sum = sum(values);
+    float pdf[];
+    resize(pdf, len);
+    for (int i = 0; i < len; ++i) {
+        pdf[i] = values[i] / sum;
+    }
+    return pdf;
+}
+
+function
+int sample_pdf(
+    float pdf[];
+    float uniform_rand;
+    ) {
+    float cdf[]= create_cdf(pdf);
+    return sample_cdf(cdf, uniform_rand);
+}
+
+function
+float random_uniform(
+    float seed;
+    int offset;
+    int core;
+    ) {
+    if ( core == -1 ) {
+        return offset;
+    } else if ( core == 0 ) {
+        return random(seed, offset);
+    } else if ( core == 1 ) {
+        return random_brj(seed, offset);
+    } else if ( core == 2 ) {
+        return random_sobol(seed, offset);
+    } else {
+        return -1;
+    }
+}
+
+
+
+
+#endif

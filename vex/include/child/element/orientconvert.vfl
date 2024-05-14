@@ -1,0 +1,490 @@
+
+#ifndef __ORIENTCONVERT_VFL__
+#define __ORIENTCONVERT_VFL__
+
+#include <orientconvert.vfl>
+
+/*
+normal, tangent, bitangent
+N, up
+angleaxis
+angle, axis
+quaternion/orient
+matrix3
+euler(rotations, order)
+*/
+
+
+#include <arraydeep.vfl>
+
+
+
+function
+vector Ntoup(
+    const vector N;
+    const vector up;
+    ) {
+    return normalize(cross(cross(N, up), N));
+}
+
+function
+vector Ntoup(
+    const vector N;
+    ) {
+    return Ntoup(N, set(0,1,0));
+    //vector xaxis, yasix = up;
+    //return makebasis(xaxis, yasix, N, u);
+}
+
+function
+vector Nuptob(
+    const vector N;
+    const vector up;
+    ) {
+    return cross(N, up);
+}
+
+
+
+
+function
+matrix3 Ntbtom3(
+    const vector N;
+    const vector tangent;
+    const vector bitangent;
+    ) {
+    //这个算法是错的
+    error('error func Ntbtom3');
+    return set(N, tangent, bitangent);
+}
+
+function
+matrix Ntbtom(
+    vector N;
+    vector tangent;
+    vector bitangent;
+    ) {
+    //这个算法是错的
+    error('error func Ntbtom');
+    return Ntbtom3(N, tangent, bitangent);
+}
+
+function
+matrix3 Nuptom3(
+    vector N;
+    vector up;
+    ) {
+    return maketransform(cross(N, up), up);
+    //return Ntbtom3(N, up, cross(N, up));
+}
+
+
+function
+matrix Nuptom(
+    vector N;
+    vector up;
+    ) {
+    return Nuptom3(N, up);
+}
+
+
+
+// 有优化空间
+function
+vector4 quaternion(
+    vector N;
+    vector tangent;
+    vector bitangent;
+    ) {
+    return quaternion(Ntbtom3(N, tangent, bitangent));
+    /*
+    float x = N.x, y = tangent.y, z = bitangent.z;
+    float
+    q0 = 1+x-y-z,
+    q1 = 1-x+y-z,
+    q2 = 1-x-y+z,
+    q3 = 1+x+y+z;
+    return ;
+    */
+}
+
+function
+vector4 quaternion(
+    vector N;
+    vector up;
+    ) {
+    return quaternion(Nuptom3(N, up));
+}
+
+function
+vector4[] quaternion(
+    vector N[];
+    vector up[];
+    ) {
+    vector4 result[];
+    int len = min(len(N), len(up));
+    for (int i = 0; i < len; ++i){
+        push(result, quaternion(N[i], up[i]));
+    }
+    return result;
+}
+
+function
+vector4[] quaternion(
+    vector N[];
+    vector tangent[];
+    vector bitangent[];
+    ) {
+    vector4 result[];
+    int len = min(len(N), len(tangent), len(bitangent));
+    for (int i = 0; i < len; ++i){
+        push(result, quaternion(N[i], tangent[i], bitangent[i]));
+    }
+    return result;
+}
+
+
+
+
+function
+vector qtoeuler(
+    vector4 q;
+    int order;
+    ) {
+    return quaterniontoeuler(q, order);
+}
+
+
+function
+vector quaterniontoeuler(
+    vector4 q;
+    ) {
+    return quaterniontoeuler(q, XFORM_XYZ);
+}
+
+function
+vector qtoeuler(
+    vector4 q;
+    ) {
+    return quaterniontoeuler(q);
+    /*
+    float q0 = q.w;
+    float q1 = q.x;
+    float q2 = q.y;
+    float q3 = q.z;
+    vector result = set(atan2(2*(q0*q1+q2*q3), (1-2*(q1*q1+q2*q2))),
+                        asin(2*(q0*q2-q3*q1)),
+                        atan2(2*(q0*q3+q1*q2), (1-2*(q2*q2+q3*q3))));
+    //return in radians
+    return degrees(result);
+    */
+    //return cracktransform(0, 0, 1, {0,0,0}, matrix(qconvert(q)));
+}
+
+function
+vector qtoeulerd(
+    vector4 q;
+    int order;
+    ) {
+    return degrees(qtoeuler(q, order));
+}
+
+
+function
+vector quaterniontoeulerd(
+    vector4 q;
+    ) {
+    return degrees(quaterniontoeuler(q));
+}
+
+function
+vector qtoeulerd(
+    vector4 q;
+    ) {
+    return degrees(qtoeuler(q));
+}
+
+function
+vector m3toeuler(
+    matrix3 m3;
+    int xyz;
+    ) {
+    return quaterniontoeuler(quaternion(matrix3(m3)), xyz);
+    //return cracktransform(XFORM_SRT, xyz, 1, {0,0,0}, (matrix)m3); //需要给定XFORM_TRS，不通用
+    //return in radians
+}
+
+function
+vector mtoeuler(
+    matrix m;
+    int xyz;
+    ) {
+    return m3toeuler(matrix3(m), xyz);
+    //return cracktransform(0, 0, 1, {0,0,0}, m);
+    //return in radians
+}
+
+function
+vector m3toeuler(
+    matrix3 m3;
+    ) {
+    return quaterniontoeuler(quaternion(matrix3(m3)), XFORM_XYZ);
+    //return in radians
+}
+
+function
+vector mtoeuler(
+    matrix m;
+    ) {
+    return m3toeuler(matrix3(m), XFORM_XYZ);
+    //return in radians
+}
+
+function
+vector mtotranslate(
+    const matrix m;
+    ) {
+    return set(m.xw, m.yw, m.zw);
+}
+
+function
+vector mtopivot(
+    const matrix m;
+    ) {
+    return set(m.wx, m.wy, m.wz);
+}
+
+
+function
+vector m3toN(
+    matrix3 mtx;
+    ) {
+    return set(mtx.zx, mtx.zy, mtx.zz);
+}
+
+function
+vector m3tot(
+    matrix3 mtx;
+    ) {
+    return set(mtx.yx, mtx.yy, mtx.yz);
+}
+
+function
+vector m3tob(
+    matrix3 mtx;
+    ) {
+    return set(mtx.xx, mtx.xy, mtx.xz);
+}
+
+function
+vector m3toup(
+    matrix3 mtx;
+    ) {
+    return m3tot(mtx);
+}
+
+
+function
+void m3toNup(
+    const matrix3 mtx;
+    export vector N;
+    export vector up;
+    ) {
+    N = m3toN(mtx);
+    up = m3toup(mtx);
+}
+
+/*
+
+// 有优化空间
+function
+vector angleaxistoeuler(
+    const vector angleaxis;
+    ) {
+    return result;
+}
+
+// 有优化空间
+function
+vector dirtoeuler(
+    const vector N;
+    const vector tangent;
+    const vector bitangent;
+    ) {
+    return result;
+}
+*/
+function
+void angleaxistoNup(
+    const vector angleaxis;
+    export vector N;
+    export vector up;
+    ) {
+    float m3[] = serialize(angleaxistom3(angleaxis));
+    N = set(m3[6], m3[7], m3[8]);
+    up = set(m3[3], m3[4], m3[5]);
+}
+
+// 有优化空间
+function
+void qconvert(
+    const vector4 quat;
+    vector N;
+    vector up;
+    ) {
+    m3toNup(qconvert(quat), N, up);
+}
+
+function
+void qconvert(
+    const vector4 quat;
+    vector N;
+    vector tangent;
+    vector bitangent;
+    ) {
+    assign(N, tangent, bitangent, matrix3(qconvert(quat)));
+}
+
+function
+void angleaxistodir(
+    const vector angleaxis;
+    vector N;
+    vector tangent;
+    vector bitangent;
+    ) {
+    assign(N, tangent, bitangent, angleaxistom3(angleaxis));
+}
+
+
+
+
+
+function
+vector qtoN(
+    const vector4 q;
+    ) {
+    return qrotate(q, {0,0,1});
+}
+
+function
+vector qtot(
+    const vector4 q;
+    ) {
+    return qrotate(q, {0,1,0});
+}
+
+function
+vector qtob(
+    const vector4 q;
+    ) {
+    return qrotate(q, {1,0,0});
+}
+
+function
+vector qtoup(
+    const vector4 q;
+    ) {
+    return qtot(q);
+}
+
+function
+void qtoNup(
+    const vector4 q;
+    export vector N;
+    export vector up;
+    ) {
+    N = qtoN(q);
+    up = qtoup(q);
+}
+
+
+
+
+
+
+
+function
+matrix3 qtom3(
+    const vector4 quat;
+    ) {
+    return qconvert(quat);
+}
+
+
+
+function
+matrix qtom(
+    const vector4 quat;
+    ) {
+    return matrix3(qconvert(quat));
+}
+/*
+function
+matrix qtom(
+    const vector4 quat;
+    const vector pivot;
+    ) {
+    return matrix3(qconvert(quat));
+}
+
+*/
+
+function
+vector4 eulertoq(
+    const vector rotations;
+    const int order;
+    ) {
+    return eulertoquaternion(rotations, order);
+}
+
+
+
+
+
+
+// angleaxis
+
+function
+void angleaxis(
+    const vector angleaxis;
+    export float angle;
+    export vector axis;
+    ) {
+    angle = length(angleaxis);
+    axis = normalize(angleaxis);
+}
+
+function
+float angleaxistoangle(
+    vector angleaxis;
+    ) {
+    return length(angleaxis);
+}
+
+function
+vector angleaxistoaxis(
+    vector angleaxis;
+    ) {
+    return normalize(angleaxis);
+}
+
+
+
+function
+matrix3 angleaxistom3(
+    vector angleaxis;
+    ) {
+    // 有优化空间
+    return qconvert(quaternion(angleaxis));
+}
+
+
+function
+matrix angleaxistom(
+    vector angleaxis;
+    ) {
+    return angleaxistom(angleaxis);
+}
+
+
+#endif

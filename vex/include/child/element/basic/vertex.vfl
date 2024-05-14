@@ -1,0 +1,243 @@
+
+#ifndef __VERTEX_VFL__
+#define __VERTEX_VFL__
+
+#include <vertex.vfl>
+
+
+
+/*
+int vtxprimidx = vertexprimindex(0, @vtxnum);
+int vtxprim = vertexprim(0, @vtxnum);
+*/
+
+
+
+
+function
+int[] vertexequivs(
+    int geo;
+    int vtxpnum;
+    ) {
+    /*
+    int vnext = vtxpnum, vertices[];
+    do{
+        push(vertices, vnext);
+        vnext = vertexnext(geo, vnext);
+    } while(vnext != vtxpnum);
+    return vertices;
+    */
+    return pointvertices(geo, vertexpoint(geo, vtxnum));
+}
+
+function
+int[] vertexequivs(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return vertexequiv(geo, vertexindex(geo, primnum, vtxpnum));
+}
+
+function
+int vertexisequiv(
+    int geo;
+    int vtxnum0;
+    int vtxnum1;
+    ) {
+    if(vertexpoint(geo, vtxnum0) = vertexpoint(geo, vtxnum1))
+        return 1;
+    else
+        return 0;
+}
+
+function
+int vertexisequiv(
+    int geo;
+    int primnum0;
+    int vtxpnum0;
+    int primnum1;
+    int vtxpnum1;
+    ) {
+    return vertexisequiv(geo, vertexindex(geo, primnum0, vtxpnum0), vertexindex(geo, primnum1, vtxpnum1));
+}
+
+function
+int[] vertexquivcount(
+    int geo;
+    int vtxnum;
+    ) {
+    return len(vertexequivs(geo, vtxnum));
+}
+
+function
+int[] vertexquivcount(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return len(vertexequivs(geo, primnum, vtxpnum));
+}
+
+function
+int vertexprev(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return vertexprev(geo, vertexindex(geo, primnum, vtxpnum));
+}
+
+function
+int vertexnext(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return vertexnext(geo, vertexindex(geo, primnum, vtxpnum));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function
+int[] vertexprimequivs(
+    int geo;
+    int vtxnum;
+    ) {
+    return primvertices(geo, vertexprim(geo, vtxnum));
+}
+
+function
+int[] vertexprimequivs(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return vertexprimequiv(geo, vertexindex(geo, primnum, vtxpnum));
+}
+
+
+
+function
+int[] vertexprimequivcount(
+    int geo;
+    int vtxnum;
+    ) {
+    return len(vertexprimequivs(geo, vtxnum));
+}
+
+function
+int[] vertexprimequivcount(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return len(vertexprimequivs(geo, primnum, vtxpnum));
+}
+
+
+
+function
+int vertexisprimequiv(
+    int geo;
+    int vtxnum0;
+    int vtxnum1;
+    ) {
+    if(vertexprim(geo, vtxnum0) = vertexprim(geo, vtxnum1)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+function
+int vertexisprimequiv(
+    int geo;
+    int primnum0;
+    int vtxpnum0;
+    int primnum1;
+    int vtxpnum1;
+    ) {
+    return vertexisprimequiv(geo, vertexindex(geo, primnum0, vtxpnum0), vertexindex(geo, primnum1, vtxpnum1));
+}
+
+
+
+
+
+function
+int vertexprevprim(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    if( vtxpnum == 0 ) {
+        return primvertexcount(geo, primnum) - 1;
+    } else {
+        return vtxpnum - 1;
+    }
+}
+
+function
+int vertexprevprim(
+    int geo;
+    int primnum;
+    int vtxnum;
+    ) {
+    int primnum = vertexprim(geo, vtxnum);
+    return vertexindex(geo, primnum, vertexprevprim(geo, primnum, vertexprimindex(geo, vtxnum)));
+}
+
+
+function
+int vertexnextprim(
+    int geo;
+    int primnum;
+    int vtxpnum;
+    ) {
+    return ( vtxpnum == primvertexcount(geo, primnum)-1 ) ? 0 : vtxpnum + 1;
+}
+
+function
+int vertexnextprim(
+    int geo;
+    int vtxnum;
+    ) {
+    int primnum = vertexprim(geo, vtxnum);
+    return vertexindex(geo, primnum, vertexnextprim(geo, primnum, vertexprimindex(geo, vtxnum)));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

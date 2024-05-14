@@ -1,0 +1,159 @@
+
+#ifndef __MATHINTERPOLATION_VFL__
+#define __MATHINTERPOLATION_VFL__
+
+#include <precompile.vfl>
+
+#include <mathinterpolation.vfl>
+
+
+
+
+
+
+#include <mathdeep.vfl>
+
+
+
+
+
+#define FUNCbezier2(type)\
+        function\
+        type bezier(\
+            type a;\
+            type b;\
+            float bias;\
+            ) {\
+            return a + (b-a) * bias;\
+        }\
+
+DEFINEFUNCfv(FUNCbezier2)
+
+#define FUNCbezier3(type)\
+        function\
+        type bezier(\
+            type a;\
+            type b;\
+            type c;\
+            float bias;\
+            ) {\
+            type temp0 = bezier(a, b, bias);\
+            type temp1 = bezier(b, c, bias);\
+            return bezier(temp0, temp1, bias);\
+        }\
+
+DEFINEFUNCfv(FUNCbezier3)
+
+#define FUNCbezier4(type)\
+        function\
+        type bezier(\
+            type a;\
+            type b;\
+            type c;\
+            type d;\
+            float bias;\
+            ) {\
+            type temp0 = bezier(a, b, bias);\
+            type temp1 = bezier(b, c, bias);\
+            type temp2 = bezier(c, d, bias);\
+            return bezier(temp0, temp1, temp2, bias);\
+        }\
+
+DEFINEFUNCfv(FUNCbezier4)
+
+#define FUNCbezier5(type)\
+        function\
+        type bezier(\
+            type a;\
+            type b;\
+            type c;\
+            type d;\
+            type e;\
+            float bias;\
+            ) {\
+            type temp0 = bezier(a, b, bias);\
+            type temp1 = bezier(b, c, bias);\
+            type temp2 = bezier(c, d, bias);\
+            type temp3 = bezier(d, e, bias);\
+            return bezier(temp0, temp1, temp2, temp3, bias);\
+        }\
+
+DEFINEFUNCfv(FUNCbezier5)
+
+#define FUNCbezier6(type)\
+        function\
+        type bezier(\
+            type a;\
+            type b;\
+            type c;\
+            type d;\
+            type e;\
+            type f;\
+            float bias;\
+            ) {\
+            type temp0 = bezier(a, b, bias);\
+            type temp1 = bezier(b, c, bias);\
+            type temp2 = bezier(c, d, bias);\
+            type temp3 = bezier(d, e, bias);\
+            type temp4 = bezier(e, f, bias);\
+            return bezier(temp0, temp1, temp2, temp3, temp4, bias);\
+        }\
+
+DEFINEFUNCfv(FUNCbezier6)
+
+
+#define FUNCsmoothstep(type)\
+        function\
+        int[] smoothstep(\
+            type value;\
+            float a;\
+            float b;\
+            ) {\
+            type t = (value - a) / (b - a);\
+            return t*t*(3-2*t);\
+        }\
+
+DEFINEFUNCfv(FUNCsmoothstep)
+
+
+#define FUNCsmoothsteperf(type)\
+        function\
+        int[] smoothsteperf(\
+            type value;\
+            float a;\
+            float b;\
+            ) {\
+            type t = (value - a) / (b - a);\
+            return erf(t);\
+        }\
+
+DEFINEFUNCfv(FUNCsmoothsteperf)
+
+
+
+// Convert the umap range from 0-1 to 0-1-0
+float curveToHalf(
+    float value;
+    ) {
+    return clamp(value, 0, 0.5) * clamp(fit(value, 0, 1, 1, 0) , 0, 0.5) * 4;
+}
+
+// Main interpolation function
+float interpolate_curve(
+    float value;
+    string sign;
+    ) {
+    value = cos(value * PI2);
+    if ( sign == "-" )
+        return 1 + (value * -1);
+    else
+        return value;
+}
+
+
+
+
+
+
+
+#endif

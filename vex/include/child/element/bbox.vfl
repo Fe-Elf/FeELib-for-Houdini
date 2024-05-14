@@ -1,0 +1,55 @@
+
+#ifndef __BBOX_VFL__
+#define __BBOX_VFL__
+
+#include <bbox.vfl>
+
+
+
+
+
+
+
+#include <attribdeep.vfl>
+
+function
+vector getpointbbox_center(
+    int geo;
+    int pts[];
+    ) {
+    vector pos[] = pointv(geo, "P", pts);
+    return (max(pos) + min(pos)) / 2;
+}
+
+function
+vector getpointbbox_max(
+    int geo;
+    int pts[];
+    ) {
+    return max(pointv(geo, "P", pts));
+}
+
+function
+vector getpointbbox_min(
+    int geo;
+    int pts[];
+    ) {
+    return min(pointv(geo, "P", pts));
+}
+
+function
+vector getpointbbox_size(
+    int geo;
+    int pts[];
+    ) {
+    vector pos[] = pointv(geo, "P", pts);
+    return max(pos) - min(pos);
+}
+
+
+
+
+
+
+
+#endif

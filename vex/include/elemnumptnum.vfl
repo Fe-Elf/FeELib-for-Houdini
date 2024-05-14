@@ -1,0 +1,47 @@
+
+#ifndef __ELEMNUM_VFL__
+#define __ELEMNUM_VFL__
+
+#include <elemnum.vfl>
+
+
+
+
+
+#define wrangleclass(elemnum, wrangleclass)\
+        int elemnum;\
+        if(wrangleclass == 0) {\
+            elemnum = i@primnum;\
+        } else if(wrangleclass == 1) {\
+            elemnum = i@ptnum;\
+        } else if(wrangleclass == 2) {\
+            elemnum = i@vtxnum;\
+        } else if(wrangleclass == 3) {\
+            elemnum = i@elemnum;\
+        } else {\
+            ;\
+        }\
+/*
+wrangleclass(int elemnum, chi("class"));
+*/
+
+/*
+int elemnum;
+int wrangleclass = chi("class");
+if(wrangleclass == 0) {
+    elemnum = i@primnum;
+} else if(wrangleclass == 1) {
+    elemnum = i@ptnum;
+} else if(wrangleclass == 2) {
+    elemnum = i@vtxnum;
+} else if(wrangleclass == 3) {
+    elemnum = i@elemnum;
+}
+*/
+
+
+
+
+
+
+#endif

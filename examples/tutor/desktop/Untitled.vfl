@@ -1,0 +1,21 @@
+// point cloud
+
+#include <pc.vfl>
+
+float radius = chf("searchrad");
+int maxpoints = chi("maxpoints");
+
+int handle = pcopen(1, "P", vector(point(1,"P",@elemnum)), radius, maxpoints);
+
+#if 1
+    vector centroid = pcfiltercirclefalloff(handle, "P", radius, 1);
+#elif 1
+    vector centroid = pcfilter(handle, "P");
+#else
+    vector centroid = pccentroid(handle);
+#endif
+//addpoint(0, centroid);
+
+
+setpointgroup(0, "clusterpoint", @ptnum, 1);
+pcclose(handle);

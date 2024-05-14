@@ -1,0 +1,81 @@
+
+#ifndef __EDGEFLOW_VFL__
+#define __EDGEFLOW_VFL__
+
+#include <edgeflow.vfl>
+
+
+
+
+
+function
+int isboundary(
+    const int geo;
+    const int hedge;
+    ) {
+    if(hedge_equivcount(geo, hedge) == 1)
+        return 1;
+    else
+        return 0;
+}
+
+function
+int isinterior(
+    const int geo;
+    const int hedge;
+    ) {
+    if(hedge_equivcount(geo, hedge) == 2)
+        return 1;
+    else
+        return 0;
+}
+
+function
+int ismanifold(
+    const int geo;
+    const int hedge;
+    ) {
+    if(hedge_equivcount(geo, hedge) < 3)
+        return 1;
+    else
+        return 0;
+}
+
+
+function
+int isboundary(
+    const int geo;
+    const int ptnum0, ptnum1;
+    ) {
+    return isboundary(geo, pointedge(geo, ptnum0, ptnum1));
+}
+
+function
+int isinterior(
+    const int geo;
+    const int ptnum0, ptnum1;
+    ) {
+    return isinterior(geo, pointedge(geo, ptnum0, ptnum1));
+}
+
+function
+int ismanifold(
+    const int geo;
+    const int ptnum0, ptnum1;
+    ) {
+    return ismanifold(geo, pointedge(geo, ptnum0, ptnum1));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

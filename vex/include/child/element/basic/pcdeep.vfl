@@ -1,0 +1,182 @@
+
+#ifndef __PCDEEP_VFL__
+#define __PCDEEP_VFL__
+
+#include <precompile.vfl>
+
+#include <pcdeep.vfl>
+
+
+
+
+
+
+
+
+function
+vector pccentroid(
+    const int handle;
+    ) {
+    vector centroid = 0;
+    while(pciterate(handle)) {
+        vector pos;
+        pcimport(handle, "P", pos);
+        centroid += pos;
+    }
+    return centroid / pcnumfound(handle);
+}
+
+
+
+function
+int[] nearpoints(
+    const int geo;
+    const int ptgroup;
+    const vector P;
+    const float radius;
+    const int maxpts;
+    ) {
+    return nearpoints(geo, itoa(ptgroup), P, radius, maxpts);
+}
+
+function
+int[] nearpoints(
+    const int geo;
+    const int ptgroup;
+    const vector P;
+    const float radius;
+    ) {
+    return nearpoints(geo, itoa(ptgroup), P, radius);
+}
+
+
+
+
+
+function
+int[] pcfind(
+    const int geo;
+    const int ptgroup;
+    const string Pchannel;
+    const vector P;
+    const float radius;
+    const int maxpts;
+    ) {
+    return pcfind(geo, itoa(ptgroup), Pchannel, P, radius, maxpts);
+}
+
+function
+int[] pcfind(
+    const int geo;
+    const int ptgroup;
+    const string Pchannel;
+    const vector P;
+    const float radius;
+    ) {
+    return pcfind(geo, itoa(ptgroup), Pchannel, P, radius);
+}
+
+function
+int[] pcfind(
+    const int geo;
+    const int ptgroup;
+    const vector P;
+    const float radius;
+    const int maxpts;
+    ) {
+    return pcfind(geo, ptgroup, "P", P, radius, maxpts);
+}
+
+
+
+
+function
+int pcimport(
+    const int handle;
+    const string channel;
+    export vector2 value;
+    ) {
+    vector vec;
+    int result = pcimport(handle, channel, vec);
+    value = (vector2)vec;
+    return result;
+}
+
+
+
+
+#define FUNCpcfilternonfalloff(type)\
+        function\
+        type pcfilternonfalloff(\
+            int handle;\
+            string channel;\
+            ) {\
+            type result = 0;\
+            while (pciterate(handle)) {\
+                type value;\
+                pcimport(handle, channel, value);\
+                result += value;\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCifv(FUNCpcfilternonfalloff)
+
+
+
+function
+int pcfiltercirclefalloff(
+    int handle;
+    string channel;
+    const float radius;
+    const float rolloff;
+    ) {
+    int value = 0;
+    float result = 0;
+    float weightsum = 0;
+    float weight, dist;
+    while (pciterate(handle)) {
+        pcimport(handle, "point.distance", dist);
+        pcimport(handle, channel, value);
+        float fvalue = value;
+        weight = 1 - smooth(0, radius, dist, rolloff);
+        weightsum += weight;
+        result += fvalue * weight;
+    }
+    return int(rint(result / weightsum));
+}
+
+#define FUNCpcfiltercirclefalloff(type)\
+        function\
+        type pcfiltercirclefalloff(\
+            int handle;\
+            const string channel;\
+            const float radius;\
+            const float rolloff;\
+            ) {\
+            type value, result = 0;\
+            float weightsum = 0;\
+            float weight, dist;\
+            while (pciterate(handle)) {\
+                pcimport(handle, "point.distance", dist);\
+                pcimport(handle, channel, value);\
+                weight = 1 - smooth(0, radius, dist, rolloff);\
+                weightsum += weight;\
+                result += value * weight;\
+            }\
+            return result / weightsum;\
+        }\
+
+DEFINEFUNCfv(FUNCpcfiltercirclefalloff)
+
+
+
+
+
+
+
+
+
+
+
+#endif

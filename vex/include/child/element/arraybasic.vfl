@@ -1,0 +1,102 @@
+
+#ifndef __ARRAYBASIC_VFL__
+#define __ARRAYBASIC_VFL__
+
+#include <precompile.vfl>
+
+#include <arraybasic.vfl>
+
+
+
+
+
+#include <vectordeep.vfl>
+
+
+
+
+#include <mathdeep.vfl>
+
+#define FUNCnuniqueval0(type)\
+        function\
+        int nuniqueval(\
+            type arr[];\
+            float tolerance;\
+            ) {\
+            if ( tolerance < 0 ) return 0;\
+            int result = 0;\
+            for (int i = len(arr)-1; i > -1; --i) {\
+                int flag = 1;\
+                for (int j = i-1; j > -1; --j) {\
+                    if ( distance(arr[i], arr[j]) <= tolerance ) {\
+                        flag = 0;\
+                        break;\
+                    }\
+                }\
+                if ( flag ) {\
+                    ++result;\
+                }\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCall(FUNCnuniqueval0)
+
+
+
+#define FUNCmaxidx2(type)\
+        function\
+        int[] maxidx(\
+            const type arr[];\
+            float threshold;\
+            ) {\
+            int result[];\
+            type max = max(arr);\
+            foreach (int idx; type item; arr){\
+                if (length(item - max) < threshold) {\
+                    push(result, idx);\
+                }\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCifv(FUNCmaxidx2)
+
+
+#define FUNCminidx2(type)\
+        function\
+        int[] minidx(\
+            const type arr[];\
+            float threshold;\
+            ) {\
+            int result[];\
+            type min = min(arr);\
+            foreach (int idx; type item; arr){\
+                if (length(item - min) < threshold) {\
+                    push(result, idx);\
+                }\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCifv(FUNCminidx2)
+
+
+
+
+
+
+
+
+
+
+
+
+#endif
+
+
+
+
+
+
+

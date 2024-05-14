@@ -1,0 +1,62 @@
+
+#ifndef __COORDINATES_VFL__
+#define __COORDINATES_VFL__
+
+#include <coordinates.vfl>
+
+
+
+function
+vector2 cartesiantopolar(
+    const vector2 v;
+    ) {
+    float r = length(v);
+    float th = acos(v.x/r);
+    return set(r, th);
+}
+
+function
+vector2 cartesiantopolar(
+    const float x, y;
+    ) {
+    return cartesiantopolar(set(x, y));
+}
+
+function
+vector cartesiantopolar(
+    vector v;
+    ) {
+    float r = length(v);
+    float th = acos(v.z/r);
+    float phi = atan2(v.y, v.x);
+    return set(r, th, phi);
+}
+
+function
+vector2 polartocartesian(
+    const float radius, theta;
+    ) {
+    return set(radius*cos(theta), radius*sin(theta));
+}
+
+function
+vector2 polartocartesian(
+    vector2 v;
+    ) {
+    return polartocartesian(v.x, v.y);
+}
+
+function
+vector polartocartesian(
+    vector v;
+    ) {
+    return set(v.x*sin(v.y)*cos(v.z), v.x*sin(v.y)*sin(v.z), v.x*cos(v.y));
+}
+
+
+
+
+
+
+
+#endif

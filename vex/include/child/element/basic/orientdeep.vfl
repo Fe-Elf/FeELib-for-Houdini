@@ -1,0 +1,368 @@
+
+#ifndef __ORIENTDEEP_VFL__
+#define __ORIENTDEEP_VFL__
+
+#include <precompile.vfl>
+
+#include <orientdeep.vfl>
+
+
+
+
+
+
+
+///////////////////////////////////////matrix///////////////////////////////////////
+
+
+
+/*
+matrix index test
+#include <constant.vfl>
+f[]@naturalnum = naturalnum(16);
+4[]@mtx = unserialize(@naturalnum);
+f@a = @mtx[0].yx;
+*/
+
+
+
+
+function
+matrix3 feedihedral(
+    const vector from, to;
+    ) {
+    return invert(lookat(0, from)) * lookat(0, to);
+}
+
+function
+matrix3 feedihedral(
+    const vector from, to, up0, up1;
+    ) {
+    return invert(lookat(0, from, up0)) * lookat(0, to, up1);
+}
+
+function
+matrix3 feedihedral(
+    const vector from, to, up;
+    ) {
+    return feedihedral(from, to, up, up);
+}
+
+function
+matrix2 rotate(
+    const matrix2 mtx;
+    const float amount;
+    ) {
+    matrix2 result = mtx;
+    rotate(result, amount);
+    return result;
+}
+
+function
+matrix3 rotate(
+    const matrix3 mtx;
+    const float amount;
+    const vector axis;
+    ) {
+    matrix3 result = mtx;
+    rotate(result, amount, axis);
+    return result;
+}
+
+function
+matrix rotate(
+    const matrix mtx;
+    const float amount;
+    const vector axis;
+    ) {
+    matrix result = mtx;
+    rotate(result, amount, axis);
+    return result;
+}
+
+function
+void rotate(
+    export matrix3 mtx;
+    const vector angelaxis;
+    ) {
+    rotate(mtx, length(angelaxis), normalize(angelaxis));
+}
+
+function
+void rotate(
+    export matrix mtx;
+    const vector angelaxis;
+    ) {
+    rotate(mtx, length(angelaxis), normalize(angelaxis));
+}
+
+function
+matrix3 rotate(
+    const matrix3 mtx;
+    const vector angelaxis;
+    ) {
+    matrix3 result = mtx;
+    rotate(result, angelaxis);
+    return result;
+}
+
+function
+matrix rotate(
+    const matrix mtx;
+    const vector angelaxis;
+    ) {
+    matrix result = mtx;
+    rotate(result, angelaxis);
+    return result;
+}
+
+
+/*
+function
+matrix3 slerp(
+    const matrix3 mtx1;
+    const matrix3 mtx2;
+    const float bias;
+    ) {
+    return matrix3(slerp(quaternion(mtx1), quaternion(mtx2), bias));
+}
+
+*/
+
+
+
+
+function
+vector4 unitq(
+    ) {
+    return {0,0,0,1};
+}
+
+
+
+
+function
+vector4 qdivide(
+    vector4 q1, q2;
+    ) {
+    return qmultiply(qinvert(q2), q1);
+}
+
+
+
+
+
+
+function
+vector4 slerp(
+    vector4 q2;
+    const float bias;
+    ) {
+    int iter = int(rint(bias));
+    if (abs(bias - iter) < 1e-05) {
+        vector4 result = {0,0,0,1};
+        for (int i = abs(iter); i > 0; --i){
+            result = qmultiply(q2, result);
+        }
+        if (bias < 0) {
+            return qinvert(result);
+        } else {
+            return result;
+        }
+    } else {
+        return slerp({0,0,0,1}, q2, bias);
+    }
+}
+
+
+
+
+
+function
+vector4 qlerp(
+    vector4 q1, q2;
+    const float bias1, bias2;
+    ) {
+    return qmultiply(slerp(q2, bias2), slerp(q1, bias1));
+}
+
+function
+vector4 qlerp(
+    vector4 q1, q2;
+    float bias;
+    ) {
+    return qlerp(q1, q2, 1-bias, bias);
+}
+
+
+
+
+/*
+function
+vector4 slerpdebug(
+    vector4 q1, q2;
+    const float bias;
+    ) {
+    int iter = rint(bias);
+    if (abs(bias - iter) < 1e-05) {
+        vector4 result = {0,0,0,1};
+        for (int i = abs(iter); i > 0; --i){
+            result = qmultiply(, result)
+        }
+        return result;
+    } else {
+        return slerp(q1, q2, bias);
+    }
+}
+*/
+
+/*
+#define FUNCqrotate(type)\
+        function\
+        type qrotate(\
+            vector4 q;\
+            type mtx;\
+            ) {\
+            return mtx * type(matrix3(qconvert(q)));\
+        }\
+
+DEFINEFUNCm3(FUNCqrotate)
+*/
+
+
+function
+matrix3 qrotate(
+    vector4 q;
+    const matrix3 mtx;
+    ) {
+    matrix3 mtx3 = qconvert(q);
+    return mtx3 * mtx;
+}
+
+function
+matrix qrotate(
+    vector4 q;
+    const matrix mtx;
+    ) {
+    matrix3 mtx3 = qconvert(q);
+    return matrix(mtx3) * mtx;
+}
+/*
+function
+matrix3 qrotate(
+    vector4 q;
+    const vector pivot;
+    const matrix3 mtx;
+    ) {
+    matrix3 mtx3 = qconvert(q);
+    return mtx3 * mtx;
+}
+
+function
+matrix qrotate(
+    vector4 q;
+    const vector pivot;
+    const matrix mtx;
+    ) {
+    matrix3 mtx3 = qconvert(q);
+    return matrix(mtx3) * mtx;
+}
+*/
+
+function
+void rotate(
+    export matrix3 mtx;
+    vector4 q;
+    ) {
+    mtx = qrotate(q, mtx);
+}
+
+function
+void rotate(
+    export matrix mtx;
+    vector4 q;
+    ) {
+    mtx = qrotate(q, mtx);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////quaterion///////////////////////////////////////
+
+
+
+function
+vector slerp(
+    const vector pos0, pos1;
+    const float bias;
+    ) {
+    return qrotate(slerp({0,0,0,1}, dihedral(pos0, pos1), bias), pos0);
+}
+
+
+
+function
+vector projecttoplane(
+    const vector dir, N;
+    ) {
+    #if 1
+        vector nN = normalize(N);
+        return dir - nN * dot(dir, nN);
+    #else
+        return (dir + reflect(dir, N)) / 2;
+    #endif
+}
+
+
+
+
+function
+vector dirrandom(
+    const vector dir;
+    const float cone_angle;
+    const vector seed;
+    ) {
+    if (cone_angle == 0) {
+        return dir;
+    } else {
+        return slerp(dir, normalize(random(seed)) * length(dir), cone_angle / 180);
+    }
+}
+
+
+
+function
+vector rotateaxis(
+    const vector dir;
+    const vector axis;
+    const float angle;
+    ) {
+    matrix3 m3 = ident();
+    rotate(m3, angle, axis);
+    return dir * m3;
+    /*
+    //https://baike.baidu.com/item/罗德里格旋转公式/18878562?fr=aladdin
+    vector naxis = normalize(axis);
+    float cosa = cos(angle);
+    return cosa * dir + (1-cosa) * naxis * dot(naxis, dir) + sin(angle) * cross(naxis, dir);
+    */
+}
+
+
+
+
+
+#endif

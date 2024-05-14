@@ -1,0 +1,48 @@
+
+#ifndef __CONVERSION_VFL__
+#define __CONVERSION_VFL__
+
+#include <precompile.vfl>
+
+#include <conversion.vfl>
+
+
+#include <mathdeep.vfl>
+
+
+
+#define FUNCcasttoarray0(type)\
+        function\
+        float[] casttoarray(\
+            type arg;\
+            ) {\
+            float arr[];\
+            for (int i = 0; i < argsize(arg); ++i) {\
+                push(arr, arg[i]);\
+            }\
+            return arr;\
+        }\
+
+DEFINEFUNCfvm(FUNCcasttoarray0)
+
+#define FUNCcasttoarray1(type)\
+        function\
+        float[] casttoarray(\
+            type arg[];\
+            ) {\
+            float arr[];\
+            for (int i = 0; i < argsize(arg); ++i) {\
+                push(arr, arg[i]);\
+            }\
+            return arr;\
+        }\
+
+DEFINEFUNCfvm(FUNCcasttoarray1)
+
+
+
+
+
+
+
+#endif

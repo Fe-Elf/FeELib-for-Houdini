@@ -1,0 +1,1438 @@
+
+#ifndef __ATTRIBDEEP_VFL__
+#define __ATTRIBDEEP_VFL__
+
+#include <precompile.vfl>
+
+#include <attribdeep.vfl>
+
+
+
+
+#include <constant.vfl>
+
+#define FUNCfindattrib(type)\
+		function\
+		int[] findattrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const type value;\
+			) {\
+			int numelem = numelem(geo, attribclass);\
+			int result[];\
+			for (int i = 0; i < numelem; ++i) {\
+				if ( value == type(attrib(geo, attribclass, attribname, i)) ) {\
+					push(result, i);\
+				}\
+			}\
+			return result;\
+		}\
+
+DEFINEFUNCall(FUNCfindattrib)
+
+
+#define FUNCfindpointattrib(type)\
+		function\
+		int[] findpointattrib(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			) {\
+			return findattrib(geo, 'point', attribname, value);\
+		}\
+
+DEFINEFUNCall(FUNCfindpointattrib)
+
+#define FUNCfindvertexattrib(type)\
+		function\
+		int[] findvertexattrib(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			) {\
+			return findattrib(geo, 'vertex', attribname, value);\
+		}\
+
+DEFINEFUNCall(FUNCfindvertexattrib)
+
+#define FUNCfindprimattrib(type)\
+		function\
+		int[] findprimattrib(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			) {\
+			return findattrib(geo, 'prim', attribname, value);\
+		}\
+
+DEFINEFUNCall(FUNCfindprimattrib)
+
+
+
+
+#define FUNCfindattribval0(type)\
+		function\
+		int findattribval(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const type value;\
+			) {\
+			int numelem = numelem(geo, attribclass);\
+			for (int i = 0; i < numelem; ++i) {\
+				if ( value == type(attrib(geo, attribclass, attribname, i)) ) {\
+					return i;\
+				}\
+			}\
+			return -1;\
+		}\
+
+DEFINEFUNCfvm(FUNCfindattribval0)
+
+
+#define FUNCfindattribval1(type)\
+		function\
+		int findattribval(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const type value;\
+			const int which;\
+			) {\
+			int findnum = 0;\
+			int numelem = numelem(geo, attribclass);\
+			for (int i = 0; i < numelem; ++i) {\
+				if ( value == type(attrib(geo, attribclass, attribname, i)) ) {\
+					if ( findnum == which ) {\
+						return i;\
+					}\
+					++findnum;\
+				}\
+			}\
+			return -1;\
+		}\
+
+DEFINEFUNCfvm(FUNCfindattribval1)
+
+#define FUNCfindpointattribval0(type)\
+		function\
+		int findpointattribval(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			const int which;\
+			) {\
+			return findattribval(geo, 'point', attribname, value, which);\
+		}\
+
+DEFINEFUNCall(FUNCfindpointattribval0)
+
+#define FUNCfindpointattribval1(type)\
+		function\
+		int findpointattribval(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			) {\
+			return findattribval(geo, 'point', attribname, value);\
+		}\
+
+DEFINEFUNCall(FUNCfindpointattribval1)
+
+#define FUNCfindvertexattribval0(type)\
+		function\
+		int findvertexattribval(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			const int which;\
+			) {\
+			return findattribval(geo, 'vertex', attribname, value, which);\
+		}\
+
+DEFINEFUNCall(FUNCfindvertexattribval0)
+
+#define FUNCfindvertexattribval1(type)\
+		function\
+		int findvertexattribval(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			) {\
+			return findattribval(geo, 'vertex', attribname, value);\
+		}\
+
+DEFINEFUNCall(FUNCfindvertexattribval1)
+
+#define FUNCfindprimattribval0(type)\
+		function\
+		int findprimattribval(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			const int which;\
+			) {\
+			return findattribval(geo, 'prim', attribname, value, which);\
+		}\
+
+DEFINEFUNCall(FUNCfindprimattribval0)
+
+#define FUNCfindprimattribval1(type)\
+		function\
+		int findprimattribval(\
+			const int geo;\
+			const string attribname;\
+			const type value;\
+			) {\
+			return findattribval(geo, 'prim', attribname, value);\
+		}\
+
+DEFINEFUNCall(FUNCfindprimattribval1)
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const float value;
+	const int which;
+	const int threshold;
+	) {
+	if ( threshold == 0 ) {
+		return findattribval(geo, attribclass, attribname, value, which);
+	} else if ( threshold < 0 ) {
+		error('feelib: attribdeep.vfl findattribval function');
+		return -1;
+	} else {
+		int findnum = 0;
+		int numelem = numelem(geo, attribclass);
+		for (int i = 0; i < numelem; ++i) {
+			if ( abs(value - float(attrib(geo, attribclass, attribname, i))) <= threshold ) {
+				if ( findnum == which ) {
+					return i;
+				}
+				++findnum;
+			}
+		}
+		return -1;
+	}
+}
+
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const float value;
+	const float threshold;
+	) {
+	if ( threshold == 0 ) {
+		return findattribval(geo, attribclass, attribname, value);
+	} else if ( threshold < 0 ) {
+		error('feelib: attribdeep.vfl findattribval function');
+		return -1;
+	} else {
+		int numelem = numelem(geo, attribclass);
+		for (int i = 0; i < numelem; ++i) {
+			if ( abs(value - float(attrib(geo, attribclass, attribname, i))) <= threshold ) {
+				return i;
+			}
+		}
+		return -1;
+	}
+}
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const float value;
+	const int which;
+	const float threshold;
+	) {
+	if ( threshold == 0 ) {
+		return findattribval(geo, attribclass, attribname, value, which);
+	} else if ( threshold < 0 ) {
+		error('feelib: attribdeep.vfl findattribval function');
+		return -1;
+	} else {
+		int findnum = 0;
+		int numelem = numelem(geo, attribclass);
+		for (int i = 0; i < numelem; ++i) {
+			if ( abs(value - float(attrib(geo, attribclass, attribname, i))) <= threshold ) {
+				if ( findnum == which ) {
+					return i;
+				}
+				++findnum;
+			}
+		}
+		return -1;
+	}
+
+}
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const string value;
+	const int which;
+	const float threshold;
+	) {
+	return findattribval(geo, attribclass, attribname, value, which);
+}
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const string value;
+	const int which;
+	const int threshold;
+	) {
+	return findattribval(geo, attribclass, attribname, value, which);
+}
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const int value;
+	const int which;
+	const int threshold;
+	) {
+	if ( threshold < 1 ) {
+		return findattribval(geo, attribclass, attribname, value, which);
+	} else {
+		int findattribval = findattribval(geo, attribclass, attribname, value, which);
+		for (int i = 1; i <= threshold; ++i) {
+			if ( findattribval != -1 ) break;
+			findattribval = findattribval(geo, attribclass, attribname, value + i, which);
+			if ( findattribval != -1 ) break;
+			findattribval = findattribval(geo, attribclass, attribname, value - i, which);
+		}
+		return findattribval;
+	}
+}
+
+function
+int findattribval(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	const int value;
+	const int which;
+	const float threshold;
+	) {
+	if ( threshold < 1 ) {
+		return findattribval(geo, attribclass, attribname, value, which);
+	} else {
+		int findattribval = findattribval(geo, attribclass, attribname, value, which);
+		for (int i = 1; i <= threshold; ++i) {
+			if ( findattribval != -1 ) break;
+			findattribval = findattribval(geo, attribclass, attribname, value + i, which);
+			if ( findattribval != -1 ) break;
+			findattribval = findattribval(geo, attribclass, attribname, value - i, which);
+		}
+		return findattribval;
+	}
+}
+
+
+
+function
+int attribisarray(
+	const int geo;
+	const string attribclass;
+	const string attribname;
+	) {
+	int attribtype = attribtype(geo, attribclass, attribname);
+	if (attribtype < 0) {
+		warning("specified %s attributes do not exist.", attribname);
+		return -1;
+	} else if(attribtype > 2) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+function
+int pointattribisarray(
+	const int geo;
+	const string attribname;
+	) {
+	return attribisarray(geo, 'point', attribname);
+}
+
+function
+int vertexattribisarray(
+	const int geo;
+	const string attribname;
+	) {
+	return attribisarray(geo, 'vertex', attribname);
+}
+
+function
+int primattribisarray(
+	const int geo;
+	const string attribname;
+	) {
+	return attribisarray(geo, 'prim', attribname);
+}
+
+function
+int detailattribisarray(
+	const int geo;
+	const string attribname;
+	) {
+	return attribisarray(geo, 'detail', attribname);
+}
+
+
+/*
+#define FUNCattribisarray(type)\
+		function\
+		int attribisarray(\
+			int geo;\
+			string attribclass;\
+			string attribname;\
+			) {\
+			int attribtype = attribtype(geo, attribclass, attribname);\
+			if(attribtype < 0) {\
+				warning('specified' + attribclass + 'attributes do not exist.');\
+				return -1;\
+			} else if(attribtype > 2) {\
+				return 1;\
+			} else {\
+				return 0;\
+			}\
+		}\
+
+DEFINEFUNCall(FUNCattribisarray)
+
+#define FUNCpointattribisarray(type)\
+		function\
+		int pointattribisarray(\
+			int geo;\
+			string attribname;\
+			) {\
+			return attribisarray(geo, 'point', attribname);\
+		}\
+
+DEFINEFUNCall(FUNCpointattribisarray)
+
+#define FUNCvertexattribisarray(type)\
+		function\
+		int vertexattribisarray(\
+			int geo;\
+			string attribname;\
+			) {\
+			return attribisarray(geo, 'vertex', attribname);\
+		}\
+
+DEFINEFUNCall(FUNCvertexattribisarray)
+
+#define FUNCprimattribisarray(type)\
+		function\
+		int primattribisarray(\
+			int geo;\
+			string attribname;\
+			) {\
+			return attribisarray(geo, 'prim', attribname);\
+		}\
+
+DEFINEFUNCall(FUNCprimattribisarray)
+
+#define FUNCdetailattribisarray(type)\
+		function\
+		int detailattribisarray(\
+			int geo;\
+			string attribname;\
+			) {\
+			return attribisarray(geo, 'detail', attribname);\
+		}\
+
+DEFINEFUNCall(FUNCdetailattribisarray)
+*/
+
+
+#define FUNCsetattrib0(type)\
+		function\
+		int setattrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const int elemnum;\
+			const type value;\
+			const string mode;\
+			) {\
+			if ( attribclass == 'vertex' ) {\
+				return setattrib(geo, attribclass, attribname, -1, elemnum, value, mode);\
+			} else {\
+				return setattrib(geo, attribclass, attribname, elemnum, 0, value, mode);\
+			}\
+		}\
+
+DEFINEFUNCfvms(FUNCsetattrib0)
+
+#define FUNCsetattrib1(type)\
+		function\
+		int setattrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const int elemnum;\
+			const type value;\
+			) {\
+			if ( attribclass == 'vertex' ) {\
+				return setattrib(geo, attribclass, attribname, -1, elemnum, value, 'set');\
+			} else {\
+				return setattrib(geo, attribclass, attribname, elemnum, 0, value, 'set');\
+			}\
+		}\
+
+DEFINEFUNCall(FUNCsetattrib1)
+
+
+#define FUNCattrib0(type)\
+		function\
+		type[] attrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const int elemnums[];\
+			) {\
+			type attribvalue[];\
+			if (attribisarray(geo, attribclass, attribname)) {\
+				foreach (int elemnum; elemnums) {\
+					push(attribvalue, type[](attrib(geo, attribclass, attribname, elemnum)));\
+				}\
+			} else {\
+				resize(attribvalue, len(elemnums));\
+				foreach (int idx; int elemnum; elemnums) {\
+					attribvalue[idx] =  type(attrib(geo, attribclass, attribname, elemnum));\
+				}\
+			}\
+			return attribvalue;\
+		}\
+
+DEFINEFUNCall(FUNCattrib0)
+
+
+#define FUNCattrib1(type)\
+		function\
+		type attrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const int primnum;\
+			const int vtxnum;\
+			) {\
+			if(attribclass != 'vertex') {\
+				error('wrong parameter');\
+			}\
+			return type(vertex(geo, attribname, primnum, vtxnum));\
+		}\
+
+DEFINEFUNCall(FUNCattrib1)
+
+#define FUNCattrib2(type)\
+		function\
+		type[] attrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const int primnum;\
+			const int vtxnum;\
+			) {\
+			if(attribclass != 'vertex') {\
+				error('wrong parameter');\
+			}\
+			return type[](vertex(geo, attribname, primnum, vtxnum));\
+		}\
+
+DEFINEFUNCall(FUNCattrib2)
+
+#define FUNCattrib3(type)\
+		function\
+		type[] attrib(\
+			const int geo;\
+			const string attribclass;\
+			const string attribname;\
+			const int primnums[];\
+			const int vtxnums[];\
+			) {\
+			if(len(primnums) != len(vtxnums)) {\
+				warning('len(primnums) is not equal to len(vtxnums)');\
+			}\
+			int len = min(len(primnums), len(vtxnums));\
+			\
+			type attribvalue[];\
+			if(attribisarray(geo, attribclass, attribname)) {\
+				for (int i = 0; i < len; ++i) {\
+					push(attribvalue, type[](attrib(geo, attribclass, attribname, primnums[i], vtxnums[i])));\
+				}\
+			} else {\
+				resize(attribvalue, len);\
+				for (int i = 0; i < len; ++i) {\
+					attribvalue[i] =  type(attrib(geo, attribclass, attribname, primnums[i], vtxnums[i]));\
+				}\
+			}\
+			return attribvalue;\
+		}\
+
+DEFINEFUNCall(FUNCattrib3)
+
+
+#define attribi(attribgeo, attribattribname, elemnums) int(attrib(attribgeo, attribattribname, elemnums))
+#define attribf(attribgeo, attribattribname, elemnums) float(attrib(attribgeo, attribattribname, elemnums))
+#define attribv2(attribgeo, attribattribname, elemnums) vector2(attrib(attribgeo, attribattribname, elemnums))
+#define attribv(attribgeo, attribattribname, elemnums) vector(attrib(attribgeo, attribattribname, elemnums))
+#define attribv4(attribgeo, attribattribname, elemnums) vector4(attrib(attribgeo, attribattribname, elemnums))
+#define attribm2(attribgeo, attribattribname, elemnums) matrix2(attrib(attribgeo, attribattribname, elemnums))
+#define attribm3(attribgeo, attribattribname, elemnums) matrix3(attrib(attribgeo, attribattribname, elemnums))
+#define attribm(attribgeo, attribattribname, elemnums) matrix(attrib(attribgeo, attribattribname, elemnums))
+#define attribs(attribgeo, attribattribname, elemnums) string(attrib(attribgeo, attribattribname, elemnums))
+
+#define attribiarr(attribgeo, attribattribname, elemnums) int[](attrib(attribgeo, attribattribname, elemnums))
+#define attribfarr(attribgeo, attribattribname, elemnums) float[](attrib(attribgeo, attribattribname, elemnums))
+#define attribv2arr(attribgeo, attribattribname, elemnums) vector2[](attrib(attribgeo, attribattribname, elemnums))
+#define attribvarr(attribgeo, attribattribname, elemnums) vector[](attrib(attribgeo, attribattribname, elemnums))
+#define attribv4arr(attribgeo, attribattribname, elemnums) vector4[](attrib(attribgeo, attribattribname, elemnums))
+#define attribm2arr(attribgeo, attribattribname, elemnums) matrix2[](attrib(attribgeo, attribattribname, elemnums))
+#define attribm3arr(attribgeo, attribattribname, elemnums) matrix3[](attrib(attribgeo, attribattribname, elemnums))
+#define attribmarr(attribgeo, attribattribname, elemnums) matrix[](attrib(attribgeo, attribattribname, elemnums))
+#define attribsarr(attribgeo, attribattribname, elemnums) string[](attrib(attribgeo, attribattribname, elemnums))
+
+
+#define FUNCpoint(type)\
+	function\
+	type[] point(\
+		const int geo;\
+		const string attribname;\
+		const int ptnums[];\
+		) {\
+		return attrib(geo, 'point', attribname, ptnums);\
+	}\
+
+DEFINEFUNCall(FUNCpoint)
+
+#define pointi(pointgeo, pointattribname, pointptnums) int(point(pointgeo, pointattribname, pointptnums))
+#define pointf(pointgeo, pointattribname, pointptnums) float(point(pointgeo, pointattribname, pointptnums))
+#define pointv2(pointgeo, pointattribname, pointptnums) vector2(point(pointgeo, pointattribname, pointptnums))
+#define pointv(pointgeo, pointattribname, pointptnums) vector(point(pointgeo, pointattribname, pointptnums))
+#define pointv4(pointgeo, pointattribname, pointptnums) vector4(point(pointgeo, pointattribname, pointptnums))
+#define pointm2(pointgeo, pointattribname, pointptnums) matrix2(point(pointgeo, pointattribname, pointptnums))
+#define pointm3(pointgeo, pointattribname, pointptnums) matrix3(point(pointgeo, pointattribname, pointptnums))
+#define pointm(pointgeo, pointattribname, pointptnums) matrix(point(pointgeo, pointattribname, pointptnums))
+#define points(pointgeo, pointattribname, pointptnums) string(point(pointgeo, pointattribname, pointptnums))
+
+#define pointiarr(pointgeo, pointattribname, pointptnums) int[](point(pointgeo, pointattribname, pointptnums))
+#define pointfarr(pointgeo, pointattribname, pointptnums) float[](point(pointgeo, pointattribname, pointptnums))
+#define pointv2arr(pointgeo, pointattribname, pointptnums) vector2[](point(pointgeo, pointattribname, pointptnums))
+#define pointvarr(pointgeo, pointattribname, pointptnums) vector[](point(pointgeo, pointattribname, pointptnums))
+#define pointv4arr(pointgeo, pointattribname, pointptnums) vector4[](point(pointgeo, pointattribname, pointptnums))
+#define pointm2arr(pointgeo, pointattribname, pointptnums) matrix2[](point(pointgeo, pointattribname, pointptnums))
+#define pointm3arr(pointgeo, pointattribname, pointptnums) matrix3[](point(pointgeo, pointattribname, pointptnums))
+#define pointmarr(pointgeo, pointattribname, pointptnums) matrix[](point(pointgeo, pointattribname, pointptnums))
+#define pointsarr(pointgeo, pointattribname, pointptnums) string[](point(pointgeo, pointattribname, pointptnums))
+
+#define FUNCprim(type)\
+	function\
+	type[] prim(\
+		const int geo;\
+		const string attribname;\
+		const int primnums[];\
+		) {\
+		return attrib(geo, 'prim', attribname, primnums);\
+	}\
+
+DEFINEFUNCall(FUNCprim)
+
+#define primi(primgeo, primattribname, primprimnums) int(prim(primgeo, primattribname, primprimnums))
+#define primf(primgeo, primattribname, primprimnums) float(prim(primgeo, primattribname, primprimnums))
+#define primv2(primgeo, primattribname, primprimnums) vector2(prim(primgeo, primattribname, primprimnums))
+#define primv(primgeo, primattribname, primprimnums) vector(prim(primgeo, primattribname, primprimnums))
+#define primv4(primgeo, primattribname, primprimnums) vector4(prim(primgeo, primattribname, primprimnums))
+#define primm2(primgeo, primattribname, primprimnums) matrix2(prim(primgeo, primattribname, primprimnums))
+#define primm3(primgeo, primattribname, primprimnums) matrix3(prim(primgeo, primattribname, primprimnums))
+#define primm(primgeo, primattribname, primprimnums) matrix(prim(primgeo, primattribname, primprimnums))
+#define prims(primgeo, primattribname, primprimnums) string(prim(primgeo, primattribname, primprimnums))
+
+#define primiarr(primgeo, primattribname, primprimnums) int[](prim(primgeo, primattribname, primprimnums))
+#define primfarr(primgeo, primattribname, primprimnums) float[](prim(primgeo, primattribname, primprimnums))
+#define primv2arr(primgeo, primattribname, primprimnums) vector2[](prim(primgeo, primattribname, primprimnums))
+#define primvarr(primgeo, primattribname, primprimnums) vector[](prim(primgeo, primattribname, primprimnums))
+#define primv4arr(primgeo, primattribname, primprimnums) vector4[](prim(primgeo, primattribname, primprimnums))
+#define primm2arr(primgeo, primattribname, primprimnums) matrix2[](prim(primgeo, primattribname, primprimnums))
+#define primm3arr(primgeo, primattribname, primprimnums) matrix3[](prim(primgeo, primattribname, primprimnums))
+#define primmarr(primgeo, primattribname, primprimnums) matrix[](prim(primgeo, primattribname, primprimnums))
+#define primsarr(primgeo, primattribname, primprimnums) string[](prim(primgeo, primattribname, primprimnums))
+
+#define FUNCvertex(type)\
+	function\
+	type[] vertex(\
+		const int geo;\
+		const string attribname;\
+		const int vtxnums[];\
+		) {\
+		return attrib(geo, 'vertex', attribname, vtxnums);\
+	}\
+
+DEFINEFUNCall(FUNCvertex)
+
+#define vertexi(vertexgeo, vertexattribname, vertexvtxnums) int(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexf(vertexgeo, vertexattribname, vertexvtxnums) float(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexv2(vertexgeo, vertexattribname, vertexvtxnums) vector2(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexv(vertexgeo, vertexattribname, vertexvtxnums) vector(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexv4(vertexgeo, vertexattribname, vertexvtxnums) vector4(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexm2(vertexgeo, vertexattribname, vertexvtxnums) matrix2(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexm3(vertexgeo, vertexattribname, vertexvtxnums) matrix3(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexm(vertexgeo, vertexattribname, vertexvtxnums) matrix(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexs(vertexgeo, vertexattribname, vertexvtxnums) string(vertex(vertexgeo, vertexattribname, vertexvtxnums))
+
+#define vertexiarr(vertexgeo, vertexattribname, vertexvtxnums) int[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexfarr(vertexgeo, vertexattribname, vertexvtxnums) float[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexv2arr(vertexgeo, vertexattribname, vertexvtxnums) vector2[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexvarr(vertexgeo, vertexattribname, vertexvtxnums) vector[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexv4arr(vertexgeo, vertexattribname, vertexvtxnums) vector4[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexm2arr(vertexgeo, vertexattribname, vertexvtxnums) matrix2[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexm3arr(vertexgeo, vertexattribname, vertexvtxnums) matrix3[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexmarr(vertexgeo, vertexattribname, vertexvtxnums) matrix[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+#define vertexsarr(vertexgeo, vertexattribname, vertexvtxnums) string[](vertex(vertexgeo, vertexattribname, vertexvtxnums))
+
+#define FUNCvertex0(type)\
+	function\
+	type[] vertex(\
+		const int geo;\
+		const string attribname;\
+		const int primnums[];\
+		const int vtxnums[];\
+		) {\
+		return attrib(geo, 'vertex', attribname, primnums, vtxnums);\
+	}\
+
+DEFINEFUNCall(FUNCvertex0)
+
+#define FUNCsetpointattrib0(type)\
+	function\
+	int[] setpointattrib(\
+		const int geo;\
+		const string attribname;\
+		const int ptnums[];\
+		type value;\
+		) {\
+		int result[];\
+		foreach (int ptnum; ptnums) {\
+			push(result, setpointattrib(geo, attribname, ptnum, value));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetpointattrib0)
+/*
+#define setpointattribi(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) int(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribf(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) float(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribv2(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) vector2(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribv(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) vector(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribv4(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) vector4(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribm2(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) matrix2(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribm3(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) matrix3(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribm(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) matrix(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+#define setpointattribs(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue) string(setpointattrib(setpointattribgeo, setpointattribattribname, setpointattribptnums, setpointattribvalue))
+*/
+#define FUNCsetpointattrib1(type)\
+	function\
+	int[] setpointattrib(\
+		int geo;\
+		string attribname;\
+		int ptnums[];\
+		type value[];\
+		) {\
+		int result[];\
+		foreach (int ptnum; ptnums) {\
+			push(result, setpointattrib(geo, attribname, ptnum, value));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetpointattrib1)
+
+#define FUNCsetpointattrib2(type)\
+	function\
+	int[] setpointattrib(\
+		int geo;\
+		string attribname;\
+		int ptnums[];\
+		type value;\
+		string mode;\
+		) {\
+		int result[];\
+		foreach (int ptnum; ptnums) {\
+			push(result, setpointattrib(geo, attribname, ptnum, value, mode));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetpointattrib2)
+
+#define FUNCsetpointattrib3(type)\
+	function\
+	int[] setpointattrib(\
+		int geo;\
+		string attribname;\
+		int ptnums[];\
+		type value[];\
+		string mode;\
+		) {\
+		int result[];\
+		foreach (int ptnum; ptnums) {\
+			push(result, setpointattrib(geo, attribname, ptnum, value, mode));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetpointattrib3)
+
+
+
+
+
+
+#define FUNCsetprimattrib0(type)\
+	function\
+	int[] setprimattrib(\
+		int geo;\
+		string attribname;\
+		int primnums[];\
+		type value;\
+		) {\
+		int result[];\
+		foreach (int primnum; primnums) {\
+			push(result, setprimattrib(geo, attribname, primnum, value));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetprimattrib0)
+
+#define FUNCsetprimattrib1(type)\
+	function\
+	int[] setprimattrib(\
+		int geo;\
+		string attribname;\
+		int primnums[];\
+		type value[];\
+		) {\
+		int result[];\
+		foreach (int primnum; primnums) {\
+			push(result, setprimattrib(geo, attribname, primnum, value));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetprimattrib1)
+
+#define FUNCsetprimattrib2(type)\
+	function\
+	int[] setprimattrib(\
+		int geo;\
+		string attribname;\
+		int primnums[];\
+		type value;\
+		string mode;\
+		) {\
+		int result[];\
+		foreach (int primnum; primnums) {\
+			push(result, setprimattrib(geo, attribname, primnum, value, mode));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetprimattrib2)
+
+#define FUNCsetprimattrib3(type)\
+	function\
+	int[] setprimattrib(\
+		int geo;\
+		string attribname;\
+		int primnums[];\
+		type value[];\
+		string mode;\
+		) {\
+		int result[];\
+		foreach (int primnum; primnums) {\
+			push(result, setprimattrib(geo, attribname, primnum, value, mode));\
+		}\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetprimattrib3)
+
+
+
+
+
+
+
+
+
+#define FUNCsetvertexattrib00(type)\
+	function\
+	int setvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnum;\
+		type value;\
+		) {\
+		return setvertexattrib(geo, attribname, -1, vtxnum, value);\
+	}\
+
+DEFINEFUNCall(FUNCsetvertexattrib00)
+
+#define FUNCsetvertexattrib01(type)\
+	function\
+	int setvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnum;\
+		type value[];\
+		) {\
+		return setvertexattrib(geo, attribname, -1, vtxnum, value);\
+	}\
+
+DEFINEFUNCall(FUNCsetvertexattrib01)
+
+#define FUNCsetvertexattrib02(type)\
+	function\
+	int setvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnum;\
+		type value;\
+		string mode;\
+		) {\
+		return setvertexattrib(geo, attribname, -1, vtxnum, value, mode);\
+	}\
+
+DEFINEFUNCfvms(FUNCsetvertexattrib02)
+
+#define FUNCsetvertexattrib03(type)\
+	function\
+	int setvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnum;\
+		type value[];\
+		string mode;\
+		) {\
+		return setvertexattrib(geo, attribname, -1, vtxnum, value, mode);\
+	}\
+
+DEFINEFUNCfvms(FUNCsetvertexattrib03)
+
+#define FUNCsetlvertexattrib02(type)\
+	function\
+	int setlvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnum;\
+		type value;\
+		string mode;\
+		) {\
+		return setvertexattrib(geo, attribname, -1, vtxnum, value, mode);\
+	}\
+
+DEFINEFUNCall(FUNCsetlvertexattrib02)
+
+#define FUNCsetlvertexattrib03(type)\
+	function\
+	int setlvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnum;\
+		type value[];\
+		string mode;\
+		) {\
+		return setvertexattrib(geo, attribname, -1, vtxnum, value, mode);\
+	}\
+
+DEFINEFUNCall(FUNCsetlvertexattrib03)
+
+
+
+
+
+
+
+
+
+#define FUNCsetvertexattrib10(type)\
+	function\
+	int[] setvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnums[];\
+		type value;\
+		) {\
+		int result[];\
+		foreach (int vtxnum; vtxnums)\
+			push(result, setvertexattrib(geo, attribname, vtxnum, value));\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetvertexattrib10)
+
+#define FUNCsetvertexattrib11(type)\
+	function\
+	int[] setvertexattrib(\
+		int geo;\
+		string attribname;\
+		int vtxnums[];\
+		type value[];\
+		) {\
+		int result[];\
+		foreach (int vtxnum; vtxnums)\
+			push(result, setvertexattrib(geo, attribname, vtxnum, value));\
+		return result;\
+	}\
+
+DEFINEFUNCall(FUNCsetvertexattrib11)
+
+#define FUNCsetvertexattrib12(type)\
+		function\
+		int[] setvertexattrib(\
+			int geo;\
+			string attribname;\
+			int vtxnums[];\
+			type value;\
+			string mode;\
+			) {\
+			int result[];\
+			foreach (int vtxnum; vtxnums)\
+				push(result, setvertexattrib(geo, attribname, vtxnum, value, mode));\
+			return result;\
+		}\
+
+DEFINEFUNCall(FUNCsetvertexattrib12)
+
+#define FUNCsetvertexattrib13(type)\
+		function\
+		int[] setvertexattrib(\
+			int geo;\
+			string attribname;\
+			int vtxnums[];\
+			type value[];\
+			string mode;\
+			) {\
+			int result[];\
+			foreach (int vtxnum; vtxnums)\
+				push(result, setvertexattrib(geo, attribname, vtxnum, value, mode));\
+			return result;\
+		}\
+
+DEFINEFUNCall(FUNCsetvertexattrib13)
+
+
+
+
+
+
+
+#define FUNCsetpointattribarr20(type)\
+		function\
+		int setpointattribarr(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			int idx;\
+			string mode;\
+			) {\
+			type attrib[] = point(geo, attribname, elemnum);\
+			attrib[idx] = value;\
+			return setpointattrib(geo, attribname, elemnum, attrib, mode);\
+		}\
+
+DEFINEFUNCall(FUNCsetpointattribarr20)
+
+#define FUNCsetpointattribarr21(type)\
+		function\
+		int setpointattribarr(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			int idx;\
+			) {\
+			return setpointattrib(geo, attribname, elemnum, value, idx, 'set');\
+		}\
+
+DEFINEFUNCall(FUNCsetpointattribarr21)
+
+
+
+#define FUNCsetprimattribarr20(type)\
+		function\
+		int setprimattribarr(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			int idx;\
+			string mode;\
+			) {\
+			type attrib[] = prim(geo, attribname, elemnum);\
+			attrib[idx] = value;\
+			return setprimattrib(geo, attribname, elemnum, attrib, mode);\
+		}\
+
+DEFINEFUNCall(FUNCsetprimattribarr20)
+
+#define FUNCsetprimattribarr21(type)\
+		function\
+		int setprimattribarr(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			int idx;\
+			) {\
+			return setprimattrib(geo, attribname, elemnum, value, idx, 'set');\
+		}\
+
+DEFINEFUNCall(FUNCsetprimattribarr21)
+
+
+#define FUNCsetvertexattribarr20(type)\
+function\
+int setvertexattribarr(\
+	int geo;\
+	string attribname;\
+	int elemnum;\
+	type value;\
+	int idx;\
+	string mode;\
+	) {\
+	type attrib[] = vertex(geo, attribname, elemnum);\
+	attrib[idx] = value;\
+	return setvertexattrib(geo, attribname, elemnum, attrib, mode);\
+}\
+
+DEFINEFUNCall(FUNCsetvertexattribarr20)
+
+#define FUNCsetvertexattribarr21(type)\
+function\
+int setvertexattribarr(\
+	int geo;\
+	string attribname;\
+	int elemnum;\
+	type value;\
+	int idx;\
+	) {\
+	return setvertexattrib(geo, attribname, elemnum, value, idx, 'set');\
+}\
+
+DEFINEFUNCall(FUNCsetvertexattribarr21)
+
+
+
+#define FUNCsetdetailattrib00(type)\
+		function\
+		int setdetailattrib(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			string mode;\
+			) {\
+			return setdetailattrib(geo, attribname, value, mode);\
+		}\
+
+DEFINEFUNCall(FUNCsetdetailattrib00)
+
+#define FUNCsetdetailattrib01(type)\
+		function\
+		int setdetailattrib(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value[];\
+			string mode;\
+			) {\
+			return setdetailattrib(geo, attribname, value, mode);\
+		}\
+
+DEFINEFUNCall(FUNCsetdetailattrib01)
+
+#define FUNCsetdetailattrib02(type)\
+		function\
+		int setdetailattrib(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			) {\
+			return setdetailattrib(geo, attribname, value, 'set');\
+		}\
+
+DEFINEFUNCifvm(FUNCsetdetailattrib02)
+
+#define FUNCsetdetailattrib03(type)\
+		function\
+		int setdetailattrib(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value[];\
+			) {\
+			return setdetailattrib(geo, attribname, value, 'set');\
+		}\
+
+DEFINEFUNCifvm(FUNCsetdetailattrib03)
+
+
+
+#define FUNCsetdetailattribarr10(type)\
+		function\
+		int setdetailattribarr(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			int idx;\
+			string mode;\
+			) {\
+			type attrib[] = detail(geo, attribname);\
+			attrib[idx] = value;\
+			return setdetailattrib(geo, attribname, attrib, mode);\
+		}\
+
+DEFINEFUNCall(FUNCsetdetailattribarr10)
+
+#define FUNCsetdetailattribarr11(type)\
+		function\
+		int setdetailattribarr(\
+			int geo;\
+			string attribname;\
+			int elemnum;\
+			type value;\
+			int idx;\
+			) {\
+			return setdetailattrib(geo, attribname, value, idx, 'set');\
+		}\
+
+DEFINEFUNCall(FUNCsetdetailattribarr11)
+
+
+#define FUNCsetdetailattribarr20(type)\
+		function\
+		int setdetailattribarr(\
+			int geo;\
+			string attribname;\
+			type value;\
+			int idx;\
+			string mode;\
+			) {\
+			type attrib[] = detail(geo, attribname);\
+			attrib[idx] = value;\
+			return setdetailattrib(geo, attribname, attrib, mode);\
+		}\
+
+DEFINEFUNCall(FUNCsetdetailattribarr20)
+
+#define FUNCsetdetailattribarr21(type)\
+		function\
+		int setdetailattribarr(\
+			int geo;\
+			string attribname;\
+			type value;\
+			int idx;\
+			) {\
+			return setdetailattrib(geo, attribname, value, idx, 'set');\
+		}\
+
+DEFINEFUNCall(FUNCsetdetailattribarr21)
+
+
+#define matchattribvalgetAttrib(datatype) return findattribval(geo0, attribclass, attribname, datatype(attrib(geo1, attribclass1, attribname, elemnum)), which);
+
+#define matchattribvalgetAttribarr(datatype) return findattribval(geo0, attribclass, attribname, datatype[](attrib(geo1, attribclass1, attribname, elemnum)), which);
+
+
+function
+int matchattribval(
+	int geo0;
+	string attribclass;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	int which;
+	) {
+	int type = attribtype(geo0, attribclass, attribname);
+    if ( type == 0 ) { // integer
+        matchattribvalgetAttrib(int)
+    } else if ( type == 1 ) { // float
+        int size = attribsize(geo0, attribclass, attribname);
+        if( size == 1 ) { // float
+            matchattribvalgetAttrib(float)
+        } else if ( size == 2 ) { // vector2
+            matchattribvalgetAttrib(vector2)
+        } else if ( size == 3 ) { // vector
+            matchattribvalgetAttrib(vector)
+        } else if ( size == 4 ) { // vector4 or matrix2
+            matchattribvalgetAttrib(vector4)
+        } else if ( size == 9 ) { // matrix3
+            matchattribvalgetAttrib(matrix3)
+        } else if ( size == 16 ) { // matrix
+            matchattribvalgetAttrib(matrix)
+        } else {
+            warning(concat('One or more of the specified ', attribclass, ' attributes has an unsupported size.'));
+            return -1;
+        }
+    } else if ( type == 2 ) { // string
+        matchattribvalgetAttrib(string)
+	/*
+    } else if ( type == 3 ) { // Array of integers (or integer tuples)
+        matchattribvalgetAttribarr(int)
+    } else if ( type == 4 ) { // Array of floats (or float tuples)
+        int size = attribsize(geo0, attribclass, target);
+        if( size == 1 ) { // Array of float
+            matchattribvalgetAttribarr(float)
+        } else if ( size == 2 ) { // Array of vector2
+            matchattribvalgetAttribarr(vector2)
+        } else if ( size == 3 ) { // Array of vectors
+            matchattribvalgetAttribarr(vector)
+        } else if ( size == 4 ) { // Array of vector4s or matrix2s
+            matchattribvalgetAttribarr(vector4)
+        } else if ( size == 9 ) { // Array of matrix3s
+            matchattribvalgetAttribarr(matrix3)
+        } else if ( size == 16 ) { // Array of matrixs
+            matchattribvalgetAttribarr(matrix)
+        } else {
+            warning("One or more of the specified `chs('../class')` attributes has an unsupported size.");
+            return -1;
+        }
+    } else if ( type == 5 ) { // Array of strings
+        matchattribvalgetAttribarr(string)
+	*/
+    } else if ( type == -1 ) { // Attribute not found, or unknown type
+        warning(concat('One or more of the specified ', attribclass, ' attributes do not exist.'));
+        return -1;
+    } else {
+        warning(concat('2 One or more of the specified ', attribclass, ' attributes has an unsupported type.'));
+        return -1;
+    }
+}
+
+function
+int matchpointattribval(
+	int geo0;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	int which;
+	) {
+	return matchattribval(geo0, 'point', attribname, geo1, attribclass1, elemnum, which);
+}
+
+function
+int matchprimattribval(
+	int geo0;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	int which;
+	) {
+	return matchattribval(geo0, 'prim', attribname, geo1, attribclass1, elemnum, which);
+}
+
+function
+int matchvertexattribval(
+	int geo0;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	int which;
+	) {
+	return matchattribval(geo0, 'vertex', attribname, geo1, attribclass1, elemnum, which);
+}
+
+
+
+function
+int matchattribval(
+	int geo0;
+	string attribclass;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	) {
+	return matchattribval(geo0, attribclass, attribname, geo1, attribclass1, elemnum, 0);
+}
+
+
+
+function
+int matchpointattribval(
+	int geo0;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	) {
+	return matchattribval(geo0, 'point', attribname, geo1, attribclass1, elemnum);
+}
+
+function
+int matchprimattribval(
+	int geo0;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	) {
+	return matchattribval(geo0, 'prim', attribname, geo1, attribclass1, elemnum);
+}
+
+function
+int matchvertexattribval(
+	int geo0;
+	string attribname;
+	int geo1;
+	string attribclass1;
+	int elemnum;
+	) {
+	return matchattribval(geo0, 'vertex', attribname, geo1, attribclass1, elemnum);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

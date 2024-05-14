@@ -1,0 +1,27 @@
+#type: node
+#context: sop
+#internal: FeE
+#largeicon: /nodes/sop/SOP_FeE_GroupUnshared_1_0.png
+
+#tags: shape
+
+cmake -G "Visual Studio 16 2019" .. -DCMAKE_PREFIX_PATH="C:\Program Files\Side Effects Software\Houdini 19.0.531\toolkit\cmake"
+
+cmake -G "Visual Studio 17 2022" .. -DCMAKE_PREFIX_PATH="C:\Program Files\Side Effects Software\Houdini 19.0.531\toolkit\cmake"
+
+= FeE =
+
+""" Builds an FeE """
+
+@parameters
+
+
+
+@locals
+PT:
+    current point number
+NPT:
+    number of points in the FeE
+
+@related
+- [Node:sop/circle]

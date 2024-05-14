@@ -1,0 +1,206 @@
+
+#ifndef __BBOXDEEP_VFL__
+#define __BBOXDEEP_VFL__
+
+#include <bboxdeep.vfl>
+
+
+
+
+
+
+
+
+function
+void getbbox(
+    int geo;
+    int primnum;
+    export vector min;
+    export vector max;
+    ) {
+    getbbox(geo, itoa(primnum), min, max);
+}
+
+function
+vector getbbox_center(
+    int geo;
+    int primnum;
+    ) {
+    return getbbox_center(geo, itoa(primnum));
+    /*
+    //this is slower way
+    float bounds[] = primintrinsic(geo, 'bounds', primnum);
+    return set((bounds[0]+bounds[1])/2, (bounds[2]+bounds[3])/2, (bounds[4] + bounds[5])/2);
+    */
+}
+
+function
+vector getbbox_max(
+    int geo;
+    int primnum;
+    ) {
+    return getbbox_max(geo, itoa(primnum));
+}
+
+function
+vector getbbox_min(
+    int geo;
+    int primnum;
+    ) {
+    return getbbox_min(geo, itoa(primnum));
+}
+
+function
+vector getbbox_size(
+    int geo;
+    int primnum;
+    ) {
+    return getbbox_size(geo, itoa(primnum));
+}
+
+function
+float getbbox_sizemax(
+    int geo;
+    ) {
+    return max(getbbox_size(geo));
+}
+
+function
+float getbbox_sizemax(
+    int geo;
+    int primnum;
+    ) {
+    return max(getbbox_size(geo, itoa(primnum)));
+}
+
+function
+float getbbox_diameter(
+    int geo;
+    ) {
+    return length(getbbox_size(geo));
+}
+
+function
+float getbbox_diameter(
+    int geo;
+    int primnum;
+    ) {
+    return length(getbbox_size(geo, itoa(primnum)));
+}
+
+function
+float getbbox_radius(
+    int geo;
+    ) {
+    return getbbox_diameter(geo) / 2;
+}
+
+function
+float getbbox_radius(
+    int geo;
+    int primnum;
+    ) {
+    return getbbox_diameter(geo) / 2;
+}
+
+
+
+
+
+function
+void getpointbbox(
+    int geo;
+    int ptnum;
+    export vector min;
+    export vector max;
+    ) {
+    getpointbbox(geo, itoa(ptnum), min, max);
+}
+
+function
+vector getpointbbox_center(
+    int geo;
+    int ptnum;
+    ) {
+    return getpointbbox_center(geo, itoa(ptnum));
+}
+
+function
+vector getpointbbox_max(
+    int geo;
+    int ptnum;
+    ) {
+    return getpointbbox_max(geo, itoa(ptnum));
+}
+
+function
+vector getpointbbox_min(
+    int geo;
+    int ptnum;
+    ) {
+    return getpointbbox_min(geo, itoa(ptnum));
+}
+
+function
+vector getpointbbox_size(
+    int geo;
+    int ptnum;
+    ) {
+    return getpointbbox_size(geo, itoa(ptnum));
+}
+
+function
+float getpointbbox_sizemax(
+    int geo;
+    ) {
+    return max(getpointbbox_size(geo));
+}
+
+function
+float getpointbbox_sizemax(
+    int geo;
+    int primnum;
+    ) {
+    return max(getpointbbox_size(geo, itoa(primnum)));
+}
+
+function
+float getpointbbox_diameter(
+    int geo;
+    ) {
+    return length(getpointbbox_size(geo));
+}
+
+function
+float getpointbbox_diameter(
+    int geo;
+    int primnum;
+    ) {
+    return length(getpointbbox_size(geo, itoa(primnum)));
+}
+
+function
+float getpointbbox_radius(
+    int geo;
+    ) {
+    return getpointbbox_diameter(geo) / 2;
+}
+
+function
+float getpointbbox_radius(
+    int geo;
+    int primnum;
+    ) {
+    return getpointbbox_diameter(geo) / 2;
+}
+
+
+
+
+
+
+
+
+
+
+#endif

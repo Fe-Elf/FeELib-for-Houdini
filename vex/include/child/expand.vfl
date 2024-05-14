@@ -1,0 +1,230 @@
+
+#ifndef __EXPAND_VFL__
+#define __EXPAND_VFL__
+
+#include <precompile.vfl>
+
+#include <expand.vfl>
+
+
+#include <neighbours.vfl>
+#include <promote.vfl>
+
+function
+int[] primgroupexpand(
+	const int geo;
+	const int elemnum;
+	) {
+    return hedge_prims(geo, primhedges(geo, elemnum));
+}
+
+DEFINEFUNCuniformpush(primgroupexpand)
+
+function
+int[] primgroupexpand(
+	const int geo;
+	const int elemnum;
+	const int numiterations;
+	) {
+    int result[];
+    if (numiterations > -1) {
+        push(result, elemnum);
+        for (int i = 0; i < numiterations; ++i){
+            uniformpush(result, primgroupexpand(geo, result));
+        }
+    }
+    return result;
+}
+
+DEFINEFUNCuniformpushiter(primgroupexpand)
+
+function
+int[] primgroupwideexpand(
+	const int geo;
+	const int elemnum;
+	) {
+    int result[] = pointprims(geo, primpoints(geo, elemnum));
+    return result;
+}
+
+DEFINEFUNCuniformpush(primgroupwideexpand)
+
+function
+int[] primgroupwideexpand(
+	const int geo;
+	const int elemnum;
+	const int numiterations;
+	) {
+    int result[];
+    if (numiterations > -1) {
+        push(result, elemnum);
+        for (int i = 0; i < numiterations; ++i){
+            uniformpush(result, primgroupwideexpand(geo, result));
+        }
+    }
+    return result;
+}
+
+DEFINEFUNCuniformpushiter(primgroupwideexpand)
+
+
+
+
+
+function
+int[] primneighbours(
+    const int geo;
+    const int elemnum;
+    ) {
+    int result[] = primgroupexpand(geo, elemnum);
+    removevalue(result, elemnum);
+    return result;
+}
+
+DEFINEFUNCuniformpush(primneighbours)
+
+function
+int[] primwideneighbours(
+    const int geo;
+    const int elemnum;
+    ) {
+    int result[] = primgroupwideexpand(geo, elemnum);
+    removevalue(result, elemnum);
+    return result;
+}
+
+DEFINEFUNCuniformpush(primwideneighbours)
+
+function
+int[] primneighbours(
+    const int geo;
+    const int elemnum;
+	const int numiterations;
+    ) {
+    int result0[] = primgroupexpand(geo, elemnum, numiterations-1);
+    int result1[] = primgroupexpand(geo, result0);
+    removevalue(result1, result0);
+    return result1;
+}
+
+DEFINEFUNCuniformpushiter(primneighbours)
+
+function
+int[] primwideneighbours(
+    const int geo;
+    const int elemnum;
+	const int numiterations;
+    ) {
+    int result0[] = primgroupwideexpand(geo, elemnum, numiterations-1);
+    int result1[] = primgroupwideexpand(geo, result0);
+    removevalue(result1, result0);
+    return result1;
+}
+
+DEFINEFUNCuniformpushiter(primwideneighbours)
+
+
+
+
+
+
+
+
+
+function
+int[] pointgroupexpand(
+	const int geo;
+	const int elemnum;
+	) {
+    int result[] = neighbours(geo, elemnum);
+    push(result, elemnum);
+    return result;
+}
+
+DEFINEFUNCuniformpush(pointgroupexpand)
+
+function
+int[] pointgroupexpand(
+	const int geo;
+	const int elemnum;
+	const int numiterations;
+	) {
+    int result[] = pointgroupexpand(geo, elemnum);
+    for (int i = 1; i < numiterations; ++i){
+        uniformpush(result, pointgroupexpand(geo, result));
+    }
+    return result;
+}
+
+DEFINEFUNCuniformpushiter(pointgroupexpand)
+
+function
+int[] pointgroupwideexpand(
+	const int geo;
+	const int elemnum;
+	) {
+    return primpoints(geo, pointprims(geo, elemnum));
+}
+
+DEFINEFUNCuniformpush(pointgroupwideexpand)
+
+function
+int[] pointgroupwideexpand(
+	const int geo;
+	const int elemnum;
+	const int numiterations;
+	) {
+    int result[] = pointgroupwideexpand(geo, elemnum);
+    for (int i = 1; i < numiterations; ++i){
+        uniformpush(result, pointgroupwideexpand(geo, result));
+    }
+    return result;
+}
+
+DEFINEFUNCuniformpushiter(pointgroupwideexpand)
+
+
+
+
+
+
+
+
+
+
+
+
+
+function
+int[] wideneighbours(
+    const int geo;
+    const int elemnum;
+    ) {
+    int result[] = pointgroupwideexpand(geo, elemnum);
+    int result[] = primpoints(geo, pointprims(geo, elemnum));
+    removevalue(result, elemnum);
+    return result;
+}
+
+DEFINEFUNCuniformpush(wideneighbours)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

@@ -1,0 +1,84 @@
+
+#ifndef __PROMOTE_VFL__
+#define __PROMOTE_VFL__
+
+#include <precompile.vfl>
+
+#include <promote.vfl>
+
+
+
+
+
+#include <arraydeep.vfl>
+#include <hedgedeep.vfl>
+//#include <neighbours.vfl>
+#include <promotedeep.vfl>
+
+//hedge to prim
+
+function
+int[] hedge_prims(
+    const int geo;
+    const int hnum;
+    ) {
+    return hedge_prim(geo, hedge_equivs(geo, hnum));
+}
+
+
+DEFINEFUNCpush(hedge_prims, hedge_prims)
+
+
+DEFINEFUNCpush(pointprims, hedge_prims)
+
+DEFINEFUNCpush(primpoints, primpoints)
+
+
+
+//vertex to vertex
+
+
+function
+int[] vertexequivs(
+    const int geo;
+    const int vtx;
+    ) {
+    int result[];
+    int hedge_equivs[] = hedge_equivs(geo, vtx);
+    foreach (int hnum; hedge_equivs){
+        push(result, hedge_srcvertex(geo, hnum));
+    }
+    return result;
+}
+
+
+
+
+//prim to point
+
+int primpointsneb(
+    const int geo;
+    const int primnum;
+    ) {
+    return neighbours(primpoints(geo, primnum));
+}
+
+
+
+////////////////////////////////////point to point/////////////////////////////////
+
+function
+int[] pointprimspoints(
+    const int geo;
+    const int ptnum;
+    ) {
+    int result[], pointprims[] = pointprims(geo, ptnum);
+    foreach (int pointprim; pointprims) {
+        uniquepush(result, primpoints(geo, pointprim));
+    }
+    return result;
+}
+
+
+
+#endif

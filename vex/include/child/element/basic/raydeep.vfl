@@ -1,0 +1,495 @@
+
+#ifndef __RAYDEEP_VFL__
+#define __RAYDEEP_VFL__
+
+#include <precompile.vfl>
+
+#include <raydeep.vfl>
+
+
+
+
+#define THRESHOLD_INTERSECT 1e-03
+
+function
+int intersectdebug(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos;
+    /*export */vector uvw;
+    const float threshold;
+    ) {
+    return intersect(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, uvw);
+}
+
+function
+int intersectdebug(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos;
+    /*export */vector uvw;
+    ) {
+    return intersectdebug(geo, group, rayorig, raydir, pos, uvw, THRESHOLD_INTERSECT);
+}
+
+function
+int intersectdebug(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos;
+    /*export */vector uvw;
+    const float threshold;
+    ) {
+    return intersect(geo, rayorig + threshold * normalize(raydir), raydir, pos, uvw);
+}
+
+function
+int intersectdebug(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos;
+    /*export */vector uvw;
+    ) {
+    return intersectdebug(geo, rayorig, raydir, pos, uvw, THRESHOLD_INTERSECT);
+}
+function
+int intersectdebug(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos;
+    /*export */float u;
+    /*export */float v;
+    const float threshold;
+    ) {
+    return intersect(geo, rayorig + threshold * normalize(raydir), raydir, pos, u, v);
+}
+
+function
+int intersectdebug(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos;
+    /*export */float u;
+    /*export */float v;
+    ) {
+    return intersectdebug(geo, rayorig, raydir, pos, u, v, THRESHOLD_INTERSECT);
+}
+
+
+
+
+#if 0
+    function
+    int intersectdebug(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */vector uvw;
+        const string farthest;
+        const float threshold;
+        ) {
+        return intersect(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, uvw, farthest);
+    }
+
+    function
+    int intersectdebug(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */vector uvw;
+        const string farthest;
+        ) {
+        return intersectdebug(geo, group, rayorig, raydir, pos, uvw, farthest, THRESHOLD_INTERSECT);
+    }
+    
+    function
+    int intersectdebug(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */float u;
+        /*export */float v;
+        const float threshold;
+        ) {
+        return intersect(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, u, v);
+    }
+
+    function
+    int intersectdebug(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */float u;
+        /*export */float v;
+        ) {
+        return intersectdebug(geo, group, rayorig, raydir, pos, u, v, THRESHOLD_INTERSECT);
+    }
+
+    function
+    int intersectdebug(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */float u;
+        /*export */float v;
+        /*export */float w;
+        const float threshold;
+        ) {
+        return intersect(geo, rayorig + threshold * normalize(raydir), raydir, pos, u, v, w);
+    }
+
+    function
+    int intersectdebug(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */float u;
+        /*export */float v;
+        /*export */float w;
+        ) {
+        return intersectdebug(geo, rayorig, raydir, pos, u, v, w, THRESHOLD_INTERSECT);
+    }
+
+    function
+    int intersectdebug(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */float u;
+        /*export */float v;
+        const string farthest;
+        const float threshold;
+        ) {
+        return intersect(geo, rayorig + threshold * normalize(raydir), raydir, pos, u, v, farthest);
+    }
+
+    function
+    int intersectdebug(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos;
+        /*export */float u;
+        /*export */float v;
+        const string farthest;
+        ) {
+        return intersectdebug(geo, rayorig, raydir, pos, u, v, farthest, THRESHOLD_INTERSECT);
+    }
+#endif
+
+
+
+
+
+
+
+
+
+/*
+vector pos[], uvw[];
+int prim[];
+int numintersect = intersectdebug_all(0, @P, @N, pos, prim, uvw);
+*/
+
+function
+int intersectdebug_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    const float threshold;
+    ) {
+    return intersect_all(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, prim, uvw, tol, ttol);
+}
+
+function
+int intersectdebug_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    ) {
+    return intersectdebug_all(geo, group, rayorig, raydir, pos, prim, uvw, tol, ttol, THRESHOLD_INTERSECT);
+}
+
+/*
+tol, ttol
+tol is the 3D tolerance.
+ttol is the ray tolerance.
+Collision points within the parametric ray tolerance, ttol will be merged together, often useful to avoid getting extra intersects when hitting the edges of geometry.
+
+To get all intersections without merging, set ttol to -1.
+*/
+
+function
+int intersectdebug_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float threshold;
+    ) {
+    return intersect_all(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, prim, uvw);
+}
+
+function
+int intersectdebug_all(
+    const int geo;
+    const string group;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    ) {
+    return intersectdebug_all(geo, group, rayorig, raydir, pos, prim, uvw, THRESHOLD_INTERSECT);
+}
+
+
+
+function
+int intersectdebug_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    const float threshold;
+    ) {
+    return intersect_all(geo, rayorig + threshold * normalize(raydir), raydir, pos, prim, uvw, tol, ttol);
+}
+
+function
+int intersectdebug_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float tol;
+    const float ttol;
+    ) {
+    return intersectdebug_all(geo, rayorig, raydir, pos, prim, uvw, tol, ttol, THRESHOLD_INTERSECT);
+}
+
+function
+int intersectdebug_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    const float threshold;
+    ) {
+    return intersect_all(geo, rayorig + threshold * normalize(raydir), raydir, pos, prim, uvw);
+}
+
+function
+int intersectdebug_all(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    /*export */vector pos[];
+    /*export */int prim[];
+    /*export */vector uvw[];
+    ) {
+    return intersectdebug_all(geo, rayorig, raydir, pos, prim, uvw, THRESHOLD_INTERSECT);
+}
+
+
+
+
+
+
+
+
+
+
+#if 0
+    function
+    int intersectdebug_all(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        /*export */float w[];
+        const float threshold;
+        ) {
+        return intersect_all(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, prim, u, v, w);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        /*export */float w[];
+        ) {
+        return intersectdebug_all(geo, group, rayorig, raydir, pos, prim, u, v, w, THRESHOLD_INTERSECT);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        const float threshold;
+        ) {
+        return intersect_all(geo, group, rayorig + threshold * normalize(raydir), raydir, pos, prim, u, v);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const string group;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        ) {
+        return intersectdebug_all(geo, group, rayorig, raydir, pos, prim, u, v, THRESHOLD_INTERSECT);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];   
+        /*export */float v[];
+        /*export */float w[];
+        const float threshold;
+        ) {
+        return intersect_all(geo, rayorig + threshold * normalize(raydir), raydir, pos, prim, u, v, w);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        /*export */float w[];
+        ) {
+        return intersectdebug_all(geo, rayorig, raydir, pos, prim, u, v, w, THRESHOLD_INTERSECT);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        const float threshold;
+        ) {
+        return intersect_all(geo, rayorig + threshold * normalize(raydir), raydir, pos, prim, u, v);
+    }
+
+    function
+    int intersectdebug_all(
+        const int geo;
+        const vector rayorig;
+        const vector raydir;
+        /*export */vector pos[];
+        /*export */int prim[];
+        /*export */float u[];
+        /*export */float v[];
+        ) {
+        return intersectdebug_all(geo, rayorig, raydir, pos, prim, u, v, THRESHOLD_INTERSECT);
+    }
+
+#endif
+
+
+function
+void intersect_visualize(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    ) {
+    int newpt0 = addpoint(geo, rayorig);
+    int newpt1 = addpoint(geo, rayorig + raydir);
+    addprim(geo, 'polyline', newpt0, newpt1);
+}
+
+
+function
+void intersectdebug_visualize(
+    const int geo;
+    const vector rayorig;
+    const vector raydir;
+    const float threshold;
+    ) {
+    intersect_visualize(geo, rayorig + threshold * normalize(raydir), raydir);
+}
+
+
+
+
+
+
+
+
+
+#endif

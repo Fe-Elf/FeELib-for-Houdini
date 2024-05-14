@@ -1,0 +1,64 @@
+
+#ifndef __ORIENT_VFL__
+#define __ORIENT_VFL__
+
+#include <orient.vfl>
+
+#include <mathdeep.vfl>
+
+
+
+
+function
+vector4 slerpdebug(
+    const vector4 q0, q1;
+    const float bias;
+    ) {
+    vector4 tempq1 = q1;
+    vector imaginary0 = set(q0.x, q0.y, q0.z);
+    vector imaginary1 = set(q1.x, q1.y, q1.z);
+    /*
+    float dot = dot(q0, q1);
+    float subtended = angle(imaginary0, imaginary1);
+    float sinsubtended = sinangle(imaginary0, imaginary1);
+    */
+    float dot = dot(q0, q1);
+    //float subtended = angle(q0, q1);
+    float subtended = qdistance(q0, q1);
+    //float sinsubtended = sinangle(q0, q1);
+    float sinsubtended = sin(subtended);
+    if (dot < 0) {
+        tempq1 = qinvert(tempq1);
+        sinsubtended *= -1;
+        subtended = PI - subtended;
+    }
+    return (sin((1-bias)*subtended) * q0 + sin(bias*subtended) * tempq1) / sinsubtended;
+}
+
+
+function
+vector4 slerpfar(
+    const vector4 q0, q1;
+    const float bias;
+    ) {
+    vector4 tempq1 = q1;
+    float sinsubtended = sinangle(q0, q1);
+    float subtended = angle(q0, q1);
+    if (dot(q0, q1) < 0) {
+        tempq1 = qinvert(q1);
+        sinsubtended *= -1;
+        subtended = PI - subtended;
+    }
+    return (sin((1-bias)*subtended) * q0 + sin(bias*subtended) * tempq1) / sinsubtended;
+}
+
+
+
+
+
+
+
+
+
+
+#endif

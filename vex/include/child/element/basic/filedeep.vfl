@@ -1,0 +1,37 @@
+
+#ifndef __FILEDEEP_VFL__
+#define __FILEDEEP_VFL__
+
+//#include <precompile.vfl>
+
+#if 0
+    #include <filedeep.vfl>
+#else
+#endif
+
+
+
+function
+string filename(
+    string fullpath;
+    ) {
+    int finds[] = find(fullpath, '.');
+    return fullpath[0 : finds[-1]+1];
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

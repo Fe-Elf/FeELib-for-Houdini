@@ -1,0 +1,88 @@
+
+#ifndef __MEASUREBOUND_VFL__
+#define __MEASUREBOUND_VFL__
+
+
+#include <measurebound.vfl>
+
+
+/*
+i@polybounding = polybounding(1, @P);
+i@group_on = isongeo(1, @P);
+i@group_out = isoutgeo(1, @P);
+i@group_in = isingeo(1, @P);
+*/
+
+#include <measure.vfl>
+
+function
+int isingeo(
+    int geo;
+    vector pos;
+    ) {
+    return xyzdistN(geo, pos) < THRESHOLDn6;
+}
+
+function
+int isingeo(
+    int geo;
+    vector pos;
+    float threshold;
+    ) {
+    return xyzdistN(geo, pos) < threshold;
+}
+
+function
+int isoutgeo(
+    int geo;
+    vector pos;
+    ) {
+    return xyzdistN(geo, pos) > THRESHOLDp6;
+}
+
+function
+int isongeo(
+    int geo;
+    vector pos;
+    ) {
+    return xyzdist(geo, pos) < THRESHOLDp6;
+}
+
+function
+int isongeo(
+    int geo;
+    vector pos;
+    float threshold;
+    ) {
+    return xyzdist(geo, pos) < threshold;
+}
+
+function
+int polybounding(
+    int geo;
+    vector pos;
+    ) {
+    float dis = xyzdistN(geo, pos);
+    if( dis > THRESHOLDp6 )
+        return 1;
+    else if( dis < THRESHOLDn6 )
+        return -1;
+    else
+        return 0;
+}
+
+function
+int isonpoint(
+    int geo;
+    vector pos;
+    ) {
+    #define THRESHOLDisonpoint THRESHOLDp6
+    #define FUNCisonpoint len(pgfind(geo, pos, THRESHOLDisonpoint, 1, THRESHOLDisonpoint))
+    if (geo == 0)
+        return FUNCisonpoint > 1;
+    else
+        return FUNCisonpoint > 0;
+}
+
+
+#endif

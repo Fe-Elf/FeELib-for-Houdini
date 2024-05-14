@@ -1,0 +1,26 @@
+pyro
+
+Multifield visualizes heat (flame) and density (smoke).
+The source adds temperature and fuel to the simulation.
+Where fuel exists and the temperature is above a certain point, "burn" is created.
+Burn creates heat (visible flames).
+Burn inefficiency leaves a certain percentage of fuel behind after burning.
+Gas released = expansion
+Cooling rate, dissipation
+Velocity = start velocity + temperature * buoyancy
+Advection affects temperature, heat, density, fuel*
+In Houdini, temperature = buoyancy, velocity = momentum
+
+Temperature is one of the most important fields for running a simulation (together with Velocity) and controls to great extend how the sim behaves and looks. Although it isn¡¯t often used for rendering and visualization, internally it drives many forces and shape operators (such as Buoyancy, Shredding and Dissipation).
+
+When creating a fire sim, that control is extended to the combustion model. Temperature Diffusion and Cooling Rate act directly on the temperature field and offer great control over the simulation¡¯s decay in speed and simulated detail.
+
+
+
+
+
+
+
+
+
+

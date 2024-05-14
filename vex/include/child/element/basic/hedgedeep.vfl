@@ -1,0 +1,287 @@
+
+#ifndef __HEDGEDEEP_VFL__
+#define __HEDGEDEEP_VFL__
+
+#if 1
+    #include <hedgedeep.vfl>
+#else
+    function
+    int hedge_isMininEquivs(
+        const int geo;
+        const int hnum;
+        ) {
+        // retrun -1 means this hedge is not found
+        // retrun 0 means this hedge is not Min in Equivs
+        // retrun 1 means this hedge is     Min in Equivs
+        // retrun 2 means this hedge is unshared
+        int hnext = hedge_nextequiv(geo, hnum);
+        if ( hnext == -1 ) {
+            return -1;
+        }
+        if ( hnext == hnum ) {
+            return 2;
+        }
+        for (;   hnext != hnum;   hnext = hedge_nextequiv(geo, hnext) ) {
+            if ( hnext < hnum ) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+#endif
+
+
+function
+float hedgedir(
+    const int geo;
+    const int hnum;
+    ) {
+    vector src = point(geo, "P", hedge_srcpoint(geo, h)),
+           dst = point(geo, "P", hedge_dstpoint(geo, h));
+    return dst - src;
+}
+
+function
+float hedgelength2(
+    const int geo;
+    const int hnum;
+    ) {
+    return length2(hedgedir(geo, hnum));
+}
+
+function
+float hedgelength(
+    const int geo;
+    const int hnum;
+    ) {
+    return length(hedgedir(geo, hnum));
+}
+
+
+function
+int hedge_minequiv(
+    const int geo;
+    const int hnum;
+    ) {
+    int hnext = hedge_nextequiv(geo, hnum);
+    if ( hnext == -1 ) {
+        return -1;
+    }
+    int hmin = hnum;
+    for (;   hnext != hnum;   hnext = hedge_nextequiv(geo, hnext) ) {
+        if ( hnext >= hmin ) continue;
+        hmin = hnext;
+    }
+    return hmin;
+}
+
+function
+int hedge_isMininEquivs(
+    const int geo;
+    const int hnum;
+    ) {
+    // retrun -1 means this hedge is not found
+    // retrun 0 means this hedge is not Min in Equivs
+    // retrun 1 means this hedge is     Min in Equivs
+    // retrun 2 means this hedge is unshared
+    int hnext = hedge_nextequiv(geo, hnum);
+    if ( hnext == -1 ) {
+        return -1;
+    }
+    if ( hnext == hnum ) {
+        return 2;
+    }
+    for (;   hnext != hnum;   hnext = hedge_nextequiv(geo, hnext) ) {
+        if ( hnext < hnum ) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+function
+int[] hedge_equivs(
+    const int geo;
+    const int hnum;
+    ) {
+    int hedge_equivcount = hedge_equivcount(geo, hnum);
+    if ( hedge_equivcount == -1 ) {
+        //没有这个hedge
+        return array();
+    }
+    int hedges[];
+    resize(hedges, hedge_equivcount);
+    hedges[0] = hnum;
+    for (int i = 1; i < hedge_equivcount; ++i) {
+        hedges[i] = hedge_nextequiv(geo, hedges[i-1]);
+    }
+    return hedges;
+}
+/*
+function
+int[] hedge_equivs(
+    const int geo;
+    const int hnum;
+    ) {
+    //hedge_nextequiv非常慢（测试低面数不卡）
+    int hnext = hedge_nextequiv(geo, hnum);
+    if ( hnext == -1 ) {
+        //没有这个hedge
+        return array();
+    }
+    int hedges[] = array(hnum);
+    for (;   hnext != hnum;   hnext = hedge_nextequiv(geo, hnext) ) {
+        push(hedges, hnext);
+    }
+    return hedges;
+}
+*/
+
+function
+int[] hedge_equivsOrdered(
+    const int geo;
+    const int hnum;
+    ) {
+    int hnext = hedge_nextequiv(geo, hnum);
+    if ( hnext == -1 ) {
+        //没有这个hedge
+        return array();
+    }
+    int hedges[] = array(hnum), result[], len = 1, hedgemin = hnum, hedgemin_idx = len;
+    for (;   hnext != hnum && hnext != -1;   hnext = hedge_nextequiv(geo, hnext) ) {
+        push(hedges, hnext);
+        ++len;
+        if ( hnext < hedgemin ) {
+            hedgemin = hnext;
+            hedgemin_idx = len;
+        }
+    }
+    --hedgemin_idx;///// idx比实际的要大1，因为上面写了 = len
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = hedges[(i + hedgemin_idx) % len];
+    }
+    return result;
+}
+
+function
+int[] hedge_hedges(
+    const int geo;
+    const int hnum;
+    ) {
+    int hnext = hnum, hedges[];
+    do{
+        push(hedges, hnext);
+        hnext = hedge_next(geo, hnext);
+    } while(hnext != hnum);
+    return hedges;
+}
+
+
+
+
+
+
+
+
+
+
+function
+int[] hedge_next(
+    const int geo;
+    const int hnums[];
+    ) {
+    int hnextnums[];
+    foreach(int hnum; hnums)
+        push(hnextnums, hedge_next(geo, hnum));
+    return hnextnums;
+}
+
+function
+int[] hedge_prev(
+    const int geo;
+    const int hnums[];
+    ) {
+    int hprevnums[];
+    foreach(int hnum; hnums)
+        push(hprevnums, hedge_prev(geo, hnum));
+    return hprevnums;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function
+float hedge_length(
+    const int geo;
+    const int hnum;
+    ) {
+    vector srcpos = point(geo, "P", hedge_srcpoint(geo, hnum)),
+           dstpos = point(geo, "P", hedge_dstpoint(geo, hnum));
+    return distance(srcpos, dstpos);
+}
+
+function
+float[] hedge_length(
+    const int geo;
+    const int hnums[];
+    ) {
+    float length[];
+    foreach(int hnum; hnums)
+        push(length, hedge_length(geo, hnum));
+    return length;
+}
+
+
+
+
+/*
+int edge_count = 0;
+
+// Count number of *edges* (not half-edges) incident to point number 23.
+int hout = pointhedge("defgeo.bgeo", 23);
+while ( hout != -1 )
+{
+    if (hedge_isprimary("defgeo.bgeo", hout))
+        edge_count++;
+    int hin = hedge_prev("defgeo.bgeo", hout);
+    if (hedge_isprimary("defgeo.bgeo", hin))
+        edge_count++;
+    hout = pointhedgenext("defgeo", hout);
+};
+*/
+
+
+
+
+
+
+/* Determine the type of edge represnted by half-edge number
+
+int is_boundary = 0;
+int is_interior = 0;
+int is_nonmanifold = 0;
+
+int numeq = hedge_equivcount(0, half-edge number);
+if (numeq == 1)
+    is_boundary = 1;
+else if (numeq >= 3)
+    is_nonmanifold = 1;
+else
+    is_interior = 1;
+
+*/
+
+
+
+
+#endif

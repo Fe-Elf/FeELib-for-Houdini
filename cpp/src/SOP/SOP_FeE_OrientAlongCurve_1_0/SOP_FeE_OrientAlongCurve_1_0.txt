@@ -1,0 +1,287 @@
+= HDK Orientation Along Curve =
+
+#type: node
+#context: sop
+#internal: hdk_orientalongcurve
+#icon: SOP/hdk_orientalongcurve
+#version: 1.0
+#tags: curves, frames, transform, path, orientation, model, core
+#bestbet: orientation
+
+"""Computes orientations (frames) along curves."""
+
+== Overview ==
+
+This node computes orientations, also known as reference frames, based on the tangents of curves, with various options for specifying up vectors and additional rotations.  This can be useful for controlling orientations for geometry moving along paths or being [copied|Node:sop/copytopoints] or constructed along paths.  These orientations are equivalent to those in the [Sweep node|Node:sop/sweep] and the [Copy to Curves node|Node:sop/copytocurves].
+
+Unlike the [PolyFrame node|Node:sop/polyframe], this treats all polygons as curves, even if they are closed, making computing orientations for closed paths easier.
+
+@parameters
+
+Curve Group:
+    #id: group
+
+    Group of primitives around which to compute orientations (reference frames).
+
+== Frame ==
+
+Tangent Type:
+    #id: tangenttype
+
+    The overall method for computing tangents at each vertex.  If __Transform Using Point Attributes__ is on and the input has point `N` (vector), `orient` (quaternion), `rot` (quaternion), or `transform` (3x3 or 4x4 matrix), this is ignored in favor of the Z axis from the transform determined by these attributes.  The __Stretch Around Turns__ option always computes the stretch and stretch direction based on the __Average of Edge Directions__ tangent, regardless of this tangent type, since it's undefined otherwise.  See the descriptions and image of the options below.
+    
+    Average of Edge Directions:
+        Average of the normalized directions of the previous and next edge
+    Central Difference:
+        Average of the unnormalized previous and next edge vectors.  This is similar to the __Central Difference__ option for the __Velocity Approximation__ on the [Trail node|Node:sop/trail].
+    Previous Edge:
+        Previous edge direction
+    Next Edge:
+        Next edge direction
+    Z Axis (Ignore Curve):
+        The tangent will be chosen as the Z axis, regardless of the curve.
+
+    [Image:/images/nodes/sop/orientalongcurve/tangent_type.jpg]
+
+Make Closed Curve Orientations Continuous:
+    #id: continuousclosed
+
+    When enabled, any accumulated roll (torsion) around a closed curve will be canceled out in a manner spread out around the curve, instead of suddenly in the final edge.  Planar curves don't have any inherent accumulated roll around the curve, but this applies to the __Partial Twist__ option (when __Apply Roll or Twist__ is enabled) as well, so any twist that isn't a multiple of a full twist will be rounded to a multiple of a full twist.
+
+Extrapolate End Tangents:
+    #id: extrapolateendtangents
+
+    When enabled, end (including beginning) tangents will be extrapolated based on the __Tangent Type__ and the two edges closest to the end, instead of just being chosen as the end edge direction.  This is most useful for cases similar to when a curve is intended to represent a circular arc, so that end orientations will be rotated as expected.  See the image above.
+
+Transform Using Point Attributes:
+    #id: transformbyattribs
+
+    When enabled, any point attributes `P`, `N`, `up`, `orient`, `rot`, `trans`, `pivot`, `pscale`, `scale`, and `transform` will be used to form each transform, primarily as [specified here|/copy/instanceattrs].  If `N` is present and none of `up`, `orient`, `rot`, or `transform` are present, `N` will be used as the curve tangent and the rest of the rotation will be computed as usual.  If `up` is present and none of `N`, `orient`, `rot`, or `transform` are present, the tangent will be computed as usual, and `up` will be used as the up vector at each vertex, before any __Apply Roll or Twist__ is applied.
+
+Target Up Vector:
+    #id: upvectortype
+
+    Up vector for each curve to target, to break the tie between all possible rolls around the tangent.  If a curve is planar, the __Curve Normal__ option should ensure that the up vector is perpendicular to the plane; if the curve is a straight line, this option will fall back to using the y axis as a target up vector.  The __Attribute__ option can use a primitive or detail attribute to select the up vector for each curve.  To specify separate up vectors on all curve points, use the __Transform Using Point Attributes__ and provide a point attribute named `up`, in which case, this target up vector is ignored.
+
+Target Up Vector at Start (else Average):
+    #id: upvectoratstart
+
+    When enabled, the roll for each curve is chosen such that the up vector of the first vertex is as close as possible to the target up vector while still being perpendicular to the tangent vector.  When disabled, that applies to the average of all vertex up vectors, instead of the first vertex.  This must be enabled in order to use the __Use Target End Up Vector Option__.
+
+Use Target End Up Vector:
+    #id: useendupvector
+
+    When enabled and __Target Up Vector at Start__ is enabled, the twist along each curve is adjusted to ensure that the end up vector is as close as possible to the target up vector, without affecting the start up vector.  If __Target Up Vector__ is __Attribute__ or __Custom__, there are separate __End Up Attribute__ and __End Up Vector__ parameters, in order to specify different end up vectors from the start up vectors.
+
+Start Up Attribute:
+    #id: upvectorattrib
+
+    When __Target Up Vector__ is __Attribute__, this is the name of the primitive or detail attribute to use for each curve's target up vector.  When __Target Up Vector at Start__ is enabled, this provides the target up vectors at the start of the curves.  When __Target Up Vector at Start__ is disabled, this provides the target for the average up vector along each curve.
+
+End Up Attribute:
+    #id: endupvectorattrib
+
+    When __Target Up Vector__ is __Attribute__ and __Use Target End Up Vector__ is enabled, this is the name of the primitive or detail attribute that provides the target up vectors at the end of the curves.  The twist of each curve is adjusted to ensure that the end up vector is as close as possible to the target end up vector, without affecting the start up vector.
+
+Start Up Vector:
+    #id: upvector
+
+    When __Target Up Vector__ is __Custom__, this is the target up vector to use for each curve.  When __Target Up Vector at Start__ is enabled, this provides the target up vector at the start of the curves.  When __Target Up Vector at Start__ is disabled, this provides the target for the average up vector along each curve.
+
+End Up Vector:
+    #id: endupvector
+
+    When __Target Up Vector__ is __Custom__, this is the target end up vector to use for each curve.  The twist of each curve is adjusted to ensure that the end up vector is as close as possible to the target end up vector, without affecting the start up vector.
+
+== Additional Rotations ==
+
+Rotate Order:
+    #id: rOrd
+
+    The order in which to apply the Pitch (around X/out), Yaw (around Y/up), and Roll or Twist (around Z/tangent) options below if multiple are enabled.  Pitch and Yaw may be useful to effectively apply a pre-transform to whatever the orientation will be applied to, which is why they default to being applied before the Roll or Twist.  These rotations are effectively applied before the transforms from the curves, having the net effect of them being rotations in the space of the curve frames.
+
+Apply Roll or Twist:
+    #id: applyroll
+
+    When enabled, the parameters below for applying a roll rotation around the tangents (computed above) are enabled.
+
+Roll:
+    #id: roll
+
+    Rotation in degrees around the tangent, applied to every orientation, if __Apply Roll or Twist__ is enabled.
+
+Twist Per:
+    #id: rollper
+
+    Manner in which to apply the twist value specified below by `(360*(Full Twists) + (Partial Twist))`.  See the descriptions and image below.
+    
+    Per Edge:
+        The specified twist will be applied once for each edge, so for example, a __Partial Twist__ of 60 degrees along each of 6 edges would result in a total of 360 degrees of twist.  __Full Twists__ will have no effect in this case, since a full twist in a single edge restores the original orientation.
+    Per Unit Distance:
+        The twist for each edge will be the length of the edge times the twist value in degrees.
+    Scale by Attribute:
+        The twist value in degrees will be multiplied at each vertex by the attribute given by __Twist Ramp Attribute__, which can be a vertex, point, primitive, or detail attribute.  This product is applied as a roll at each vertex, not as an accumulating twist, so that if the attribute goes from 0 to 1 along a curve, the twist value will be the total twist applied.
+    Per Full Curve by Edges:
+        The specified twist will be applied once across each whole curve, with an equal amount of twist applied across each edge, regardless of the length of each edge.  For example, a __Partial Twist__ of 60 degrees along a curve with 6 edges will yield a 10 degree rotation along each edge in this case.
+    Per Full Curve by Distance:
+        The specified twist will be applied once across each whole curve, with the amount of twist per edge being proportional to the length of the edge.
+
+    [Image:/images/nodes/sop/orientalongcurve/twist_per.jpg]
+
+Full Twists:
+    #id: fulltwists
+
+    Integer number of full twists to add for each unit determined by __Twist Per__.  This is just provided for convenience; it is just multiplied by 360 and then added to __Partial Twist__.  If __Twist Per__ is __Per Full Curve by Edges__ or __Per Full Curve by Distance__, this corresponds with full twists along each full curve.
+
+Partial Twist:
+    #id: incroll
+
+    Twist in degrees around the tangent, to add for each unit determined by __Twist Per__.  This is added to 360 times __Full Twists__.
+
+Twist Ramp Attribute:
+    #id: rollattrib
+
+    When __Twist Per__ is __Scale By Attribute__, this is the name of the vertex, point, primitive, or detail attribute to multiply by the combination of __Full Twists__ and __Partial Twist__ in degrees.  This product is applied as a roll at each vertex, not as an accumulating twist, so that if the attribute goes from 0 to 1 along a curve, the twist value will be the total twist applied.
+
+Apply Yaw:
+    #id: applyyaw
+
+    When enabled, the parameters below for applying a yaw rotation around the up vectors (computed above) are enabled.
+
+Yaw:
+    #id: yaw
+
+    Rotation in degrees around the up vector, applied to every orientation, if __Apply Yaw__ is enabled.
+
+Yaw Per:
+    #id: yawper
+
+    Manner in which to apply the __Incremental Yaw__ value specified below.
+    
+    Per Edge:
+        The specified yaw will be applied once for each edge, so for example, an __Incremental Yaw__ of 60 degrees along each of 6 edges would result in a total of 360 degrees of yaw (spinning around the up vector).
+    Per Unit Distance:
+        The yaw for each edge will be the length of the edge times the __Incremental Yaw__ value in degrees.
+    Scale By Attribute:
+        The __Incremental Yaw__ value in degrees will be multiplied at each vertex by the attribute given by __Yaw Ramp Attribute__, which can be a vertex, point, primitive, or detail attribute.  This product is applied as a yaw at each vertex, not as an accumulating yaw, so that if the attribute goes from 0 to 1 along a curve, the __Incremental Yaw__ value will be the total yaw applied.
+    Per Full Curve by Edges:
+        The specified __Incremental Yaw__ will be applied once across each whole curve, with an equal amount of yaw applied across each edge, regardless of the length of each edge.  For example, an __Incremental Yaw__ of 60 degrees along a curve with 6 edges will yield a 10 degree rotation along each edge in this case.
+    Per Full Curve by Distance:
+        The specified __Incremental Yaw__ will be applied once across each whole curve, with the amount of yaw per edge being proportional to the length of the edge.
+
+Incremental Yaw:
+    #id: incyaw
+
+    Yaw in degrees around the up vectors, to add for each unit determined by __Yaw Per__.
+
+Yaw Ramp Attribute:
+    #id: yawattrib
+
+    When __Yaw Per__ is __Scale By Attribute__, this is the name of the vertex, point, primitive, or detail attribute to multiply by __Incremental Yaw__ in degrees.  This product is applied as a yaw at each vertex, not as an accumulating yaw, so that if the attribute goes from 0 to 1 along a curve, the __Incremental Yaw__ value will be the total yaw applied.
+
+Apply Pitch:
+    #id: applypitch
+
+    When enabled, the parameters below for applying a pitch rotation around the out vectors (perpendicular to the tangent and up vectors computed above) are enabled.
+
+Pitch:
+    #id: pitch
+
+    Rotation in degrees around the out vector (perpendicular to the tangent and up vectors), applied to every orientation, if __Apply Pitch__ is enabled.
+
+Pitch Per:
+    #id: pitchper
+
+    Manner in which to apply the __Incremental Pitch__ value specified below.
+    
+    Per Edge:
+        The specified pitch will be applied once for each edge, so for example, an __Incremental Pitch__ of 60 degrees along each of 6 edges would result in a total of 360 degrees of pitch (tumbling around the out vector).
+    Per Unit Distance:
+        The pitch for each edge will be the length of the edge times the __Incremental Pitch__ value in degrees.
+    Scale By Attribute:
+        The __Incremental Pitch__ value in degrees will be multiplied at each vertex by the attribute given by __Pitch Ramp Attribute__, which can be a vertex, point, primitive, or detail attribute.  This product is applied as a pitch at each vertex, not as an accumulating pitch, so that if the attribute goes from 0 to 1 along a curve, the __Incremental Pitch__ value will be the total pitch applied.
+    Per Full Curve by Edges:
+        The specified __Incremental Pitch__ will be applied once across each whole curve, with an equal amount of pitch applied across each edge, regardless of the length of each edge.  For example, an __Incremental Pitch__ of 60 degrees along a curve with 6 edges will yield a 10 degree rotation along each edge in this case.
+    Per Full Curve by Distance:
+        The specified __Incremental Pitch__ will be applied once across each whole curve, with the amount of pitch per edge being proportional to the length of the edge.
+
+Incremental Pitch:
+    #id: incpitch
+
+    Pitch in degrees around the up vectors, to add for each unit determined by __Pitch Per__.
+
+Pitch Ramp Attribute:
+    #id: pitchattrib
+
+    When __Pitch Per__ is __Scale By Attribute__, this is the name of the vertex, point, primitive, or detail attribute to multiply by __Incremental Pitch__ in degrees.  This product is applied as a yaw at each vertex, not as an accumulating yaw, so that if the attribute goes from 0 to 1 along a curve, the __Incremental Pitch__ value will be the total yaw applied.
+
+== Scales and Shears ==
+
+Normalize Scales:
+    #id: normalize
+
+    When enabled, any scales or shears coming from __Transform Using Point Attributes__, for example from `pscale`, `scale`, or `transform` attributes, will be canceled out.
+
+Uniform Scale:
+    #id: scale
+
+    This scale is applied to the transform after __Normalize Scales__.
+
+Stretch Around Turns:
+    #id: stretcharoundturns
+
+    When enabled, this stretches the transforms in the direction of curvature around turns in the curves, which is primarily for use with cross sections, for example with the [Sweep node|Node:sop/sweep] to avoid the cross section appearing to be squashed along edges.  This is usually the desired behavior in the Sweep node, but not usually for other uses.
+
+Max Stretch:
+    #id: maxstretcharoundturns
+
+    When __Stretch Around Turns__ is enabled, this is the maximum amount that transforms will be stretched, to avoid stretching too far when a curve almost reverses direction in a single turn.
+
+== Output Attributes ==
+
+Class:
+    #id: class
+
+    Whether to create the output attributes on the points or the vertices.  Transforms are always computed for vertices first.  If output attributes will be point attributes and there are shared points, the separate transforms of the vertices will be averaged by separately averaging the rotations as quaternions, the translations, and any scales and shears.
+
+X Axis:
+    #id: xaxisname
+
+    When enabled, a vector attribute with this name will be created on the output that is perpendicular to the curve tangents (z axis) and up vectors (y axis).  If a curve is planar and __Target Up Vector__ is set to __Curve Normal__, this corresponds with the outward direction.  If the attribute is named `N`, it will be marked as transforming like a normal, instead of a vector.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+Y Axis:
+    #id: yaxisname
+
+    When enabled, a vector attribute with this name will be created on the output that corresponds with the up vector, perpendicular to the curve tangents (z axis).  If the attribute is named `N`, it will be marked as transforming like a normal, instead of a vector.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+Tangent (Z Axis):
+    #id: zaxisname
+
+    When enabled, a vector attribute with this name will be created on the output that corresponds with the curve tangents.  If the attribute is named `N`, it will be marked as transforming like a normal, instead of a vector.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+Translation:
+    #id: translationname
+
+    When enabled, a position attribute with this name will be created on the output that corresponds with the translation coming from `P`, `pivot`, `trans`, and `transform` attributes when __Transform Using Point Attributes__ is enabled, or just `P` when it is disabled.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+Quaternion:
+    #id: quaternionname
+
+    When enabled, a quaternion attribute with this name will be created on the output that corresponds with the orientations along the curves.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+3x3 Transform:
+    #id: transform3name
+
+    When enabled, a 3x3 transform matrix attribute with this name will be created on the output that corresponds with the orientations along the curves, scales, and shears.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+4x4 Transform:
+    #id: transform4name
+
+    When enabled, a 4x4 transform matrix attribute with this name will be created on the output that corresponds with the orientations along the curves, scales, shears, and translations.  If the input `P` attribute is 64-bit, this attribute will be 64-bit.
+
+@related
+
+- [Node:sop/sweep]
+- [Node:sop/copytocurves]
+- [Node:sop/polyframe]
+- [Node:sop/copytopoints]

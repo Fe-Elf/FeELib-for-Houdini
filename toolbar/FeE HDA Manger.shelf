@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="FeE HDA Manger" label="FeE HDA Manger">
+    <memberTool name="convertHDA_to_Subnet_publish"/>
+    <memberTool name="convertFeE HDA_to_Subnet_publish"/>
+    <memberTool name="unlock_FeE_HDA_publish"/>
+    <memberTool name="unlock_HDA_publish"/>
+    <memberTool name="extractAllUsedDefiToEmbeded"/>
+    <memberTool name="findRefNode"/>
+    <memberTool name="recoverNodesFromSubnet"/>
+    <memberTool name="convertHDA_to_Subnet_Melt"/>
+    <memberTool name="Git pull And Push Sample Code"/>
+    <memberTool name="Set os HFSS Env"/>
+    <memberTool name="expandToTemp"/>
+    <memberTool name="nodeParmsAsCode"/>
+    <memberTool name="printNodeShape"/>
+  </toolshelf>
+
+  <tool name="convertHDA_to_Subnet_publish" label="convertHDA to Subnet" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+
+from importlib import reload
+reload(fee_Node)
+
+selectedNodes = hou.selectedNodes()
+fee_Node.convert_All_HDA_to_Subnet(selectedNodes, ignoreUnlock = False, ignore_SideFX_HDA = True, displayConfirmation = True)
+]]></script>
+  </tool>
+
+  <tool name="convertFeE HDA_to_Subnet_publish" label="convert FeE HDA to Subnet" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+from importlib import reload
+reload(fee_Node)
+
+selectedNodes = hou.selectedNodes()
+fee_Node.convert_All_FeENode_to_Subnet(selectedNodes, ignoreUnlock = False, ignore_SideFX_HDA = True, detectName = True, detectPath = False, displayConfirmation = True, debugMode = 0)
+]]></script>
+  </tool>
+
+  <tool name="unlock_FeE_HDA_publish" label="Unlock FeE HDA" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+
+# from importlib import reload
+# reload(fee_Node)
+
+selectedNodes = hou.selectedNodes()
+fee_Node.unlock_All_FeENode(selectedNodes, detectName = True, detectPath = False, displayConfirmation = True)
+]]></script>
+  </tool>
+
+  <tool name="unlock_HDA_publish" label="Unlock HDA" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+
+# from importlib import reload
+# reload(fee_Node)
+
+selectedNodes = hou.selectedNodes()
+fee_Node.unlock_All_HDA(selectedNodes, detectName = True, detectPath = False, displayConfirmation = True)
+
+]]></script>
+  </tool>
+
+  <tool name="findRefNode" label="Find Ref Node" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[
+def isRef(str, base_node, node):
+    path = base_node.path()
+    if ( path in str ):
+        return True
+    path = node.relativePathTo(base_node)
+    if ( path in str ):
+        return True
+    return False
+
+selectedNodes = hou.selectedNodes()
+if selectedNodes:
+    print()
+    print()
+
+for selectedNode in selectedNodes:
+    refTimes = 0
+    nodeTypeName = selectedNode.type().name()
+    print('Referenced Node Name:', end='')
+    print(nodeTypeName)
+    for subNode in hou.node('/obj').allSubChildren(top_down=True, recurse_in_locked_nodes=False):
+        for parm in subNode.parms():
+            val = parm.rawValue()
+            if isRef(val, selectedNode, subNode):
+                print(parm)
+                refTimes += 1
+                break
+                continue
+            val = parm.evalAsString()
+            if isRef(val, selectedNode, subNode):
+                print(parm)
+                refTimes += 1
+                break
+                continue
+                
+    print('This Node has been Referenced Times: ', end='')
+    print(refTimes)
+
+]]></script>
+  </tool>
+
+  <tool name="extractAllUsedDefiToEmbeded" label="Extract All Used HDA To Embeded" icon="hicon:/SVGIcons.index?MISC_digital_asset.svg">
+    <script scriptType="python"><![CDATA[
+import hou
+import os
+
+import fee_HDA
+# from importlib import reload
+# reload(fee_HDA)
+
+
+ignoreNodeTypeNames = (
+'',
+
+)
+
+fee_HDA.extractAllUsedDefiToEmbeded(ignoreNodeTypeNames = ignoreNodeTypeNames, ignoreFeEHDA = False)
+
+
+
+'''
+theTool = hou.shelves.runningTool()
+if theTool.icon().count("hicon:/SVGIcons.index?NODEFLAGS_hardlock.svg")==0:
+    theTool.setIcon("hicon:/SVGIcons.index?NODEFLAGS_hardlock.svg")
+    
+if theTool.label().count("Create BlackBoxAsset")==0:
+    theTool.setLabel("Create BlackBoxAsset")
+    
+if theTool.name().count("Create_BlackBox")==0:
+    theTool.setName("Create_BlackBox")
+'''
+]]></script>
+  </tool>
+
+  <tool name="recoverNodesFromSubnet" label="Recover Nodes from Subnet" icon="hicon:/SVGIcons.index?VOP_structpack.svg">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+from importlib import reload
+reload(fee_Node)
+
+selectedNodes = hou.selectedNodes()
+fee_Node.recoverNodesFromSubnet(selectedNodes, ignoreUnlock = False, ignore_SideFX_HDA = True, nodeFilterFunc = None, convertFeENode = True, detectName = True, detectPath = False, displayConfirmation = True, checkMatchSubNode = False)
+
+#print(fee_Node.isEqual_networkChildren(hou.node('/obj/geo1/subnet3/geolayout_fee1'), hou.node('/obj/geo1/subnet3/geolayout_fee2'), checkNodeType = False))
+]]></script>
+  </tool>
+
+  <tool name="convertHDA_to_Subnet_Melt" label="convertHDA to Subnet Melt" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+# from importlib import reload
+# reload(fee_Node)
+
+def isMeltNode(node):
+    if isinstance(node, hou.Node):
+        nodeType = node.type()
+        if nodeType.definition():
+            name = nodeType.name()
+            label = nodeType.description()
+            nameComponents = nodeType.nameComponents()
+            if nameComponents[0].startswith('Melt::') or nameComponents[1] == 'Melt' or (name.startswith('melt_') and label.startswith('Melt ')):
+                return True
+    # elif isinstance(node, str):
+    #     if hou.nodeType(node).type().defi():
+    #         return True
+    else:
+        raise TypeError('invalid input', node)
+
+    return False
+
+
+selectedNodes = hou.selectedNodes()
+
+fee_Node.convertSubnet_custom(selectedNodes, ignoreUnlock = True, ignore_SideFX_HDA = True, nodeFilterFunc = isMeltNode, convertFeENode = True, displayConfirmation = True)
+]]></script>
+  </tool>
+
+  <tool name="Git pull And Push Sample Code" label="Git pull And Push Sample Code" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[
+#raise SystemError('this is a sample code, can not be run\nè¿æ¯ä¸ä»½æµè¯ä»£ç ï¼ä¸è½è¢«è¿è¡')
+
+strictNodeNameDict = dict()
+strictNodeParmDefaultValueDict = dict()
+hideParmNodeDict = dict()
+subMenuDict = dict()
+changeNodeTypeDict = dict()
+
+if 1:
+    strictNodeNameDict[''] = ('', )
+
+if 1:
+    ##ç¬¬äºä¸ªåæ°è¡¨ç¤ºæ¯å¦æ¯expression
+    strictNodeParmDefaultValueDict[''] = (
+        ('tol3d', 0, (0.001, )),
+    )
+
+
+
+if 1:
+    hideParmNodeDict[''] = (
+        '', 
+    )
+
+
+if 1:
+    subMenuDict[''] = ''
+
+
+if 1:
+    changeNodeTypeDict[''] = ''
+
+
+bypassNodeType = ()
+'''
+bypassNodeType = (
+)
+'''
+
+deleteNodeType = (
+
+)
+
+
+gitDir = 'D:/Houdini/FeELib-for-Houdini/'
+
+import hou
+import os
+import re
+
+import fee_Utils
+import fee_HDA
+import fee_Node
+
+from importlib import reload
+reload(fee_Utils)
+reload(fee_HDA)
+reload(fee_Node)
+
+#FeEexpand_otlPath = hou.getenv("FeEexpand").replace("//","/") + "/otls/"
+
+def isMeltNode(node):
+    if isinstance(node, hou.Node):
+        nodeType = node.type()
+        if nodeType.definition():
+            name = nodeType.name()
+            label = nodeType.description()
+            nameComponents = nodeType.nameComponents()
+            if nameComponents[0].startswith('Melt::') or nameComponents[1] == 'Melt' or (name.startswith('melt_') and label.startswith('Melt ')):
+                return True
+    # elif isinstance(node, str):
+    #     if hou.nodeType(node).type().defi():
+    #         return True
+    else:
+        raise TypeError('invalid input', node)
+
+    return False
+
+
+selectedNodes = hou.selectedNodes()
+
+if len(selectedNodes) != 1:
+    raise ValueError('len(selectedNodes) != 1')
+
+
+    
+nameComponents = selectedNodes[0].type().nameComponents()
+trimName = nameComponents[2]
+trimName = trimName.lstrip('Melt')
+trimName = trimName.lstrip('Melt ')
+trimName = trimName.lstrip('Melt_')
+trimName = trimName.lstrip('melt')
+trimName = trimName.lstrip('melt ')
+trimName = trimName.lstrip('melt_')
+targetHDAPath = gitDir + 'otls/' + trimName + '.hda'
+print(targetHDAPath)
+#targetHDAPath = 'C:/Users//Documents/houdini18.5/otls/a.hda'
+
+
+updateGit = hou.ui.displayMessage(text='Git Push', buttons=('yes','no'))
+updateGit = 1 - updateGit
+
+
+# updateGit = 1
+
+if updateGit:
+    fee_Utils.gitPullByBat(gitDir)
+    #os.system('D:/Houdini/FeEProjectHoudini/otls/gitpull.bat')
+
+
+
+
+print()
+print()
+
+for selectedNode in selectedNodes:
+
+    if not isMeltNode(selectedNode):
+        raise TypeError('this in not melt Node: ', selectedNode)
+
+    nodeType = selectedNode.type()
+    defi = nodeType.definition()
+
+    newDefi = fee_Node.convertDefiByFilter(
+        selectedNode, targetHDAPath = targetHDAPath, 
+        ignoreUnlock = True, nodeFilterFunc = isMeltNode, convertFeENode = True, 
+        namespaceOriginal = 'Melt', namespaceTarget = '', 
+        subMenuOriginalPrefix = 'Melt', subMenuTargetPrefix = 'DT',
+        nodeTypeNameFromLabel = False, hdaNameFromNodeTypeName = False, 
+        # name_lower = False, name_convertSpacetoUnderscore = False, 
+        name_lower = False, name_convertSpacetoUnderscore = False,
+        deleteNodeType = deleteNodeType, bypassNodeType = bypassNodeType, 
+        strictNodeNameDict = strictNodeNameDict, subMenuDict = subMenuDict, changeNodeTypeDict = changeNodeTypeDict, 
+        strictNodeParmDefaultValueDict = strictNodeParmDefaultValueDict, hideParmNodeDict = hideParmNodeDict
+    )
+
+if updateGit:
+    fee_Utils.gitPushByBat(gitDir)
+
+    #os.system('D:/Houdini/FeEProjectHoudini/otls/gitpush.bat')
+]]></script>
+  </tool>
+
+  <tool name="Set os HFSS Env" label="Set os HFSS Env" icon="SOP_sort">
+    <script scriptType="python"><![CDATA[
+import os
+import hou
+
+hfs = hou.getenv("HFS")
+
+need_set = True
+if "HFSS" in os.environ:
+    if os.environ["HFSS"] == hfs:
+        need_set = False
+        
+if need_set:
+    cmd = '''setx HFSS "{}"'''.format(hfs)
+    os.system(cmd)
+
+]]></script>
+  </tool>
+
+  <tool name="expandToTemp" label="Expand To Temp" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import hou
+import os
+
+selectedNodes = hou.selectedNodes()
+for selectedNode in selectedNodes:
+    nodeType = selectedNode.type()
+    defi = nodeType.definition()
+    
+    sourceHDA = defi.libraryFilePath()
+    _ , hdaName = os.path.split(sourceHDA)
+    targetPath = hou.getenv("TEMP").replace("\\","/") + "/" +  hdaName;
+    hou.hda.expandToDirectory(sourceHDA, targetPath)
+    
+    command = r'start "" "' + targetPath.replace("/","\\") + r'"'
+    os.system(command)
+    print(command)
+    #start "" "..\hda\"
+]]></script>
+  </tool>
+
+  <tool name="nodeParmsAsCode" label="Node Parms As Code" icon="hicon:/SVGIcons.index?VOP_structunpack.svg">
+    <script scriptType="python"><![CDATA[
+import hou
+import os
+
+targetPath = hou.getenv("TEMP").replace("\\","/") + "/"
+
+selectedNodes = hou.selectedNodes()
+for selectedNode in selectedNodes:
+    nodeType = selectedNode.type()
+    nodeTypeName = nodeType.name()
+    nodeTypeName = nodeTypeName.replace("::", "_")
+    parmTemplateGroup = selectedNode.parmTemplateGroup()
+    
+    
+    outValue = parmTemplateGroup.asCode()
+    outValue = parmTemplateGroup.asDialogScript(False, True)
+    
+
+    #targetPath += nodeTypeName + ".txt"
+    #file = open(targetPath,'w')
+    file = open(targetPath + nodeTypeName + ".txt",'w')
+    file.write(outValue)
+    
+    command = r'start "" "' + targetPath.replace("/","\\") + r'"'
+    os.system(command)
+    break
+    
+    ]]></script>
+  </tool>
+
+  <tool name="printNodeShape" label="Print Node Shape" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[
+import hou
+import os
+
+selectedNodes = hou.selectedNodes()
+for selectedNode in selectedNodes:
+    # print(selectedNode.userDataDict())
+    print(selectedNode.userDataDict()['nodeshape'])
+    ]]></script>
+  </tool>
+</shelfDocument>

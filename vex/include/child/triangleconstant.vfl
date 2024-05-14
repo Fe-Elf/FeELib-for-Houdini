@@ -1,0 +1,152 @@
+
+#ifndef __TRIANGLECONSTANT_VFL__
+#define __TRIANGLECONSTANT_VFL__
+
+#include <triangleconstant.vfl>
+
+
+
+
+
+
+
+
+
+
+#include <polygon.vfl>
+
+
+
+
+
+
+
+
+
+
+
+float[] tri_length(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return poly_length(array(pos1, pos2, pos0));
+    /*
+    float tri_length[] = tri_length(pos0, pos1, pos2);
+    float a = tri_length[0];
+    float b = tri_length[1];
+    float c = tri_length[2];
+    */
+}
+
+float[] tri_length(
+    const int geo;
+    const int primnum;
+    ) {
+    return reorder(poly_length(geo, primnum), array(2, 0, 1));
+    /*
+    vector tri_length[] = tri_length(geo, primnum);
+    float a = tri_length[2];
+    float b = tri_length[0];
+    float c = tri_length[1];
+    */
+}
+
+
+
+
+
+float tri_abc(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return poly_product(array(pos0, pos1, pos2));
+    // float abc = tri_abc(pos0, pos1, pos2);
+}
+
+float tri_abc(
+    const int geo;
+    const int primnum;
+    ) {
+    return poly_product(geo, primnum);
+    // float abc = tri_abc(geo, primnum);
+}
+
+
+
+
+
+
+float tri_C(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return perimeter(array(pos0, pos1, pos2));
+    // float C = tri_C(pos0, pos1, pos2);
+}
+
+float tri_C(
+    const int geo;
+    const int primnum;
+    ) {
+    return perimeter(geo, primnum);
+    // float C = tri_C(geo, primnum);
+}
+
+float tri_p(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    return tri_C(pos0, pos1, pos2) / 2;
+    // float p = tri_p(pos0, pos1, pos2);
+}
+
+float tri_p(
+    const int geo;
+    const int primnum;
+    ) {
+    return tri_C(geo, primnum) / 2;
+    // float p = tri_p(geo, primnum);
+}
+
+
+
+
+
+
+
+float tri_area(
+    const vector pos0;
+    const vector pos1;
+    const vector pos2;
+    ) {
+    float tri_length[] = tri_length(pos0, pos1, pos2);
+    float a = tri_length[0];
+    float b = tri_length[1];
+    float c = tri_length[2];
+    float p = perimeter(array(pos0, pos1, pos2)) / 2;
+    return sqrt(p*(p-a)*(p-b)*(p-c));
+    // float S = tri_area(pos0, pos1, pos2);
+}
+
+float tri_area(
+    const int geo;
+    const int primnum;
+    ) {
+    return area(geo, primnum);
+    // float S = tri_area(geo, primnum);
+}
+
+
+
+
+
+
+
+
+
+
+#endif

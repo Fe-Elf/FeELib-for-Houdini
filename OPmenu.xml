@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menuDocument>
+  <menu>
+
+    <subMenu id="FeELibOPMenu">
+      <label>FeE</label>
+      <insertBefore />
+
+
+      <scriptItem id="CopyNodeTypeName">
+        <label>Copy Node Type Name</label>
+        <scriptCode><![CDATA[
+import fee_Utils
+name = kwargs["node"].type().name()
+fee_Utils.setClipboardText(name)
+      ]]></scriptCode>
+      </scriptItem>
+      
+
+      <scriptItem id="CopyNodePath">
+        <label>Copy Node Path</label>
+        <scriptCode><![CDATA[
+import fee_Utils
+path = kwargs["node"].path()
+fee_Utils.setClipboardText(path)
+      ]]></scriptCode>
+      </scriptItem>
+      
+
+
+      <scriptItem id="subNodeCount">
+        <label>Sub Node Count</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+print(selectedNodes[0].path() + '\n Sub Node Count is ' + str(fee_Node.subNodeCount(selectedNodes)))
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <scriptItem id="getAllUsedHDKNode">
+        <label>Get All Used HDK Node</label>
+        <scriptCode><![CDATA[
+import fee_Node
+# from importlib import reload
+# reload(fee_Node)
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getAllUsedHDKNode(kwargsNode)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+
+
+      <scriptItem id="bakeAllParms">
+        <label>Bake All Parms</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.bakeAllParms(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+
+      <scriptItem id="createCopyNodeParmsNode">
+        <label>Create Copy Node Parms Node</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.createCopyNodeParmsNode(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <scriptItem id="setCopyNodeParmsNode">
+        <label>Set Copy Node Parms Node</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.setCopyNodeParmsNode(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <separatorItem id="fee_opmenu_separatorItem01"/>
+
+      <scriptItem id="setToDefaultColorShape">
+        <label>Set to Default Color and Shape</label>
+        <scriptCode><![CDATA[
+import fee_Node
+#kwargsNode = kwargs["node"]
+selectedItems = hou.selectedItems()
+fee_Node.setToDefaultColorShape(selectedItems)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="setToDefaultPositionWithNode">
+        <label>Set to Default Position with Node</label>
+        <scriptCode><![CDATA[
+import fee_Node
+#kwargsNode = kwargs["node"]
+selectedItems = hou.selectedItems()
+fee_Node.setToDefaultPositionWithNode(selectedItems)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <scriptItem id="setToDefaultPosition">
+        <label>Set to Default Position</label>
+        <scriptCode><![CDATA[
+import fee_Node
+#kwargsNode = kwargs["node"]
+selectedItems = hou.selectedItems()
+fee_Node.setToDefaultPosition(selectedItems)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="selectSameNodes">
+        <label>Select Same Nodes</label>
+        <scriptCode><![CDATA[
+import fee_Node
+# from importlib import reload
+# reload(fee_Node)
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.selectSameNodes(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <separatorItem id="fee_opmenu_separatorItem02"/>
+
+
+      <scriptItem id="extract_LockedNull">
+        <label>Extract Locked Null</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.extract_LockedNull(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="buildFileCacheROPNodeChain">
+        <label>Build FileCache ROP NodeChain</label>
+        <scriptCode><![CDATA[
+import fee_Node
+from importlib import reload
+reload(fee_Node)
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.buildFileCacheROPNodeChain(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <scriptItem id="correctWrangleParmeter">
+        <label>Correct Wrangle Parmeter</label>
+        <scriptCode><![CDATA[
+#SOP_attribwrangle
+import fee_Node
+# from importlib import reload
+# reload(fee_Node)
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.correctWrangleParmeter(selectedNodes)
+      ]]></scriptCode>
+      </scriptItem>
+      
+
+      <separatorItem id="fee_opmenu_separatorItem03"/>
+
+
+
+
+
+      <scriptItem id="changeNodeType">
+        <label>Change Node Type</label>
+        <scriptCode><![CDATA[
+nodeType = hou.ui.readInput('Input Node Type', buttons=(''), initial_contents='')[1]
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+for selectedNode in selectedNodes:
+    selectedNode.changeNodeType(nodeType, keep_parms=False)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="createNode">
+        <label>Create Node</label>
+        <scriptCode><![CDATA[
+nodeName = hou.ui.readInput('Input Node Name', buttons=(''), initial_contents='')[1]
+import fee_Node
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+for selectedNode in selectedNodes:
+    selectedNode.createNode(nodeName)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="searchParmsStringValue">
+        <label>Search Parms String Value</label>
+        <scriptCode><![CDATA[
+searchValue = hou.ui.readInput('Search Value', buttons=(''), initial_contents='')[1]
+import fee_Node
+# from importlib import reload
+# reload(fee_Node)
+kwargsNode = kwargs["node"]
+selectedNodes = fee_Node.getUserWantedSelectedNodes(kwargsNode)
+fee_Node.searchParmsValue_print(selectedNodes, searchValue)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+
+      <scriptItem id="setNodeAsOutput">
+        <label>Set Node as Output</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+fee_Node.setNodeAsOutput(kwargsNode)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+      <scriptItem id="displayOutput">
+        <label>Display Output</label>
+        <scriptCode><![CDATA[
+import fee_Node
+kwargsNode = kwargs["node"]
+fee_Node.displayOutput(kwargsNode)
+      ]]></scriptCode>
+      </scriptItem>
+
+
+    </subMenu>
+
+  </menu>
+</menuDocument>
+
+

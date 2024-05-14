@@ -1,0 +1,33 @@
+
+#ifndef __ENUM_VFL__
+#define __ENUM_VFL__
+
+#include <enum.vfl>
+
+
+
+
+
+
+
+
+
+
+enum week {Mon=1,Tue,Wed,Thu,Fri,Sat,Sun};
+enum month {Jan=1,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,dec};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

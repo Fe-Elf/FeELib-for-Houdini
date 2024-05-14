@@ -1,0 +1,9 @@
+{
+    "load_package_once": true,
+    "package_path" : {
+        "method": "append",
+        "value": [
+            "D:/Houdini/packages"
+        ]
+    }
+}

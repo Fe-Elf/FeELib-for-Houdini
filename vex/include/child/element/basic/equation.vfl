@@ -1,0 +1,63 @@
+
+#ifndef __EQUATION_VFL__
+#define __EQUATION_VFL__
+
+#include <equation.vfl>
+
+
+/*
+function
+vector X3X(
+    float p;
+    float q;
+    ) {
+    float x1 = cbrt(-q ± sqrt(q2+p3)) - p / cbrt(-q ± sqrt(q2+p3));
+    float x2 = cbrt(-q + sqrt(q2+p3)) + cbrt(-q - sqrt(q2+p3));
+    float x3 = ;
+    return ;
+}
+
+function
+vector X3X(
+    float a;
+    float p;
+    float q;
+    ) {
+    return X3X(p/a, q/a);
+}
+
+function
+vector X3X2X(
+    float b;
+    float c;
+    float d;
+    ) {
+    return X3X(b, c, d);
+    return X3X2X(1, b, c, d);
+}
+
+function
+vector X3X2X(
+    float a;
+    float b;
+    float c;
+    float d;
+    ) {
+    return X3X(b/a, c/a, d/a);
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

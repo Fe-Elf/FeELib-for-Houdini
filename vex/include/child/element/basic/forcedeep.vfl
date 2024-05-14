@@ -1,0 +1,63 @@
+
+#ifndef __FORCEDEEP_VFL__
+#define __FORCEDEEP_VFL__
+
+#include <forcedeep.vfl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function
+vector peakforce(
+	vector N;
+	float scale;
+	float TimeInc;
+	int normalize;
+	) {
+	if(normalize == 0)
+		return scale * N * TimeInc;
+	else
+		return scale * normalize(N) * TimeInc;
+}
+
+function
+vector peakforce(
+	vector N;
+	int scale;
+	float TimeInc;
+	int normalize;
+	) {
+	if(normalize == 0)
+		return scale * N * TimeInc;
+	else
+		return scale * normalize(N) * TimeInc;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

@@ -1,0 +1,63 @@
+
+#ifndef __NDC_VFL__
+#define __NDC_VFL__
+
+#include <NDC.vfl>
+
+
+
+
+function
+matrix3 NDCmatrix3(
+    const string cam;
+    ) {
+    vector center = fromNDC(cam, {0.5,0.5,-1});
+    vector forward = fromNDC(cam, {0.5,0.5,-2}) - center;
+    vector up = fromNDC(cam, {0.5,1,-1}) - center;
+    return maketransform(forward, up);
+    /*
+    matrix3 mat1 = dihedral({0,0,1}, fromNDC(cam, {0.5,0.5,-2}) - center);
+    matrix3 mat2 = dihedral(qrotate(q1, {0,1,0}), fromNDC(cam, {0.5,1,-1}) - center);
+    return mat1 * mat2;
+    */
+}
+
+function
+matrix NDCmatrix(
+    const string cam;
+    ) {
+    vector center = fromNDC(cam, {0.5,0.5,-1});
+    vector forward = fromNDC(cam, {0.5,0.5,-2}) - center;
+    vector up = fromNDC(cam, {0.5,1,-1}) - center;
+    return maketransform(forward, up, center);
+}
+
+function
+vector4 NDCq(
+    const string cam;
+    ) {
+    vector center = fromNDC(cam, {0.5,0.5,-1});
+    vector4 q1 = dihedral({0,0,1}, fromNDC(cam, {0.5,0.5,-2}) - center);
+    vector4 q2 = dihedral(qrotate(q1, {0,1,0}), fromNDC(cam, {0.5,1,-1}) - center);
+    return qmultiply(q2, q1);
+}
+
+function
+vector campos(
+    const string cam;
+    ) {
+    return 2 * fromNDC(cam, {0,0,1}) - fromNDC(cam, {0,0,2});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

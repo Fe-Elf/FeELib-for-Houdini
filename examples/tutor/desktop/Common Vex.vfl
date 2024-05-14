@@ -1,0 +1,381 @@
+/*
+Five elements Elf
+*/
+qrotate(quaternion, a)
+
+v@up = {0,1,0};
+p@stdquat = eulertoquaternion(chv("../transform1/rx"), XFORM_XYZ);
+v@toxform = qrotate(@stdquat, @up);
+
+
+3@lookat = lookat(@up, @toxform, @up);
+p@dihedral = dihedral(@up, @toxform);
+
+
+
+
+
+int passes[] = inpointgroup(0, "pass", pts);
+int unpassindices[] = find(passes, 0);
+removeindex(pts, unpassindices);
+
+
+//遍历
+int ptnums[];
+for (int i = 0; i < count; ++i) {
+    push(ptnums, detail(1, "iteration") / pow(@numpt, i) % @numpt);
+}
+
+
+
+for(int ptnum = @numpt-1; ptnum>-1; --ptnum){
+
+}
+
+for(int ptnum = 0; ptnum < @numpt; ++ptnum){
+
+}
+
+
+
+for(int i = len()-1; i>-1; --i){
+
+}
+
+for(int i = len()-1; i>-1; --i){
+	for(int j = len()-1; j>-1; --j){
+
+	}
+}
+
+for(int i = len()-1; i>-1; --i){
+	for(int j = len()-1; j>-1; --j){
+		for(int k = len()-1; k>-1; --k){
+
+		}
+	}
+}
+
+
+
+int len0 = len();
+for(int i = 0; i < len0; ++i){
+
+}
+
+int len0 = len();
+int len1 = len();
+for(int i = 0; i < len0; ++i){
+	for(int j = 0; j < len1; ++j){
+	}
+}
+
+int len0 = len();
+int len1 = len();
+int len2 = len();
+for(int i = 0; i < len0; ++i){
+	for(int j = 0; j < len1; ++j){
+		for(int k = 0; k < len2; ++k){
+
+		}
+	}
+}
+
+
+
+for(int i = 0; i < ; ++i){
+	for(int j = 0; j < ; ++j){
+		for(int k = 0; k < ; ++k){
+
+		}
+	}
+}
+
+
+
+
+
+
+
+
+if ( class == "prim" ){
+
+}
+if ( class == "point" ){
+
+}
+if ( class == "vertex" ){
+
+}
+
+
+
+
+
+
+
+
+
+
+
+float radius = chf("../searchrad");
+int maxpoints = chi("../maxpoints");
+
+int handle = pcopen(0, "P", @P, "N", @N, radius, maxpoints);
+int handle = pcopen(0, "P", @P, radius, maxpoints);
+
+while (pciterate(handle)) {
+    int pcptnum;
+    pcimport(handle, "point.number", pcptnum);
+    if(pcptnum == @ptnum)
+        continue;
+    float pcdis;
+    pcimport(handle, "point.distance", pcdis);
+}
+
+pcclose(handle);
+
+
+
+
+int points[];
+
+if (haspointattrib(0, 'pscale') && !chi("../uniformrad")){
+    points = pcfind_radius(0, "P", "pscale", radius, @P, radius*@pscale, maxpoints);
+}
+else{
+    points = pgfind(0, @P, radius, maxpoints, radius);
+}
+
+removevalue(points, @ptnum);
+
+int nearpt = nearpoint(geo, P, radius);
+int nearpts[] = nearpoints(geo, P, radius, 2);
+removevalue(nearpts, ptnum);
+removeindex(nearpts, 0);
+
+
+
+
+
+//detect attrib type
+
+string attribname[] = split(chs("../attribname"));
+foreach (string target; attribname){
+    int type = primattribtype(0, target);
+    if (type == 0) { // integer
+        ;
+    } else if ( type == 1 ) { // float or vector
+        int size = primattribsize(0, target);
+        if ( size == 1 ) { // float
+            
+        } else if ( size == 2 ) { // vector2
+            
+        } else if ( size == 3 ) { // vector
+            
+        } else if ( size == 4 ) { // vector4 or matrix2
+            
+        } else if ( size == 9 ) { // matrix3
+            
+        } else if ( size == 16 ) { // matrix
+            
+        } else {
+            warning("One or more of the specified prim attributes has an unsupported size.");
+            continue;
+        }
+    } else if ( type == 2 ) { // string
+        ;
+    } else if ( type == 3 ) { // Array of integers (or integer tuples)
+        ;
+    } else if ( type == 4 ) { // Array of floats (or float tuples)
+        ;
+    } else if ( type == 5 ) { // Array of strings
+        ;
+    } else if ( type == -1 ) { // Attribute not found, or unknown type
+        warning("One or more of the specified prim attributes do not exist.");
+    } else {
+        warning("One or more of the specified prim attributes has an unsupported type.");
+    }
+}
+
+string attribname[] = split(chs("../attribname"));
+foreach (string target; attribname){
+    int type = pointattribtype(0, target);
+    if (type == 0) { // integer
+        ;
+    } else if ( type == 1 ) { // float or vector
+        int size = pointattribsize(0, target);
+        if ( size == 1 ) { // float
+            
+        } else if ( size == 2 ) { // vector2
+            
+        } else if ( size == 3 ) { // vector
+            
+        } else if ( size == 4 ) { // vector4 or matrix2
+            
+        } else if ( size == 9 ) { // matrix3
+            
+        } else if ( size == 16 ) { // matrix
+            
+        } else {
+            warning("One or more of the specified point attributes has an unsupported size.");
+            continue;
+        }
+    } else if ( type == 2 ) { // string
+        ;
+    } else if ( type == 3 ) { // Array of integers (or integer tuples)
+        ;
+    } else if ( type == 4 ) { // Array of floats (or float tuples)
+        ;
+    } else if ( type == 5 ) { // Array of strings
+        ;
+    } else if ( type == -1 ) { // Attribute not found, or unknown type
+        warning("One or more of the specified point attributes do not exist.");
+    } else {
+        warning("One or more of the specified point attributes has an unsupported type.");
+    }
+}
+
+
+string attribname[] = split(chs("../attribname"));
+foreach (string target; attribname){
+    int type = vertexattribtype(0, target);
+    if (type == 0) { // integer
+        ;
+    } else if ( type == 1 ) { // float or vector
+        int size = vertexattribsize(0, target);
+        if ( size == 1 ) { // float
+            
+        } else if ( size == 2 ) { // vector2
+            
+        } else if ( size == 3 ) { // vector
+            
+        } else if ( size == 4 ) { // vector4 or matrix2
+            
+        } else if ( size == 9 ) { // matrix3
+            
+        } else if ( size == 16 ) { // matrix
+            
+        } else {
+            warning("One or more of the specified vertex attributes has an unsupported size.");
+            continue;
+        }
+    } else if ( type == 2 ) { // string
+        ;
+    } else if ( type == 3 ) { // Array of integers (or integer tuples)
+        ;
+    } else if ( type == 4 ) { // Array of floats (or float tuples)
+        ;
+    } else if ( type == 5 ) { // Array of strings
+        ;
+    } else if ( type == -1 ) { // Attribute not found, or unknown type
+        warning("One or more of the specified vertex attributes do not exist.");
+    } else {
+        warning("One or more of the specified vertex attributes has an unsupported type.");
+    }
+}
+
+
+value.x, value.y
+value.x, value.y, value.z
+value.x, value.y, value.z, value.w
+value.xx, value.xy, value.yx, value.yy
+value.xx, value.xy, value.xz, value.yx, value.yy, value.yz, value.zx, value.zy, value.zz
+value.xx, value.xy, value.xz, value.xw, value.yx, value.yy, value.yz, value.yw, value.zx, value.zy, value.zz, value.zw, value.wx, value.wy, value.wz, value.ww
+arr[0], arr[1]
+arr[0], arr[1], arr[2]
+arr[0], arr[1], arr[2], arr[3]
+arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8]
+arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10], arr[11], arr[12], arr[13], arr[14], arr[15]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

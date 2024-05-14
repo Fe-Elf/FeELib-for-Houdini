@@ -1,0 +1,98 @@
+
+#ifndef __CONVERSIONDEEP_VFL__
+#define __CONVERSIONDEEP_VFL__
+
+#include <precompile.vfl>
+
+
+#if 1
+    #include <conversiondeep.vfl>
+#else
+    function
+    int[] atoi(
+        string strarr[];
+        ) {
+        int result[];
+        int len = len(strarr);
+        resize(result, len);
+        for (int i = 0; i < len; ++i) {
+            result[i] = atoi(strarr[i]);
+        }
+        return result;
+    }
+#endif
+
+
+
+
+
+
+function
+int[] opdigits(
+    string strarr[];
+    ) {
+	int result[];
+    int len = len(strarr);
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = opdigits(strarr[i]);
+    }
+    return result;
+}
+
+function
+int[] atoi(
+    string strarr[];
+    ) {
+	int result[];
+    int len = len(strarr);
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = atoi(strarr[i]);
+    }
+    return result;
+}
+
+function
+int[] splitatoi(
+    string str;
+    ) {
+    return atoi(split(str));
+}
+
+function
+string[] itoa(
+    int argarr[];
+    ) {
+	string result[];
+    int len = len(argarr);
+    resize(result, len);
+    for (int i = 0; i < len; ++i) {
+        result[i] = itoa(argarr[i]);
+    }
+    return result;
+}
+
+function
+string itoa(
+    int argarr[];
+    string whitespace;
+    ) {
+    return join(itoa(argarr), whitespace);
+}
+
+function
+string itoa(
+    int argarr[];
+    ) {
+    return itoa(argarr, ' ');
+}
+
+
+
+
+
+
+
+
+#endif

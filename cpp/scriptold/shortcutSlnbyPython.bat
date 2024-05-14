@@ -1,0 +1,4 @@
+
+python .\shortcutSln.py 
+
+pause

@@ -1,0 +1,31 @@
+
+#ifndef __UVW_VFL__
+#define __UVW_VFL__
+
+#include <uvw.vfl>
+
+
+
+
+
+
+function
+vector2 uvtoudim(
+    const float u;
+    const float v;
+    ) {
+    return sprintf("%04d", floor(u)*1001 + floor(v)*10);
+}
+// uvtoudim(@uv[0], @uv[1])
+
+
+
+
+
+
+
+
+
+#endif
+
+

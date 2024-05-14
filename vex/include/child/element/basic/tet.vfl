@@ -1,0 +1,85 @@
+
+#ifndef __TET_VFL__
+#define __TET_VFL__
+
+#include <tet.vfl>
+
+/*
+for (int i = 0; i < 4; ++i) {
+    int tetnum = tet_adjacent(0, @primnum, i);
+    if (tetnum != -1) {
+        
+    }
+}
+*/
+
+function
+int[] tet_adjacents(
+	const int geometry;
+	const int primindex;
+	) {
+	int result[];
+	resize(result, 4);
+	for (int i = 0; i < 4; ++i) {
+		result[i] = tet_adjacent(geometry, primindex, i);
+	}
+	return result;
+}
+
+function
+int tet_adjacentcount(
+	const int geometry;
+	const int primindex;
+	) {
+	int result = 0;
+	for (int i = 0; i < 4; ++i) {
+		result += tet_adjacent(geometry, primindex, i) > -1;
+	}
+	return result;
+}
+
+function
+int tet_isadjacent(
+	const int geometry;
+	const int primindex0, primindex1;
+	) {
+	int adjacents[] = tet_adjacents(geometry, primindex0);
+	return find(adjacents, primindex1) > -1;
+}
+
+function
+float tet_volume(
+	const int geometry;
+	const int prim;
+	) {
+	return primintrinsic(geometry, 'measuredvolume', prim);
+}
+
+function
+float tet_area(
+	const int geometry;
+	const int prim;
+	) {
+	return primintrinsic(geometry, 'measuredarea', prim);
+}
+
+
+
+/*
+#define FUNCrand(type)\
+        function\
+        type tet_adjacent(geometry, primindex, faceno)(\
+			const float seed0;\
+			const float seed1;\
+			const float seed2;\
+			) {\
+			return rand(rand(seed0, seed1), seed2);\
+        }\
+
+DEFINEFUNCfv(FUNCsetdetailattrib20)
+*/
+
+
+
+
+#endif

@@ -1,0 +1,378 @@
+
+#ifndef __VECTOR_VFL__
+#define __VECTOR_VFL__
+
+#include <precompile.vfl>
+
+#if 1
+    #include <vector.vfl>
+#else
+    function
+    float normalize(
+        float value;
+        ) {
+        return 1;
+    }
+
+    function
+    int normalize(
+        int value;
+        ) {
+        return 1;
+    }
+#endif
+
+
+
+#include <comparedeep.vfl>
+#include <mathdeep.vfl>
+
+
+
+
+
+#define FUNClength1(type)\
+        function \
+        float[] length(\
+            type arr[];\
+            ) {\
+            float result[];\
+            foreach(type vec; arr) {\
+                push(result, float(length(vec)));\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCifv(FUNClength1)
+
+
+
+
+#define FUNClength20(type)\
+        function\
+        type length2(\
+            type value;\
+            ) {\
+            return value*value;\
+        }\
+
+DEFINEFUNCif(FUNClength20)
+
+#define FUNClength21(type)\
+        function\
+        float[] length2(\
+            type arr[];\
+            ) {\
+            float result[];\
+            foreach(type vec; arr) {\
+                push(result, length2(vec));\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCifv(FUNClength21)
+
+
+#define FUNCcosangle(type)\
+        function\
+        float cosangle(\
+            type vec0, vec1;\
+            ) {\
+            return dot(normalize(vec0), normalize(vec1));\
+        }\
+
+DEFINEFUNCv(FUNCcosangle)
+
+#define FUNCsinangle(type)\
+        function\
+        float sinangle(\
+            type vec0, vec1;\
+            ) {\
+            return sincos(cosangle(vec0, vec1));\
+        }\
+
+DEFINEFUNCv(FUNCsinangle)
+
+
+#define FUNCangle(type)\
+        function\
+        float angle(\
+            type vec0, vec1;\
+            ) {\
+            if(1)\
+                return acos(cosangle(vec0, vec1));\
+            else\
+                return length(vector(qconvert(dihedral(vec0, vec1))));\
+        }\
+
+DEFINEFUNCv(FUNCangle)
+
+function
+float angler(
+    vector vec0, vec1;
+    ) {
+    return angle(vec0, vec1);
+}
+
+function
+float angled(
+    vector vec0, vec1;
+    ) {
+    return degrees(angle(vec0, vec1));
+}
+
+
+function
+int anglethreshold(
+	vector N;
+	vector dir;
+	float minangle;
+	float maxangle;
+	) {
+	float cosangle = dot(normalize(N), normalize(dir));
+	if ( cosangle >= cos(radians(maxangle)) && cosangle <= cos(radians(minangle)) ) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+
+
+function
+float normalize(
+    float value;
+    ) {
+    return 1;
+}
+
+function
+int normalize(
+    int value;
+    ) {
+    return 1;
+}
+
+
+/*
+#define FUNCnormalize01(type)\
+        function\
+        type normalize(\
+            type value;\
+            ) {\
+            return 1;\
+        }\
+
+DEFINEFUNCif(FUNCnormalize01)
+*/
+
+#define FUNCnormalize10(type)\
+        function\
+        type normalize(\
+            type vec;\
+            float length;\
+            ) {\
+            return normalize(vec) * length;\
+        }\
+
+DEFINEFUNCfv(FUNCnormalize10)
+
+#define FUNCnormalize11(type)\
+        function\
+        type[] normalize(\
+            type vec[];\
+            ) {\
+            type result[];\
+            foreach (type item; vec)\
+                push(result, normalize(item));\
+            return result;\
+        }\
+
+DEFINEFUNCfv(FUNCnormalize11)
+
+#define FUNCnormalize12(type)\
+        function\
+        type[] normalize(\
+            type vec[];\
+            float length;\
+            ) {\
+            type result[];\
+            foreach (type item; vec)\
+                push(result, normalize(item, length));\
+            return result;\
+        }\
+
+DEFINEFUNCfv(FUNCnormalize12)
+
+#define FUNCnormalize20(type)\
+        function\
+        type normalize(\
+            int value;\
+            type length;\
+            ) {\
+            return length * type(value);\
+        }\
+
+DEFINEFUNCif(FUNCnormalize20)
+
+
+
+#define FUNCnormalizedot0(type)\
+        function\
+        float normalizedot(\
+            type vec0, vec1;\
+            ) {\
+            return dot(normalize(vec0), normalize(vec1));\
+        }\
+
+DEFINEFUNCv(FUNCnormalizedot0)
+
+#define FUNCnormalizedot1(type)\
+        function\
+        float normalizedot(\
+            type vec0, vec1;\
+            float length;\
+            ) {\
+            return dot(normalize(vec0, length), normalize(vec1, length));\
+        }\
+
+DEFINEFUNCv(FUNCnormalizedot1)
+
+
+
+
+#define FUNCisvertical0(type)\
+        function\
+        int isvertical(\
+            const type vec0, vec1;\
+            float threshold;\
+            ) {\
+            return cmp(dot(vec0, vec1), 0, threshold);\
+        }\
+
+DEFINEFUNCv(FUNCisvertical0)
+
+
+#define FUNCisvertical1(type)\
+        function\
+        int isvertical(\
+            const type vec0, vec1;\
+            ) {\
+            return cmp(dot(vec0, vec1), 0);\
+        }\
+
+DEFINEFUNCv(FUNCisvertical1)
+
+#define FUNCcmpdir0(type)\
+        function\
+        int cmpdir(\
+            const type vec0, vec1;\
+            float threshold;\
+            ) {\
+            float normalizedot = normalizedot(vec0, vec1);\
+            if (normalizedot > 1 - threshold) {\
+                return 1;\
+            } else if (normalizedot < threshold - 1) {\
+                return -1;\
+            } else {\
+                return 0;\
+            }\
+        }\
+
+DEFINEFUNCv(FUNCcmpdir0)
+
+#define FUNCcmpdir1(type)\
+        function\
+        int cmpdir(\
+            const type vec0, vec1;\
+            ) {\
+            float normalizedot = normalizedot(vec0, vec1);\
+            if (normalizedot == 1) {\
+                return 1;\
+            } else if (normalizedot == -1) {\
+                return -1;\
+            } else {\
+                return 0;\
+            }\
+        }\
+
+DEFINEFUNCv(FUNCcmpdir1)
+
+
+#define FUNClengthsum(type)\
+        function\
+        float lengthsum(\
+            type arr[];\
+            ) {\
+            float result = 0;\
+            foreach (type item; arr){\
+                result += length(item);\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCfv(FUNClengthsum)
+
+#define FUNClength2sum(type)\
+        function\
+        float length2sum(\
+            type arr[];\
+            ) {\
+            float result = 0;\
+            foreach (type item; arr){\
+                result += length2(item);\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCfv(FUNClength2sum)
+
+
+#define FUNCnormalizearray(type)\
+        function\
+        type[] normalizearr(\
+            type arr[];\
+            ) {\
+            float lengthsum = lengthsum(arr);\
+            type result[];\
+            for (int i = 0; i < len(arr); ++i){\
+                push(result, arr[i] / lengthsum);\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCfv(FUNCnormalizearray)
+
+
+/*
+// equal to -reflect()
+function
+vector mirror(
+    vector vec, axis;
+    ) {
+    vector cross = cross(cross(vec, axis), axis);
+    return reflect(vec, cross);
+}
+
+*/
+
+
+
+/*
+// equal to reflect()
+function
+vector symmetry(
+    vector vec, axis;
+    ) {
+    float dot = dot(vec, axis);
+    return 2*normalize(axis, dot) - vec;
+}
+
+*/
+
+
+
+
+
+
+#endif

@@ -1,0 +1,170 @@
+
+#ifndef __MATRIXARR_VFL__
+#define __MATRIXARR_VFL__
+
+#include <precompile.vfl>
+
+#include <matrixarr.vfl>
+
+
+
+
+#define FUNCmtx_transpose(type)\
+        function\
+        type[] mtx_transpose(\
+            type mtx[];\
+            int m, n;\
+			) {\
+            type mtxresult[];\
+            for(int i=0; i<m; ++i){\
+                for(int j=0; j<n; ++j){\
+                    mtxresult[j*m+i] = mtx[i*n+j];\
+                }\
+            }\
+            return mtxresult;\
+        }\
+
+DEFINEFUNCifv(FUNCmtx_transpose)
+
+
+#define FUNCmtx_multi(type)\
+        function\
+        type[] mtx_multi(\
+            type A[], B[];\
+            int m, n, l;\
+            ) {\
+            type C[];\
+            for(int i=0; i<m; i++){\
+                int count=0;\
+                for(int j=0; j<n; j++){\
+                    type r = A[i*n+j];\
+                    if(r != 0){\
+                        for(int k=0; k<l; k++){\
+                            C[i*l+k] += r*B[j*l+k];\
+                        }\
+                    } else {\
+                        ++count;\
+                    }\
+                    if(count == n-1){\
+                        for(int k=0; k<l; k++){\
+                            C[i*l+k] = 0;\
+                        }\
+                    }\
+                }\
+            }\
+            return C;\
+        }\
+
+DEFINEFUNCifv(FUNCmtx_multi)
+
+function
+void jacbi_eigen(
+    export float A[];
+    export float EVECTOR[];
+    const float precision;
+    const int maxiters;
+    const int reorder;
+    ) {
+    int dim = int(sqrt(len(A)));
+    for(int i=0; i<dim; i++){
+        EVECTOR[i*dim+i] = 1;
+    }
+    int count = 0;
+    while(1){
+        int row = 0;
+        int col = 1;
+        float max = abs(A[1]);
+        for(int i=0; i<dim; i++){
+            for(int j=i+1; j<dim; j++){
+                float temp = abs(A[i*dim+j]);
+                if(temp > max){
+                    max = temp;
+                    row = i;
+                    col = j;
+                }
+            }
+        }
+        if (max < precision || count >= maxiters) break;
+        
+        float app = A[row*dim+row];
+        float aqq = A[col*dim+col];
+        float apq = A[row*dim+col];
+        float theta;
+        if (abs(app - aqq) < precision){
+            theta = PI/4;
+        }else{
+            theta = atan(2*apq / (app - aqq)) /2;
+        }
+        float cos = cos(theta);
+        float sin = sin(theta);
+        A[row*dim+row] = app * cos*cos + aqq * sin*sin + 2*apq * cos * sin;
+        A[col*dim+col] = app * sin*sin + aqq * cos*cos - 2*apq * cos * sin;
+         
+        for(int i=0; i<dim; i++){
+            float api;
+            float aqi;
+            if(i<row){
+                api = A[i*dim+row];
+                aqi = A[i*dim+col];
+                A[i*dim+row] = api * cos + aqi * sin;
+                A[i*dim+col] = api * -sin + aqi * cos;
+            }
+            if(i>row && i<col){
+                if(i == col) continue;
+                api = A[row*dim+i];
+                aqi = A[i*dim+col];
+                A[row*dim+i] = api * cos + aqi * sin;
+                A[i*dim+col] = api * -sin + aqi * cos;
+            }
+            
+            if(i>col){
+                api = A[row*dim+i];
+                aqi = A[col*dim+i];
+                A[row*dim+i] = api * cos + aqi * sin;
+                A[col*dim+i] = api * -sin + aqi * cos;
+            }
+        }
+        A[row*dim+col] = 0;
+        
+        for(int i=0; i<dim; i++){
+            float vip = EVECTOR[i*dim+row];
+            float viq = EVECTOR[i*dim+col];
+            if(vip != 0 || viq != 0){
+                EVECTOR[i*dim+row] = vip*cos + viq*sin;
+                EVECTOR[i*dim+col] = vip*-sin + viq*cos;
+            }
+        }
+        count++;
+    }
+    
+    float e[];
+    for(int i=0; i<dim; i++){
+        e[i] = A[i*dim+i];
+    }
+    A = e;
+    
+    if(reorder){
+        for(int i=0; i<dim; i++){
+            e[i] = abs(e[i]);
+        }
+        e = reverse(argsort(e));
+        float eval[];
+        float REORDER[];
+        for(int i=0; i<dim; i++){
+            int col = int(e[i]);
+            eval[i] = A[col];
+            for(int j=0; j<dim; j++){
+                REORDER[j*dim+i] = EVECTOR[j*dim+col];
+            }
+        }
+        EVECTOR = REORDER;
+        A = eval;
+    }
+}
+
+
+
+
+#endif
+
+

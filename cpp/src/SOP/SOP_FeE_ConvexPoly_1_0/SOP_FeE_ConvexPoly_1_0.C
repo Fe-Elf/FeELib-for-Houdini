@@ -1,0 +1,170 @@
+
+//#define UT_ASSERT_LEVEL 3
+#include "SOP_FeE_ConvexPoly_1_0.h"
+
+#include "SOP_FeE_ConvexPoly_1_0.proto.h"
+
+#include "GA/GA_Detail.h"
+#include "PRM/PRM_TemplateBuilder.h"
+#include "UT/UT_Interrupt.h"
+#include "UT/UT_DSOVersion.h"
+
+
+
+
+#include "GFE/GFE_Convex.h"
+
+
+
+
+using namespace SOP_FeE_ConvexPoly_1_0_Namespace;
+
+
+static const char *theDsFile = R"THEDSFILE(
+{
+    name        parameters
+
+    parm {
+        name    "convexPoly"
+        cppname "ConvexPoly"
+        label   "Convex Polygon"
+        type    toggle
+        default { "on" }
+    }
+    parm {
+        name    "primGroup"
+        cppname "PrimGroup"
+        label   "Prim Group"
+        type    string
+        default { "" }
+        disablewhen "{ convexPoly == 0 }"
+        parmtag { "script_action" "import soputils\nkwargs['geometrytype'] = (hou.geometryType.Primitives,)\nkwargs['inputindex'] = 0\nsoputils.selectGroupParm(kwargs)" }
+        parmtag { "script_action_help" "Select geometry from an available viewport.\nShift-click to turn on Select Groups." }
+        parmtag { "script_action_icon" "BUTTONS_reselect" }
+    }
+    parm {
+        name    "maxPoint"
+        cppname "MaxPoint"
+        label   "Max Point"
+        type    integer
+        default { "3" }
+        disablewhen "{ convexPoly == 0 }"
+        range   { 3! 10 }
+    }
+    parm {
+        name    "flipEdge"
+        cppname "FlipEdge"
+        label   "Flip Edge"
+        type    toggle
+        default { "1" }
+        disablewhen "{ convexPoly == 0 }"
+    }
+    parm {
+        name    "avoidDegeneracy"
+        cppname "AvoidDegeneracy"
+        label   "Avoid Degeneracy"
+        type    toggle
+        default { "0" }
+        disablewhen "{ convexPoly == 0 }"
+    }
+
+}
+)THEDSFILE";
+
+PRM_Template*
+SOP_FeE_ConvexPoly_1_0::buildTemplates()
+{
+    static PRM_TemplateBuilder templ("SOP_FeE_ConvexPoly_1_0.C"_sh, theDsFile);
+    if (templ.justBuilt())
+    {
+        templ.setChoiceListPtr("primGroup"_sh, &SOP_Node::primGroupMenu);
+    }
+    return templ.templates();
+}
+
+const UT_StringHolder SOP_FeE_ConvexPoly_1_0::theSOPTypeName("FeE::convexPoly::1.0"_sh);
+
+void
+newSopOperator(OP_OperatorTable* table)
+{
+    OP_Operator* newOp = new OP_Operator(
+        SOP_FeE_ConvexPoly_1_0::theSOPTypeName,
+        "FeE Convex Poly",
+        SOP_FeE_ConvexPoly_1_0::myConstructor,
+        SOP_FeE_ConvexPoly_1_0::buildTemplates(),
+        1,
+        1,
+        nullptr,
+        OP_FLAG_GENERATOR,
+        nullptr,
+        1,
+        "Five elements Elf/Filter/Topo/Artificial Line");
+
+    newOp->setIconName("SOP_divide");
+    table->addOperator(newOp);
+
+}
+
+
+
+
+
+class SOP_FeE_ConvexPoly_1_0Verb : public SOP_NodeVerb
+{
+public:
+    SOP_FeE_ConvexPoly_1_0Verb() {}
+    virtual ~SOP_FeE_ConvexPoly_1_0Verb() {}
+
+    virtual SOP_NodeParms *allocParms() const { return new SOP_FeE_ConvexPoly_1_0Parms(); }
+    virtual UT_StringHolder name() const { return SOP_FeE_ConvexPoly_1_0::theSOPTypeName; }
+
+    virtual CookMode cookMode(const SOP_NodeParms *parms) const { return COOK_GENERIC; }
+
+    virtual void cook(const CookParms &cookparms) const;
+    
+    /// This static data member automatically registers
+    /// this verb class at library load time.
+    static const SOP_NodeVerb::Register<SOP_FeE_ConvexPoly_1_0Verb> theVerb;
+};
+
+// The static member variable definition has to be outside the class definition.
+// The declaration is inside the class.
+const SOP_NodeVerb::Register<SOP_FeE_ConvexPoly_1_0Verb> SOP_FeE_ConvexPoly_1_0Verb::theVerb;
+
+const SOP_NodeVerb *
+SOP_FeE_ConvexPoly_1_0::cookVerb() const 
+{ 
+    return SOP_FeE_ConvexPoly_1_0Verb::theVerb.get();
+}
+
+
+
+
+
+
+void
+SOP_FeE_ConvexPoly_1_0Verb::cook(const SOP_NodeVerb::CookParms &cookparms) const
+{
+    auto&& sopparms = cookparms.parms<SOP_FeE_ConvexPoly_1_0Parms>();
+    GA_Detail& outGeo0 = *cookparms.gdh().gdpNC();
+    //auto sopcache = (SOP_FeE_ConvexPoly_1_0Cache*)cookparms.cache();
+
+    const GA_Detail& inGeo0 = *cookparms.inputGeo(0);
+
+    outGeo0.replaceWith(inGeo0);
+    
+    if (!sopparms.getConvexPoly())
+        return;
+    
+    UT_AutoInterrupt boss("Processing");
+    if (boss.wasInterrupted())
+        return;
+
+    GFE_Convex convex(outGeo0, cookparms);
+    convex.setComputeParm(sopparms.getMaxPoint(), sopparms.getFlipEdge(), sopparms.getAvoidDegeneracy());
+    convex.groupParser.setPrimitiveGroup(sopparms.getPrimGroup());
+    convex.computeAndBumpDataId();
+    
+}
+
+

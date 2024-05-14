@@ -1,0 +1,305 @@
+
+#ifndef __MEASUREDEEP_VFL__
+#define __MEASUREDEEP_VFL__
+
+#if 0
+    #include <measuredeep.vfl>
+#else
+
+#endif
+
+
+
+
+
+
+
+
+function
+float polylength(
+    int geo;
+    int primnum;
+    int ptnum;
+    ) {
+    float result = 0;
+    int primpoints[] = primpoints(geo, primnum);
+    int ptindex = find(primpoints, ptnum);
+    if (ptindex == 0) {
+        return result;
+    }
+    vector lastpos = point(geo, "P", primpoints[0]);
+    for (int i = 1; i < len(primpoints); ++i){
+        vector thispos = point(geo, "P", primpoints[i]);
+        result += distance(thispos, lastpos);
+        lastpos = thispos;
+        if (i == ptindex) {
+            return result;
+        }
+    }
+    return -1;
+}
+
+/*
+function
+float polyarea(
+    vector poses[];
+    ) {
+    int len = len(poses);
+    if ( len < 3 ) return 0;
+    vector p1 = poses[0];
+    vector p2 = poses[1];
+    vector p3 = poses[2];
+    //float P1X,P1Y,P1Z = poses[0][0],poses[0][1],poses[0][2];
+    //float P2X,P2Y,P2Z = poses[1][0],poses[1][1],poses[1][2];
+    //float P3X,P3Y,P3Z = poses[2][0],poses[2][1],poses[2][2];
+    float a = pow(((P2Y-P1Y)*(P3Z-P1Z)-(P3Y-P1Y)*(P2Z-P1Z)),2) + pow(((P3X-P1X)*(P2Z-P1Z)-(P2X-P1X)*(P3Z-P1Z)),2) + pow(((P2X-P1X)*(P3Y-P1Y)-(P3X-P1X)*(P2Y-P1Y)),2);
+    float cosnx = ((P2Y-P1Y)*(P3Z-P1Z)-(P3Y-P1Y)*(P2Z-P1Z))/(pow(a,1/2));
+    float cosny = ((P3X-P1X)*(P2Z-P1Z)-(P2X-P1X)*(P3Z-P1Z))/(pow(a,1/2));
+    float cosnz = ((P2X-P1X)*(P3Y-P1Y)-(P3X-P1X)*(P2Y-P1Y))/(pow(a,1/2));
+    float area = cosnz*((poses[-1][0])*(P1Y)-(P1X)*(poses[-1][1])) + cosnx*((poses[-1][1])*(P1Z)-(P1Y)*(poses[-1][2])) + cosny*((poses[-1][2])*(P1X)-(P1Z)*(poses[-1][0]));
+
+    for (int i = 0; i < len;) {
+        p1 = poses[i];
+        p2 = poses[++i];
+        area += cosnz*((p1[0])*(p2[1])-(p2[0])*(p1[1])) + cosnx*((p1[1])*(p2[2])-(p2[1])*(p1[2])) + cosny*((p1[2])*(p2[0])-(p2[2])*(p1[0]));
+    }
+
+    area /= 2;
+
+    return area;
+}
+
+function
+float polyarea(
+    int geo;
+    int primnum;
+    ) {
+    int primpoints[] = primpoints(geo, primnum);
+    int len = len(primpoints);
+    vector poses;
+    resize(poses, len);
+    for (int i = 0; i < len; ++i) {
+        poses[i] = point(geo, "P", primpoints[i]);
+    }
+    return polyarea(poses);
+}
+
+
+*/
+
+
+
+
+
+
+
+
+
+function
+vector planelineintersect(
+    vector plP, plN;
+    vector lP0, lP1;
+    ) {
+    vector dir = lP1 - lP0;
+    float dot = dot(plN, dir);
+    
+    float p0 = plP.x, p1 = plP.y, p2 = plP.z;
+    float l0 = lP0.x, l1 = lP0.y, l2 = lP0.z;
+
+    float t = sum(set((p0-l0), (p1-l1), (p2-l2)) * plN) / dot;
+    return set(l0 + dir.x * t,
+               l1 + dir.y * t,
+               l2 + dir.z * t);
+}
+
+
+
+
+
+
+
+
+function
+float linepointdistance(
+    vector lP0, lP1;
+    vector pP;
+    ) {
+    vector dir = lP1 - lP0;
+    vector vec = pP - lP0;
+    #if 1
+        return length(cross(dir, vec)) / length(dir);
+    #else
+        return sqrt(square(length(vec)) - square(dot(vec, dir) / length(dir)));
+    #endif
+}
+
+/*
+
+//这段代码说明了ptlined和linepointdistance的区别
+
+#include <measure.vfl>
+
+vector pos = {0,-1,1};
+vector linepos0 = {0,0,0};
+vector linepos1 = {0,1,0};
+
+f@dis0 = ptlined(linepos0, linepos1, pos);
+f@dis1 = linepointdistance(linepos0, linepos1, pos);
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function
+float manhattan_distance(
+    vector pos0, pos1;
+    ) {
+    return sum(abs(pos0-pos1));
+}
+#define mandistance manhattan_distance
+
+function
+float minkowski_distance(
+    vector pos0, pos1;
+    float p;
+    ) {
+    return pow(sum(abs(pow(pos0-pos1, p))), 1/p);
+}
+
+
+
+
+function
+vector[] sidedir(
+    int geo;
+    int primnum;
+    ) {
+    vector sidedir[];
+    int primpoints[] = primpoints(geo, primnum);
+    for (int i = 0; i < len(primpoints); ++i){
+        vector pos0 = point(geo, 'P', primpoints[i]);
+        vector pos1 = point(geo, 'P', primpoints[i+1]);
+        push(sidedir, pos1 - pos0);
+    }
+    return sidedir;
+}
+
+function
+float[] sidelength(
+    int geo;
+    int primnum;
+    ) {
+    float sidelength[];
+    vector sidedir[] = sidedir(geo, primnum);
+    foreach (vector dir; sidedir){
+        push(sidelength, length(dir));
+    }
+    return sidelength;
+}
+
+
+
+function
+float planepointdistance(
+    vector plP, plN;
+    vector ptP;
+    ) {
+    vector intersect_pos;
+    return planepointdistance(plP, plN, ptP, intersect_pos);
+}
+
+function
+float planepointdistance(
+    int geo, primnum;
+    vector ptP;
+    ) {
+    vector intersect_pos;
+    vector
+    plP = prim(geo, "P", primnum),
+    //plP = primP_avg(geo, primnum),
+    plN = primN_last(geo, primnum);
+    
+    return planepointdistance(plP, plN, ptP, intersect_pos);
+}
+
+function
+float planepointdistance(
+    int geo, primnum;
+    vector ptP;
+    export vector intersect_pos;
+    ) {
+    vector
+    plP = prim(geo, "P", primnum),
+    //plP = primP_avg(geo, primnum),
+    plN = primN_last(geo, primnum);
+
+    return planepointdistance(plP, plN, ptP, intersect_pos);
+}
+
+function
+float planePointDirectedDistance(
+    int geo, primnum;
+    vector ptP;
+    export vector intersect_pos;
+    ) {
+    vector intersect_pos;
+    vector
+    plP = prim(geo, "P", primnum),
+    //plP = primP_avg(geo, primnum),
+    plN = primN_last(geo, primnum);
+    
+    return planepointdistance(plP, plN, ptP, intersect_pos) * (dot(-plN, ptP - plP) < 0 ? -1 : 1);
+}
+
+function
+float planePointDirectedDistance(
+    int geo, primnum;
+    vector ptP;
+    export vector intersect_pos;
+    ) {
+    vector
+    plP = prim(geo, "P", primnum),
+    //plP = primP_avg(geo, primnum),
+    plN = primN_last(geo, primnum);
+    
+    return planepointdistance(plP, plN, ptP, intersect_pos) * (dot(-plN, ptP - plP) < 0 ? -1 : 1);
+}
+
+
+
+function
+float planePointDirectedDistance(
+    vector plP, plN;
+    vector ptP;
+    ) {
+    vector intersect_pos;
+    return planepointdistance(plP, plN, ptP, intersect_pos) * (dot(-plN, ptP - plP) < 0 ? -1 : 1);
+}
+
+function
+float planePointDirectedDistance(
+    vector plP, plN;
+    vector ptP;
+    export vector intersect_pos;
+    ) {
+    return planepointdistance(plP, plN, ptP, intersect_pos) * (dot(-plN, ptP - plP) < 0 ? -1 : 1);
+}
+
+
+
+
+
+
+#endif

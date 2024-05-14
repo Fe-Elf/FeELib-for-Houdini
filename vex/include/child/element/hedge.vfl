@@ -1,0 +1,63 @@
+
+#ifndef __HEDGE_VFL__
+#define __HEDGE_VFL__
+
+#include <hedge.vfl>
+
+
+
+
+#include <constant.vfl>
+#include <promotedeep.vfl>
+
+function
+float hedgepointdistance(
+    int geo;
+    int hnum;
+    vector pos;
+    ) {
+    vector P0 = point(geo, 'P', hedge_srcpoint(geo, hnum));
+    vector P1 = point(geo, 'P', hedge_dstpoint(geo, hnum));
+    return ptlined(P0, P1, pos);
+}
+
+
+
+function
+float cloesthedgedist(
+    int geo;
+    int prim;
+    vector pos;
+    ) {
+    float dist = MAXFS32;
+    int primhedges[] = primhedges(geo, prim);
+    foreach (int primhedge; primhedges){
+        dist = min(dist, hedgepointdistance(geo, primhedge, pos));
+    }
+    return dist;
+}
+
+function
+int cloesthedge(
+    int geo;
+    int prim;
+    vector pos;
+    ) {
+    int result;
+    float dist = MAXFS32;
+    int primhedges[] = primhedges(geo, prim);
+    foreach (int primhedge; primhedges){
+        float newdist = hedgepointdistance(geo, primhedge, pos);
+        if (newdist < dist) {
+            dist = newdist;
+            result = primhedge;
+        }
+    }
+    return result;
+}
+
+
+
+
+
+#endif

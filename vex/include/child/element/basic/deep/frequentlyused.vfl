@@ -1,0 +1,37 @@
+
+#ifndef __FREQUENTLYUSED_VFL__
+#define __FREQUENTLYUSED_VFL__
+
+#include <frequentlyused.vfl>
+
+/*
+
+#define (,)\
+        \
+
+
+#define FUNC(type)\
+        function\
+        void (\
+            const type \
+            ) {\
+            ;\
+        }\
+
+DEFINEFUNCall(FUNC)
+
+        
+
+function\
+void (\
+    const type \
+    ) {\
+    ;\
+}\
+
+*/
+
+
+
+
+#endif

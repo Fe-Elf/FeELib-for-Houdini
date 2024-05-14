@@ -1,0 +1,97 @@
+
+#ifndef __MATHBASIC_VFL__
+#define __MATHBASIC_VFL__
+
+#include <mathbasic.vfl>
+
+
+
+
+
+
+#include <arithmetic.vfl>
+#include <arraydeep.vfl>
+#include <mathdeep.vfl>
+
+
+
+/*
+#define FUNCefit0(type)\
+        function\
+        type efit(\
+            const type value;\
+            const float omin, omax, nmin, nmax;\
+            ) {\
+            float ser[] = serialize(value);\
+            foreach (int idx; float item; ser){\
+                ser[idx] = efit(item, omin, omax, nmin, nmax);\
+            }\
+            return unserialize(ser);\
+        }\
+
+DEFINEFUNCm(FUNCefit0)
+
+#define FUNCefit1(type)\
+        function\
+        type efit(\
+            const type value;\
+            const type omin, omax;\
+            const float nmin, nmax;\
+            ) {\
+            float ser[] = serialize(value);\
+            float omin0[] = serialize(omin),\
+                  omax0[] = serialize(omax),\
+            for(int i = len(ser)-1; i>-1; --i){\
+                ser[i] = efit(ser[i], omin0[i], omax0[i], nmin0[i], nmax0[i]);\
+            }\
+            return unserialize(ser);\
+        }\
+
+DEFINEFUNCm(FUNCefit1)
+
+#define FUNCefit2(type)\
+        function\
+        type efit(\
+            const type value;\
+            const type omin, omax, nmin, nmax;\
+            ) {\
+            float ser[] = serialize(value);\
+            float omin0[] = serialize(omin),\
+                  omax0[] = serialize(omax),\
+                  nmin0[] = serialize(nmin),\
+                  nmax0[] = serialize(nmax);\
+            for(int i = len(ser)-1; i>-1; --i){\
+                ser[i] = efit(ser[i], omin0[i], omax0[i], nmin0[i], nmax0[i]);\
+            }\
+            return unserialize(ser);\
+        }\
+
+DEFINEFUNCm(FUNCefit2)
+*/
+
+
+
+
+
+#include <compare.vfl>
+
+#define FUNCsincos(type)\
+        function\
+        type sincos(\
+            type value;\
+            ) {\
+            return cmp(value, 0) * sqrt(1 - square(value));\
+        }\
+
+DEFINEFUNCv(FUNCsincos)
+
+
+
+
+
+
+
+
+
+
+#endif

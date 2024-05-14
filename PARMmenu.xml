@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menuDocument>
+  <menu>
+
+    <subMenu id="FeE">
+      <label>FeE</label>
+      <insertBefore />
+
+      <scriptItem id="setOptypePython">
+        <label>set Optype Python</label>
+        <scriptCode><![CDATA[
+import fee_Parm
+# from importlib import reload
+# reload(fee_Parm)
+
+parms = kwargs["parms"]
+if len(parms) == 0:
+    raise ValueError('invalid input', parms)
+
+fee_Parm.setOptypePython(parms[0])
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="CopyParmName">
+        <label>Copy Parm Name</label>
+        <scriptCode><![CDATA[
+import fee_Utils
+
+parms = kwargs["parms"]
+if len(parms) == 0:
+    raise ValueError('invalid input', parms)
+
+fee_Utils.setClipboardText(parms[0].name())
+      ]]></scriptCode>
+      </scriptItem>
+      
+    </subMenu>
+
+  </menu>
+</menuDocument>

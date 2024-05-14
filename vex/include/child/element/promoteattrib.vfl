@@ -1,0 +1,165 @@
+
+#ifndef __PROMOTEATTRIB_VFL__
+#define __PROMOTEATTRIB_VFL__
+
+#include <promoteattrib.vfl>
+
+
+
+
+#include <attribdeep.vfl>
+
+
+
+
+#define FUNCpointprimsattrib(type)\
+        function\
+        type[] pointprimsattrib(\
+            const int geo;\
+            const string attribname;\
+            const int ptnum;\
+            ) {\
+            return prim(geo, attribname, pointprims(geo, ptnum));\
+        }\
+
+DEFINEFUNCall(FUNCpointprimsattrib)
+
+#define pointprimsattribi(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) int[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribf(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) float[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribv2(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) vector2[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribv(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) vector[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribv4(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) vector4[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribm2(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) matrix2[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribm3(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) matrix3[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribm(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) matrix[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+#define pointprimsattribs(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums) string[](pointprimsattrib(pointprimsattribgeo, pointprimsattribattribname, pointprimsattribptnums))
+
+
+
+
+
+#define FUNCprimpointsattrib(type)\
+        function\
+        type[] primpointsattrib(\
+            const int geo;\
+            const string attribname;\
+            const int primnum;\
+            ) {\
+            return point(geo, attribname, primpoints(geo, primnum));\
+        }\
+
+DEFINEFUNCall(FUNCprimpointsattrib)
+
+#define primpointsattribi(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) int[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribf(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) float[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribv2(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) vector2[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribv(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) vector[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribv4(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) vector4[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribm2(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) matrix2[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribm3(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) matrix3[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribm(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) matrix[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+#define primpointsattribs(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums) string[](primpointsattrib(primpointsattribgeo, primpointsattribattribname, primpointsattribprimnums))
+
+
+
+
+
+#define FUNCprimverticesattrib(type)\
+        function\
+        type[] primverticesattrib(\
+            const int geo;\
+            const string attribname;\
+            const int primnum;\
+            ) {\
+            return vertex(geo, attribname, primvertices(geo, primnum));\
+        }\
+
+DEFINEFUNCall(FUNCprimverticesattrib)
+
+#define primverticesattribi(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) int[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribf(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) float[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribv2(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) vector2[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribv(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) vector[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribv4(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) vector4[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribm2(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) matrix2[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribm3(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) matrix3[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribm(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) matrix[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+#define primverticesattribs(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums) string[](primverticesattrib(primverticesattribgeo, primverticesattribattribname, primverticesattribprimnums))
+
+
+
+
+function
+vector[] primpointspos(
+    const int geo;  
+    const int primnum;
+    ) {
+    return primpointsattribv(geo, "P", primnum);
+}
+
+function
+vector[] primverticespos(
+    const int geo;
+    const int primnum;
+    ) {
+    return primverticesattribv(geo, "P", primnum);
+}
+
+function
+vector[] pointprimspos(
+    const int geo;
+    const int ptnum;
+    ) {
+    return pointprimsattribv(geo, "P", ptnum);
+}
+
+
+
+
+function
+vector[] vertexprimspos(
+    const int geo;
+    const int vtxnum;
+    ) {
+    return pointprimspos(geo, vertexpoint(geo, vtxnum));
+}
+
+function
+vector[] vertexprimspos(
+    const int geo;
+    const int primnum;
+    const int vtxpnum;
+    ) {
+    return pointprimspos(geo, vertexpoint(geo, primnum, vtxpnum));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

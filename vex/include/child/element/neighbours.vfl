@@ -1,0 +1,462 @@
+
+#ifndef __NEIGHBOURS_VFL__
+#define __NEIGHBOURS_VFL__
+
+#if 1
+    #include <neighbours.vfl>
+#else
+    //和原版的区别是，对于unshared edge，会输出-1
+    function
+    int[] polyedgeneighbours(
+        int geo;
+        int primnum;
+        int ignorenonneb, ignoremanifold;
+        ) {
+        int result[];
+        //if ( ignoremanifold && includenonneb ) resize(result, );
+        int start = primhedge(geo, primnum);
+        for (int hedge_next = start; hedge_next != -1;) {
+            int flag = 1;
+            for (int hedge_nextequiv = hedge_nextequiv(geo, hedge_next); hedge_nextequiv != hedge_next; hedge_nextequiv = hedge_nextequiv(geo, hedge_nextequiv)) {
+                int hedge_prim = hedge_prim(geo, hedge_nextequiv);
+                if (hedge_prim == -1 || hedge_prim == primnum) break;
+                flag = 0;
+                // if ( ignoremanifold ) {
+                //     result[i] = hedge_prim;
+                //     break;
+                // } else {
+                    push(result, hedge_prim);
+                // }
+                if ( ignoremanifold ) break;
+            }
+            if ( !ignorenonneb && flag ) {
+                push(result, -1);
+            }
+            hedge_next = hedge_next(geo, hedge_next);
+            if ( hedge_next == start ) break;
+        }
+        return result;
+    }
+#endif
+
+#include <arraydeep.vfl>
+#include <group.vfl>
+#include <promotedeep.vfl>
+
+
+
+
+
+
+
+
+
+
+function
+int[] polylineneighbours(
+    int geo;
+    int primnum;
+    ) {
+    int nebs[], primpoints[] = primpoints(geo, primnum);
+    foreach (int primpoint; primpoints) {
+        int pointprims[] = pointprims(geo, primpoint);
+        uniquepush(nebs, pointprims);
+    }
+    removevalue(nebs, primnum);
+    return nebs;
+}
+
+/*
+function
+int[] polylineneighbours(
+    int geo;
+    string groupname;
+    int primnum;
+    ) {
+    int nebs[] = polylineneighbours(geo, primnum);
+    foreach (int neb; nebs){
+        if (inprimgroup(geo, groupname, neb)) {
+            
+        }
+    }
+    return nebs;
+}
+*/
+
+
+//和原版的区别是，对于unshared edge，会输出-1
+function
+int[] polyedgeneighbours(
+    int geo;
+    int primnum;
+    int ignorenonneb, ignoremanifold;
+    ) {
+    int result[];
+    //if ( ignoremanifold && includenonneb ) resize(result, );
+    int start = primhedge(geo, primnum);
+    for (int hedge_next = start; hedge_next != -1;) {
+        int flag = 1;
+        for (int hedge_nextequiv = hedge_nextequiv(geo, hedge_next); hedge_nextequiv != hedge_next; hedge_nextequiv = hedge_nextequiv(geo, hedge_nextequiv)) {
+            int hedge_prim = hedge_prim(geo, hedge_nextequiv);
+            if (hedge_prim == -1 || hedge_prim == primnum) break;
+            flag = 0;
+            // if ( ignoremanifold ) {
+            //     result[i] = hedge_prim;
+            //     break;
+            // } else {
+                push(result, hedge_prim);
+            // }
+            if ( ignoremanifold ) break;
+        }
+        if ( !ignorenonneb && flag ) {
+            push(result, -1);
+        }
+        hedge_next = hedge_next(geo, hedge_next);
+        if ( hedge_next == start ) break;
+    }
+    return result;
+}
+
+function
+int[] polyedgeneighbours(
+    int geo;
+    int primnum;
+    ) {
+    return polyedgeneighbours(geo, primnum, 0, 0);
+}
+
+
+function
+int[] neighbours(
+    const int geo;
+    const int ptnums[];
+    ) {
+    int nebs[];
+    foreach (int ptnum; ptnums) {
+        push(nebs, neighbours(geo, ptnum));
+    }
+    removevalue(nebs, ptnums);
+    return nebs;
+}
+
+function
+int[] neighbours_pointgroup(
+    const int geo;
+    const string groupname;
+    const int ptnum;
+    ) {
+    int result[], nebcount = neighbourcount(geo, ptnum);
+    resize(result, nebcount);
+    int len = 0;
+    for (int i = 0; i < nebcount; ++i) {
+        int neb = neighbour(geo, ptnum, i);
+        if ( !inpointgroup(geo, groupname, neb) ) continue;
+        result[len] = neb;
+        ++len;
+    }
+    resize(result, len);
+    return result;
+}
+
+// function
+// int[] neighbours_edgegroup(
+//     const int geo;
+//     const string groupname;
+//     const int ptnum;
+//     ) {
+//     int result[], nebcount = neighbourcount(geo, ptnum);
+//     resize(result, nebcount);
+//     int len = 0;
+//     for (int i = 0; i < nebcount; ++i) {
+//         int neb = neighbour(geo, ptnum, i);
+//         if ( !inedgegroup(geo, groupname, ptnum, neb) ) continue;
+//         result[len] = neb;
+//         ++len;
+//     }
+//     resize(result, len);
+//     return result;
+// }
+
+function
+int[] neighbours_edgegroup(
+    const int geo;
+    const string groupname;
+    const int ptnum;
+    ) {
+    int nebs[] = neighbours(geo, ptnum);
+    int nebcount = len(nebs);
+    int len = 0;
+    for (int i = 0; i < nebcount; ++i) {
+        int neb = nebs[i];
+        if ( !inedgegroup(geo, groupname, ptnum, neb) ) continue;
+        nebs[len] = neb;
+        ++len;
+    }
+    resize(nebs, len);
+    return nebs;
+}
+
+function
+int[] neighbours_pointgroup(
+    const int geo;
+    const string groupname;
+    const int ptnums[];
+    ) {
+    int nebs[];
+    foreach (int ptnum; ptnums) {
+        push(nebs, neighbours_pointgroup(geo, groupname, ptnum));
+    }
+    removevalue(nebs, ptnums);
+    return nebs;
+}
+
+function
+int[] neighbours_pointgroup(
+    const int geo;
+    const int ptnum;
+    export float dist[];
+    ) {
+    int nebs[] = neighbours(geo, ptnum);
+    resize(dist, len(nebs));
+    vector pos = point(geo, "P", ptnum);
+    foreach (int idx; int neb; nebs) {
+        dist[idx] = distance(pos, point(geo, "P", neb));
+    }
+    return nebs;
+}
+
+function
+int[] neighbours_pointgroup(
+    const int geo;
+    const string groupname;
+    const int ptnum;
+    export float dist[];
+    ) {
+    int nebs[] = neighbours_pointgroup(geo, groupname, ptnum);
+    resize(dist, len(nebs));
+    vector pos = point(geo, "P", ptnum);
+    foreach (int idx; int neb; nebs) {
+        dist[idx] = distance(pos, point(geo, "P", neb));
+    }
+    return nebs;
+}
+
+
+
+
+function
+int[] neighbours(
+    const int geo;
+    const int ptnum;
+    export float dists[];
+    ) {
+    int nebs[] = neighbours(geo, ptnum);
+    int len = len(nebs);
+    resize(dists, len);
+    vector pos = point(geo, 'P', ptnum);
+    for (int i = 0; i < len; ++i) {
+        vector nebpos = point(geo, 'P', nebs[i]);
+        dists[i] = distance2(pos, nebpos);
+    }
+    return nebs;
+}
+
+function
+int[] neighbourssortdist(
+    const int geo;
+    const int ptnum;
+    ) {
+    float dist[];
+    int nebs[] = neighbours(geo, ptnum, dist);
+    int arg[] = argsort(dist);
+    return reorder(nebs, arg);
+}
+
+function
+int[] neighbourssortdist_pointgroup(
+    const int geo;
+    const string groupname;
+    const int ptnum;
+    ) {
+    float dist[];
+    int nebs[] = neighbours_pointgroup(geo, groupname, ptnum, dist);
+    int arg[] = argsort(dist);
+    return reorder(nebs, arg);
+}
+
+
+function
+int[] neighbourssortdist(
+    const int geo;
+    const int ptnum;
+    export float dist[];
+    ) {
+    int nebs[] = neighbours(geo, ptnum, dist);
+    int arg[] = argsort(dist);
+    dist = reorder(dist, arg);
+    return reorder(nebs, arg);
+}
+
+function
+int[] neighbourssortdist_pointgroup(
+    const int geo;
+    const string groupname;
+    const int ptnum;
+    export float dist[];
+    ) {
+    int nebs[] = neighbours_pointgroup(geo, groupname, ptnum, dist);
+    int arg[] = argsort(dist);
+    dist = reorder(dist, arg);
+    return reorder(nebs, arg);
+}
+
+
+
+
+
+/*
+
+
+function
+int[] neighboursdebug(
+    const int geo;
+    const int ptnum;
+    ) {
+    int result[] = neighbours(geo, ptnum);
+    result = removenebrepeat(sort(result));
+    removevalue(result, ptnum);
+    return result;
+}
+
+*/
+
+
+
+function
+int nextpoint(
+    const int geo;
+    const int primnum;
+    const int ptnum;
+    ) {
+    int vtxpnum = pointprimindex(geo, primnum, ptnum);
+    int numpt = primvertexcount(geo, primnum);
+    if (vtxpnum == -1) {
+        return -numpt-1;
+    } else if (vtxpnum == numpt-1) {
+        return -1;
+    }
+    return vertexpoint(geo, vertexindex(geo, primnum, vtxpnum + 1));
+}
+
+function
+int[] nextpoints(
+    int geo;
+    int primnums[];
+    int ptnum;
+    ) {
+    int result[];
+    foreach (int primnum; primnums){
+        push(result, nextpoint(geo, primnum, ptnum));
+    }
+    return result;
+}
+
+function
+int nextpoint(
+    int geo;
+    int ptnum;
+    ) {
+    return nextpoint(geo, pointprims(geo, ptnum)[0], ptnum);
+}
+
+function
+int[] nextpoints(
+    int geo;
+    int ptnum;
+    ) {
+    return nextpoints(geo, pointprims(geo, ptnum), ptnum);
+}
+
+
+
+
+
+
+
+function
+int prevpoint(
+    int geo;
+    int primnum;
+    int ptnum;
+    ) {
+    int vtxpnum = pointprimindex(geo, primnum, ptnum);
+    int numpt = primvertexcount(geo, primnum);
+    if (vtxpnum == -1) {
+        return -numpt-1;
+    } else if (vtxpnum == 0) {
+        return -1;
+    }
+    return vertexpoint(geo, vertexindex(geo, primnum, vtxpnum - 1));
+}
+
+function
+int[] prevpoints(
+    int geo;
+    int primnums[];
+    int ptnum;
+    ) {
+    int result[];
+    foreach (int primnum; primnums){
+        push(result, prevpoint(geo, primnum, ptnum));
+    }
+    return result;
+}
+
+function
+int prevpoint(
+    int geo;
+    int ptnum;
+    ) {
+    return prevpoint(geo, pointprims(geo, ptnum)[0], ptnum);
+}
+
+function
+int[] prevpoints(
+    int geo;
+    int ptnum;
+    ) {
+    return prevpoints(geo, pointprims(geo, ptnum), ptnum);
+}
+
+
+
+
+function
+int[] verticesSharedPoint(
+    int geometry;
+    int linearvertex;
+    ) {
+    int vertexpoint = vertexpoint(geometry, linearvertex);
+    if ( vertexpoint == -1 ) {
+        return {};
+    }
+    int pointvertex = pointvertex(geometry, vertexpoint);
+    int vertexnext = vertexnext(geometry, pointvertex);
+    int vertices[] = array(pointvertex);
+    for (; vertexnext != -1; vertexnext = vertexnext(geometry, vertexnext)) {
+        push(vertices, vertexnext);
+    }
+    
+    return vertices;
+}
+
+
+
+
+
+
+
+
+
+
+#endif

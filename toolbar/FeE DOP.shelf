@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="fee_DOP" label="FeE DOP">
+    <memberTool name="simple_sopsolver"/>
+    <memberTool name="detailwrangle1_dop"/>
+    <memberTool name="pointwrangle1_dop"/>
+  </toolshelf>
+
+  <tool name="simple_sopsolver" label="Simple SOPSolver" icon="DOP_sopsolver">
+    <toolMenuContext name="network">
+      <contextOpType>Dop/sopsolver</contextOpType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if "outputnodename" in kwargs and "inputindex" in kwargs:
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if "inputnodename" in kwargs and "outputindex" in kwargs:
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if "autoplace" in kwargs:
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if "shiftclick" in kwargs and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if "nodepositionx" in kwargs and             "nodepositiony" in kwargs:
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if "node_bbox" in kwargs:
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if 'sopgeo' not in child_type:
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1 (Dop/sopsolver)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1 = `run("opadd -e -n -v sopsolver sopsolver1")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opparm $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1  numinputs ( 0 ) numoutputs ( 0 ) numstamps ( 0 )
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1 usesoppath ( off ) datapath ( '`chs("../sopgeo1/dataname")`' ) solveinitframe ( off ) uniquedataname ( on )
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opcf $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame (Sop/dopimport)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame = `run("opadd -e -n -v dopimport Prev_Frame")`
+oplocate -x `$arg2 + 3.6318600000000001` -y `$arg3 + -1.8995500000000001` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame
+chblockbegin
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame doposxform
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../transformsopoutput")' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame/doposxform
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame doxform
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'ch("../transformsopoutput")' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame/doxform
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame integrateovertime
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F '1/$FPS' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame/integrateovertime
+chblockend
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame doppath ( '`stamps("..", "DOPNET", "../..")`' ) objpattern ( '`stamps("..", "OBJID", arg(dopnodeobjs(".."),0))`' ) singleobject ( on ) importstyle ( fetch ) geodatapath ( '`stamps("..", "DATANAME", chs("../datapath"))`' ) doposxform ( doposxform ) doxform ( doxform ) centeratpivot ( off ) adddopobjectname ( off ) pointvels ( none ) donotsim ( on )
+opcolor -c 0.60000002384185791 0.40000000596046448 1 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame
+opset -d on -r on -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Prev_Frame
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1 (Sop/object_merge)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1 = `run("opadd -e -n -v object_merge Input_1")`
+oplocate -x `$arg2 + 5.8722399999999997` -y `$arg3 + -1.6779900000000001` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1
+opparm $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1  numobj ( 1 )
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1 objpath1 ( '`opinputpath("../..", 0)`' )
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_1
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2 (Sop/object_merge)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2 = `run("opadd -e -n -v object_merge Input_2")`
+oplocate -x `$arg2 + 7.4656000000000002` -y `$arg3 + -2.2325200000000001` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2
+opparm $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2  numobj ( 1 )
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2 objpath1 ( '`opinputpath("../..", 1)`' )
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_2
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3 (Sop/object_merge)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3 = `run("opadd -e -n -v object_merge Input_3")`
+oplocate -x `$arg2 + 8.7743500000000001` -y `$arg3 + -2.8480300000000001` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3
+opparm $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3  numobj ( 1 )
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3 objpath1 ( '`opinputpath("../..", 2)`' )
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_3
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4 (Sop/object_merge)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4 = `run("opadd -e -n -v object_merge Input_4")`
+oplocate -x `$arg2 + 10.2864` -y `$arg3 + -3.4025500000000002` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4
+opparm $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4  numobj ( 1 )
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4 objpath1 ( '`opinputpath("../..", 3)`' )
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1_Input_4
+oporder -e Prev_Frame Input_1 Input_2 Input_3 Input_4 
+opcf ..
+opset -p on $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opcf $arg1
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1 (Dop/emptyobject)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1 = `run("opadd -e -n -v emptyobject emptyobject1")`
+oplocate -x `$arg2 + -0.0012500286102295477` -y `$arg3 + 2.0031000239308918` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+chblockbegin
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1 activation
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F '$ST == 0' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1/activation
+chblockend
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+opset -p on $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1
+opcf $arg1
+
+# Node $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 (Dop/sopgeo)
+set _obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 = `run("opadd -e -n -v sopgeo sopgeo1")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 1.0000000119209289` $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+opparm $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1  numstamps ( 0 )
+chblockbegin
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 time
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F '$T' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1/time
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 transformtime
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F '$T' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1/transformtime
+chadd -t 0 0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 activation
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'constant()' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1/activation
+chblockend
+opparm -V 18.5.462 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 soppath ( '`opinputpath("..", 0)`' )
+opcolor -c 0.80000001192092896 0.80000001192092896 0.80000001192092896 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F off -c on -e on -b off $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+opexprlanguage -s hscript $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+opuserdata -n '___Version___' -v '18.5.462' $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+opset -p on $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+
+opcf $arg1
+opwire -n $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1 -0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opcf $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+opcf ..
+opcf $arg1
+opcf $arg1
+opwire -n $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_emptyobject1 -0 $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopgeo1
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_Cache_Tree_Seed_terrain_biome1_biome_terrain_fee1_dopnet1_sopsolver1
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="detailwrangle1_dop" label="Detail Wrangle" icon="DOP_geometrywrangle">
+    <helpURL>operator:Dop/geometrywrangle</helpURL>
+    <toolMenuContext name="network">
+      <contextOpType>Dop/geometrywrangle</contextOpType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if "outputnodename" in kwargs and "inputindex" in kwargs:
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if "inputnodename" in kwargs and "outputindex" in kwargs:
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if "autoplace" in kwargs:
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if "shiftclick" in kwargs and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if "nodepositionx" in kwargs and             "nodepositiony" in kwargs:
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if "node_bbox" in kwargs:
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if 'geometrywrangle' not in child_type:
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1 (Dop/geometrywrangle)
+set _obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1 = `run("opadd -e -n -v geometrywrangle detailwrangle1")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+opparm $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1  bindings ( 0 ) bindfield_num ( 0 ) groupbindings ( 0 )
+opparm $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1 bindclass ( detail )
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+opexprlanguage -s hscript $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+opuserdata -n '___Version___' -v '' $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+opset -p on $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+
+opcf $arg1
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_biome_terrain_fee1_dopnet1_detailwrangle1
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="pointwrangle1_dop" label="Point Wrangle1" icon="DOP_geometrywrangle">
+    <helpURL>operator:Dop/geometrywrangle</helpURL>
+    <toolMenuContext name="network">
+      <contextOpType>Dop/geometrywrangle</contextOpType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if "outputnodename" in kwargs and "inputindex" in kwargs:
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if "inputnodename" in kwargs and "outputindex" in kwargs:
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9 
+    if "autoplace" in kwargs:
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if "shiftclick" in kwargs and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if "nodepositionx" in kwargs and             "nodepositiony" in kwargs:
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if "node_bbox" in kwargs:
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+            
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if 'geometrywrangle' not in child_type:
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r''' 
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1 (Dop/geometrywrangle)
+set _obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1 = `run("opadd -e -n -v geometrywrangle pointwrangle1")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+opparm $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1  bindings ( 0 ) bindfield_num ( 0 ) groupbindings ( 0 )
+opset -d off -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+opexprlanguage -s hscript $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+opuserdata -n '___Version___' -v '' $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+opset -p on $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+
+opcf $arg1
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_geo1_biome_terrain_fee1_dopnet1_pointwrangle1
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+</shelfDocument>

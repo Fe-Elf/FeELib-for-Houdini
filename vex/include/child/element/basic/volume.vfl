@@ -1,0 +1,442 @@
+
+#ifndef VOLUME_VFL
+#define VOLUME_VFL
+
+
+#define FUNCifvIDXArgi\
+        int ix;\
+        int iy;\
+        int iz;\
+
+#define FUNCifvIDXArgf\
+        float ix;\
+        float iy;\
+        float iz;\
+
+#define FUNCifvIDXArgv\
+        vector index;\
+
+#define FUNCifvIDXParai\
+        set(ix, iy, iz)\
+
+#define FUNCifvIDXParaf\
+        set(ix, iy, iz)\
+
+#define FUNCifvIDXParav\
+        index\
+
+
+
+#define FUNCifvResArgi\
+        int resx;\
+        int resy;\
+        int resz;\
+
+#define FUNCifvResArgf\
+        float resx;\
+        float resy;\
+        float resz;\
+
+#define FUNCifvResArgv\
+        vector res;\
+
+#define FUNCifvResParai\
+        set(resx, resy, resz)\
+
+#define FUNCifvResParaf\
+        set(resx, resy, resz)\
+
+#define FUNCifvResParav\
+        res\
+
+#include <precompile.vfl>
+
+#if 1
+    #include <volume.vfl>
+#else
+    function
+    float volumesample_nearest(
+        const int geometry;
+        const int primnum;
+        const vector position;
+        ) {
+        return volumeindex(geometry, primnum, volumepostoindex(geometry, primnum, position));
+    }
+
+    function
+    vector volumesamplev_nearest(
+        const int geometry;
+        const int primnum;
+        const vector position;
+        ) {
+        return volumeindex(geometry, primnum, volumepostoindex(geometry, primnum, position));
+    }
+#endif
+
+
+/*
+// 3D Around Voxels
+
+#define around_voxel_operation(voxeldist)\
+        vector aroundvoxel = set(@ix+i, @iy+j, @iz+k);\
+        vector aroundvoxel = set(clamp(@ix+i,0,@resx-1), clamp(@iy+j,0,@resy-1), clamp(@iz+k,0,@resz-1));\
+
+// 3D 26 voxels
+for(int k = -1; k < 2; ++k) {
+    for(int j = -1; j < 2; ++j) {
+        for(int i = -1; i < 2; ++i) {
+                int numidxoffset = abs(i) + abs(j) + abs(k);
+                if(numidxoffset == 1) {
+                    around_voxel_operation(1)
+                } else if(numidxoffset == 2) {
+                    around_voxel_operation(SQRT2)
+                } else if(numidxoffset == 3) {
+                    around_voxel_operation(SQRT2)
+                } else {;}
+            }
+        }
+    }
+}
+
+// 3D 6 voxels
+vector aroundvoxels[] = array(set(@ix-1, @iy, @iz), set(@ix, @iy-1, @iz), set(@ix, @iy, @iz-1), set(@ix+1, @iy, @iz), set(@ix, @iy+1, @iz), set(@ix, @iy, @iz+1));
+foreach(vector aroundvoxel; aroundvoxels) {
+    ;
+}
+
+
+
+// 2D Around Voxels
+
+#define around_voxel_operation(voxeldist)\
+        vector aroundvoxel = set(@ix+i, @iy+j, @iz);\
+        vector aroundvoxel = set(clamp(@ix+i,0,@resx-1), clamp(@iy+j,0,@resy-1), @iz);\
+
+// 2D 8 voxels
+for(int j = -1; j < 2; ++j) {
+    for(int i = -1; i < 2; ++i) {
+        int numidxoffset = abs(i) + abs(j);
+        if(numidxoffset == 1) {
+            around_voxel_operation(1)
+        } else if(numidxoffset == 2) {
+            around_voxel_operation(SQRT2)
+        } else {;}
+    }
+}
+
+// 2D 4 voxels
+vector aroundvoxels[] = array(set(@ix-1, @iy, @iz), set(@ix, @iy-1, @iz), set(@ix+1, @iy, @iz), set(@ix, @iy+1, @iz));
+foreach(vector aroundvoxel; aroundvoxels) {
+    ;
+}
+
+//group
+vector origidx = volumeindexorigin(0, "idistance") + ch("group");
+if(@ix == origidx.x && @iy == origidx.y && @iz == origidx.z) {
+    @passed = 1;
+}
+
+
+foreach(vector aroundvoxel; aroundvoxels) {
+    ;
+}
+
+float voxeldatas[] = primintrinsic(0, 'voxeldata', primname);
+*/
+
+
+
+
+
+
+/*
+// compute id
+
+int x_stride = 1;
+int y_stride = @resx;
+int z_stride = @resx * @resy;
+int id = clamp(@ix+i, 0, @resx-1) * x_stride + clamp(@iy+j, 0, @resy-1) * y_stride + clamp(@iz+k, 0, @resz-1) * z_stride;
+int id = @ix * x_stride + @iy * y_stride + @iz * z_stride;
+
+int id = clamp(@ix+i, 0, @resx-1) + clamp(@iy+j, 0, @resy-1) * @resx + clamp(@iz+k, 0, @resz-1) * @resx * @resy;
+int id = @ix + @iy * @resx + @iz * @resx * @resy;
+*/
+
+
+
+
+/*
+vector vidx = set(@ix, @iy, @iz);
+
+vector vsize = volumevoxelsize(0, 0);
+float vsizeavg = avg(vsize);
+float vsizex = vsize.x;
+
+vector vradius = volumevoxelradius(0, 0);
+
+vector vsize1 = volumevoxelsize(1, 0);
+float vsize1avg = avg(vsize1);
+float vsize1x = vsize1.x;
+*/
+
+
+#ifndef VIDX
+#define VIDX @ix, @iy, @iz
+#endif
+
+#ifndef VSIZE
+#define VSIZE volumevoxelsize(0, 0)
+#endif
+
+#ifndef VSIZEX
+#define VSIZEX VSIZE.x
+#endif
+
+#ifndef VSIZEavg
+#define VSIZEavg avg(VSIZE)
+#endif
+
+#ifndef VSIZE1
+#define VSIZE1 volumevoxelsize(1, 0)
+#endif
+
+#ifndef VSIZE1X
+#define VSIZE1X VSIZE1.x
+#endif
+
+#ifndef VSIZE1avg
+#define VSIZE1avg avg(VSIZE1)
+#endif
+
+
+
+
+
+
+function
+float volumesample_nearest(
+    const int geometry;
+    const int primnum;
+    const vector position;
+    ) {
+    return volumeindex(geometry, primnum, volumepostoindex(geometry, primnum, position));
+}
+
+function
+vector volumesamplev_nearest(
+    const int geometry;
+    const int primnum;
+    const vector position;
+    ) {
+    return volumeindex(geometry, primnum, volumepostoindex(geometry, primnum, position));
+}
+
+
+
+
+#define FUNCvolumeid0(resulttype, type, ifvIDXArg, ifvIDXPara, restype)\
+        function\
+        resulttype volumeid(\
+            const int geo;\
+            const type prim;\
+            ifvIDXArg\
+            const restype resx;\
+            const restype resy;\
+            ) {\
+            return ix + iy * resx + iz * resx * resy;\
+        }\
+
+FUNCvolumeid0(int, int, FUNCifvIDXArgi, FUNCifvIDXParai, int)
+FUNCvolumeid0(int, int, FUNCifvIDXArgf, FUNCifvIDXParaf, int)
+FUNCvolumeid0(int, int, FUNCifvIDXArgv, FUNCifvIDXParav, int)
+FUNCvolumeid0(int, string, FUNCifvIDXArgi, FUNCifvIDXParai, int)
+FUNCvolumeid0(int, string, FUNCifvIDXArgf, FUNCifvIDXParaf, int)
+FUNCvolumeid0(int, string, FUNCifvIDXArgv, FUNCifvIDXParav, int)
+FUNCvolumeid0(float, int, FUNCifvIDXArgi, FUNCifvIDXParai, int)
+FUNCvolumeid0(float, int, FUNCifvIDXArgf, FUNCifvIDXParaf, int)
+FUNCvolumeid0(float, int, FUNCifvIDXArgv, FUNCifvIDXParav, int)
+FUNCvolumeid0(float, string, FUNCifvIDXArgi, FUNCifvIDXParai, int)
+FUNCvolumeid0(float, string, FUNCifvIDXArgf, FUNCifvIDXParaf, int)
+FUNCvolumeid0(float, string, FUNCifvIDXArgv, FUNCifvIDXParav, int)
+FUNCvolumeid0(int, int, FUNCifvIDXArgi, FUNCifvIDXParai, float)
+FUNCvolumeid0(int, int, FUNCifvIDXArgf, FUNCifvIDXParaf, float)
+FUNCvolumeid0(int, int, FUNCifvIDXArgv, FUNCifvIDXParav, float)
+FUNCvolumeid0(int, string, FUNCifvIDXArgi, FUNCifvIDXParai, float)
+FUNCvolumeid0(int, string, FUNCifvIDXArgf, FUNCifvIDXParaf, float)
+FUNCvolumeid0(int, string, FUNCifvIDXArgv, FUNCifvIDXParav, float)
+FUNCvolumeid0(float, int, FUNCifvIDXArgi, FUNCifvIDXParai, float)
+FUNCvolumeid0(float, int, FUNCifvIDXArgf, FUNCifvIDXParaf, float)
+FUNCvolumeid0(float, int, FUNCifvIDXArgv, FUNCifvIDXParav, float)
+FUNCvolumeid0(float, string, FUNCifvIDXArgi, FUNCifvIDXParai, float)
+FUNCvolumeid0(float, string, FUNCifvIDXArgf, FUNCifvIDXParaf, float)
+FUNCvolumeid0(float, string, FUNCifvIDXArgv, FUNCifvIDXParav, float)
+
+#define FUNCvolumeid1(resulttype, type, ifvIDXArg, ifvIDXPara)\
+        function\
+        resulttype volumeid(\
+            const int geo;\
+            const type prim;\
+            ifvIDXArg\
+            const vector res;\
+            ) {\
+            return ix + iy * res.x + iz * res.x * res.y;\
+        }\
+
+FUNCvolumeid1(int, int, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid1(int, int, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid1(int, int, FUNCifvIDXArgv, FUNCifvIDXParav)
+FUNCvolumeid1(int, string, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid1(int, string, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid1(int, string, FUNCifvIDXArgv, FUNCifvIDXParav)
+FUNCvolumeid1(float, int, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid1(float, int, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid1(float, int, FUNCifvIDXArgv, FUNCifvIDXParav)
+FUNCvolumeid1(float, string, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid1(float, string, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid1(float, string, FUNCifvIDXArgv, FUNCifvIDXParav)
+
+#define FUNCvolumeid2(resulttype, type, ifvIDXArg, ifvIDXPara)\
+        function\
+        resulttype volumeid(\
+            const int geo;\
+            const type prim;\
+            ifvIDXArg\
+            ) {\
+            return volumeid(geo, prim, ifvIDXPara, volumeres(geo, prim));\
+        }\
+
+FUNCvolumeid2(int, int, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid2(int, int, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid2(int, int, FUNCifvIDXArgv, FUNCifvIDXParav)
+FUNCvolumeid2(int, string, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid2(int, string, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid2(int, string, FUNCifvIDXArgv, FUNCifvIDXParav)
+FUNCvolumeid2(float, int, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid2(float, int, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid2(float, int, FUNCifvIDXArgv, FUNCifvIDXParav)
+FUNCvolumeid2(float, string, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeid2(float, string, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeid2(float, string, FUNCifvIDXArgv, FUNCifvIDXParav)
+
+#define FUNCvolumevoxelsize(type)\
+        function\
+        vector volumevoxelsize(\
+            const int geo;\
+            const type prim;\
+            ) {\
+            return getbbox_size(geo) / volumeres(geo, prim);\
+            /*return volumevoxeldiameter(geo, prim) / sqrt(3);*/\
+        }\
+
+DEFINEFUNCis(FUNCvolumevoxelsize)
+
+#define FUNCvolumevoxelsize2(type)\
+        function\
+        vector volumevoxelsize2(\
+            const int geo;\
+            const type prim;\
+            ) {\
+            return volumevoxelsize(geo, prim) / 2;\
+        }\
+
+DEFINEFUNCis(FUNCvolumevoxelsize2)
+
+#define FUNCvolumevoxelradius(type)\
+        function\
+        vector volumevoxelradius(\
+            const int geo;\
+            const type prim;\
+            ) {\
+            return volumevoxeldiameter(geo, prim) / 2;\
+        }\
+
+DEFINEFUNCis(FUNCvolumevoxelradius)
+
+#define FUNCvolumeindex(type, ifvIDXArg, ifvIDXPara)\
+        function\
+        float volumeindex(\
+            const int geo;\
+            const type prim;\
+            ifvIDXArg\
+            ) {\
+            return volumeindex(geo, prim, ifvIDXPara);\
+        }\
+
+FUNCvolumeindex(int, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeindex(int, FUNCifvIDXArgf, FUNCifvIDXParaf)
+FUNCvolumeindex(string, FUNCifvIDXArgi, FUNCifvIDXParai)
+FUNCvolumeindex(string, FUNCifvIDXArgf, FUNCifvIDXParaf)
+
+
+
+
+#define FUNCsdfsample(type)\
+        function\
+        vector sdfsample(\
+            const int geo;\
+            const type prim;\
+            const vector pos;\
+            ) {\
+            return normalize(volumegradient(geo, prim, pos)) * volumesample(geo, prim, pos);\
+        }\
+/*
+sdfsample(0, 'surface', @P)
+*/
+DEFINEFUNCis(FUNCsdfsample)
+
+
+
+
+#define FUNCraysdf0(type)\
+        function\
+        void raysdf(\
+            const int geo;\
+            const type prim;\
+            export vector pos;\
+            const float bias;\
+            ) {\
+            pos -= sdfsample(geo, prim, pos) * bias;\
+        }\
+/*
+raysdf(0, 'surface', @P, chf('../bias'))
+*/
+DEFINEFUNCis(FUNCraysdf0)
+
+
+#define FUNCraysdf1(type)\
+        function\
+        void raysdf(\
+            const int geo;\
+            const type prim;\
+            export vector pos;\
+            ) {\
+            pos -= sdfsample(geo, prim, pos);\
+        }\
+/*
+raysdf(0, 'surface', @P)
+*/
+DEFINEFUNCis(FUNCraysdf1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

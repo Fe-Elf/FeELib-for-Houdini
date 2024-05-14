@@ -1,0 +1,38 @@
+
+#ifndef __BSPHERE_VFL__
+#define __BSPHERE_VFL__
+
+#include <bsphere.vfl>
+
+
+
+
+
+
+
+
+
+void getbsphere(
+    const int geo;
+    const float farthestdis;
+    export vector center;
+    export vector radius;
+    ) {
+    radius = farthestdis/2;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

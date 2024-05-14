@@ -1,0 +1,36 @@
+
+#ifndef __COMPARE_VFL__
+#define __COMPARE_VFL__
+
+#include <precompile.vfl>
+
+#include <compare.vfl>
+
+#include <arraydeep.vfl>
+#include <comparedeep.vfl>
+
+
+
+
+#define FUNCcmpv2(type)\
+        function\
+        int[] cmp(\
+            const type arg0, arg1;\
+            ) {\
+            float arr0[] = serialize(arg0);\
+            float arr1[] = serialize(arg1);\
+            int result[];\
+            for (int i = 0; i < len(arr0); ++i){\
+                push(result, cmp(arr0[i], arr1[i]));\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCv(FUNCcmpv2)
+
+
+
+
+#endif
+
+

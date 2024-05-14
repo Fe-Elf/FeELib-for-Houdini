@@ -1,0 +1,9 @@
+
+#ifndef __STRINGDEEP_VFL__
+#define __STRINGDEEP_VFL__
+
+#include <stringdeep.vfl>
+
+
+
+#endif

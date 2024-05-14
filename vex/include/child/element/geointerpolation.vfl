@@ -1,0 +1,65 @@
+
+#ifndef __GEOINTERPOLATION_VFL__
+#define __GEOINTERPOLATION_VFL__
+
+#include <geointerpolation.vfl>
+
+
+
+
+
+
+#include <detect.vfl>
+#include <promote.vfl>
+
+
+
+
+
+
+
+function
+void edgemiddle(
+    int geo;
+    int pt;
+    int record;
+    ) {
+    int nebs[] = neighbours(geo, pt);
+    foreach (int neb; nebs) {
+        if (neb > pt && !isboundary(geo, pt, neb)) {
+            int newpt = addpoint(0, vector(point(geo, "P", neb) + point(geo, "P", pt)) / 2);
+            if(record) {
+                setpointattrib(0, "primset", newpt, int[](hedge_prims(geo, pointhedge(geo, pt, neb))));
+                setpointattrib(0, "edgepts", newpt, int[](array(pt, neb)));
+            }
+        }
+    }
+}
+//array(hedge_prim(geo, pointhedge(geo, pt, neb)), hedge_prim(geo, pointhedge(geo, neb, pt)))
+
+
+
+
+
+
+
+function
+void deleteunusedprims(
+    int geo;
+    int primnum;
+    ) {
+    if(primpoint(geo, primnum, 0) == -1)
+        removeprim(geo, primnum, 0);
+}
+
+
+
+
+
+
+
+
+
+
+
+#endif

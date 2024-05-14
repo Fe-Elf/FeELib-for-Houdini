@@ -1,0 +1,27 @@
+
+#ifndef __RANDOM_VFL__
+#define __RANDOM_VFL__
+
+#include <precompile.vfl>
+
+#include <random.vfl>
+
+
+
+#define FUNCrand(type)\
+        function\
+        type rand(\
+			const float seed0;\
+			const float seed1;\
+			const float seed2;\
+			) {\
+			return rand(rand(seed0, seed1), seed2);\
+        }\
+
+DEFINEFUNCfv(FUNCsetdetailattrib20)
+
+
+
+
+
+#endif

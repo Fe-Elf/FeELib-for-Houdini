@@ -1,0 +1,130 @@
+erf(float)
+erf_inv
+erfc
+exp
+isfinite
+isnan
+
+kspline
+
+solvequadratic
+solvecubic
+solvepoly
+
+determinant
+eigenvalues
+
+smoothrotation
+rotate_x_to
+lookat
+
+instance
+
+pcfind_radius
+
+
+
+select reorder
+swizzle
+setcomp
+assign
+sleep
+
+sop
+cop2
+surface
+fog
+displace
+light
+
+luminance
+blackbody
+ctransform
+
+serialize
+unserialize
+
+char
+union
+typedef
+
+gather
+illuminance
+
+hpoint
+import
+normal
+color
+false
+true
+
+forpoints
+
+
+
+lookat
+qconvert
+
+transpose
+eigenvalues
+determinant
+
+vtransform
+cracktransform
+
+
+
+Vector2 u
+Vector  v
+Vector4 p
+
+@OpInput0
+@opinput0_P
+
+将属性映射为local varible.
+// add variable mapping
+addvariablename(0, "density", "DENSITY");
+
+
+
+//hscript generate vex
+ifs(strcmp(chs("attribname"), "")!=0, 'f@`chs("attribname")` = 1;' ,"")
+
+# python generate vex
+if(hou.pwd().parm('attribname').eval() != ''):
+        return 'f@`chs(\"attribname\")` = 0;'
+else:
+        return ""
+
+
+
+
+@Frame	Float frame ($FF)
+@SimTime	Float simulation time ($ST), only present in DOP contexts.
+@SimFrame	Float simulation frame ($SF), only present in DOP contexts.
+@TimeInc	Float time step (1/$FPS)
+
+ix, iy, iz
+The integer index of the current voxel. With VDBs, this can be negative.
+
+resx, resy, resz
+The resolution of the current volume primitive. For VDBs this is the size of the active voxel region.
+
+dPdx, dPdy, dPdz
+Vectors giving the length and orientation of the x, y, and z edges of the 0th voxel.
+
+
+vector (3 floats)	@accel，@center，@dPdx，@dPdy，@dPdz @force，@rest，@torque，@up, @uv
+vector4 (4 floats)	@backtrack，@orient，@rot
+int	@id，@ix，@iy，@iz，@nextid，@pstate，@resx，@resy，@resz @vtxnum，@numvtx，@group_*
+string	@name，@instance，@OdpInput1，@OpInput2，@OpInput3，@OpInput4
+
+pic( a, x, y, d ) || pic("/img/comp1/null1",$TX,$TY,D_CR) 获取图像像素的数据, 进入3d调整 
+a is the name of OP in the Image Network; 
+x and y specify the location of the pixel (in the range [0-1]); $TX $TY $TZ $BBX $BBY 
+d: D_CR, D_CG, D_CB, D_CA, D_CHUE, D_CSAT, D_CVAL,D_CLUM for the red, green, blue, alpha, hue, saturation, value, or luminance of the pixel. 
+
+chopcf( a, b, c ) || chopcf("/ch/ch1/null1",0,$F) 传送chop类数据, 控制参数 
+a is the name of OP in CHOP; 
+b is the channel number; 0 | 1 
+c is the frame number. $F $F-$PT 

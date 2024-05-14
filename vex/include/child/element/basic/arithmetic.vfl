@@ -1,0 +1,464 @@
+
+#ifndef __ARITHMETIC_VFL__
+#define __ARITHMETIC_VFL__
+
+#include <precompile.vfl>
+
+#if 1
+    #include <arithmetic.vfl>
+#else
+#endif
+
+
+
+#define DEFINEFUNCarithmetici(DEFINEFUNCname)\
+        DEFINEFUNCname(int, int)\
+/*
+DEFINEFUNCarithmetici()
+*/
+#define DEFINEFUNCarithmeticf(DEFINEFUNCname)\
+        DEFINEFUNCname(float, int)\
+        DEFINEFUNCname(float, float)\
+/*
+DEFINEFUNCarithmeticf()
+*/
+#define DEFINEFUNCarithmeticv(DEFINEFUNCname)\
+        DEFINEFUNCname(vector2, int)\
+        DEFINEFUNCname(vector2, float)\
+        DEFINEFUNCname(vector2, vector2)\
+        DEFINEFUNCname(vector, int)\
+        DEFINEFUNCname(vector, float)\
+        DEFINEFUNCname(vector, vector)\
+        DEFINEFUNCname(vector4, int)\
+        DEFINEFUNCname(vector4, float)\
+        DEFINEFUNCname(vector4, vector4)\
+/*
+DEFINEFUNCarithmeticv()
+*/
+#define DEFINEFUNCarithmeticm(DEFINEFUNCname)\
+        DEFINEFUNCname(matrix2, matrix2)\
+        DEFINEFUNCname(matrix2, matrix3)\
+        DEFINEFUNCname(matrix2, matrix)\
+        DEFINEFUNCname(matrix3, matrix3)\
+        DEFINEFUNCname(matrix3, matrix)\
+        DEFINEFUNCname(matrix, matrix)\
+/*
+DEFINEFUNCarithmeticm()
+*/
+#define DEFINEFUNCarithmeticif(DEFINEFUNCname)\
+        DEFINEFUNCarithmetici(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticf(DEFINEFUNCname)\
+/*
+DEFINEFUNCarithmeticif()
+*/
+#define DEFINEFUNCarithmeticiv(DEFINEFUNCname)\
+        DEFINEFUNCarithmetici(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticv(DEFINEFUNCname)\
+/*
+DEFINEFUNCarithmeticiv()
+*/
+#define DEFINEFUNCarithmeticfv(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticf(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticv(DEFINEFUNCname)\
+/*
+DEFINEFUNCarithmeticfv()
+*/
+#define DEFINEFUNCarithmeticifv(DEFINEFUNCname)\
+        DEFINEFUNCarithmetici(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticf(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticv(DEFINEFUNCname)\
+/*
+DEFINEFUNCarithmeticifv()
+*/
+#define DEFINEFUNCarithmeticifvm(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticifv(DEFINEFUNCname)\
+        DEFINEFUNCarithmeticm(DEFINEFUNCname)\
+/*
+DEFINEFUNCarithmeticifvm()
+*/
+
+
+
+
+/*
+////////////////新版函数已经不会有如下问题////////////////
+以下函数使用需要小心，使用时不可作为别的函数的参数
+因为参数在使用过程中被修改了
+例如
+naturalnumber = mod(sum(naturalnumber, offsetvalue), len);
+是错误用法
+需改成：
+naturalnumber = sum(naturalnumber, offsetvalue);
+naturalnumber = mod(naturalnumber, len);
+*/
+
+#define FUNCsum(type0, type1)\
+        function\
+        type0 sum(\
+            const type0 arg0;\
+            const type1 arg1;\
+            ) {\
+            return arg0 + arg1;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsum)
+
+#define FUNCmult(type0, type1)\
+        function\
+        type0 mult(\
+            const type0 arg0;\
+            const type1 arg1;\
+            ) {\
+            return arg0 * arg1;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCmult)
+
+/*
+#define FUNCsumofsquares(type0, type1)\
+        function\
+        type0[] sumofsquares(\
+            const type0 arg0;\
+            const type1 arg1;\
+            ) {\
+            return arg0 * arg1;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsumofsquares)
+
+#define FUNCrootmeansquare(type0, type1)\
+        function\
+        type0[] rootmeansquare(\
+            const type0 arg0;\
+            const type1 arg1;\
+            ) {\
+            return arg0 * arg1;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCrootmeansquare)
+*/
+
+function
+int[] sum(
+    const int arr[];
+    const int arg;
+    ) {
+    int len = len(arr);
+    int result[];
+    resize(result, len);
+    for(int i = 0; i < len; ++i) {
+        result[i] = arr[i] + arg;
+    }
+    return result;
+}
+
+#define FUNCsumarr0(type0, type1)\
+        function\
+        type0[] sum(\
+            const type0 arr[];\
+            const type1 arg;\
+            ) {\
+            int len = len(arr);\
+            type0 result[];\
+            resize(result, len);\
+            for(int i = 0; i < len; ++i) {\
+                result[i] = arr[i] + arg;\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsumarr0)
+
+#define FUNCsumarr1(type0, type1)\
+        function\
+        type0[] sum(\
+            const type0 arr[];\
+            const type1 arg[];\
+            ) {\
+            int len = len(arr);\
+            type0 result[];\
+            resize(result, len);\
+            for(int i = 0; i < len; ++i) {\
+                result[i] = arr[i] + arg[i];\
+            }\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsumarr1)
+
+#define FUNCminus0(type0, type1)\
+        function\
+        type0[] minus(\
+            const type0 arr[];\
+            const type1 arg;\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] - arg);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCminus0)
+
+#define FUNCminus1(type0, type1)\
+        function\
+        type0[] minus(\
+            const type0 arr[];\
+            const type1 arg[];\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] - arg[i]);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCminus1)
+
+#define FUNCmult0(type0, type1)\
+        function\
+        type0[] mult(\
+            const type0 arr[];\
+            const type1 arg;\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] * arg);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCmult0)
+
+#define FUNCmult1(type0, type1)\
+        function\
+        type0[] mult(\
+            const type0 arr[];\
+            const type1 arg[];\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] * arg[i]);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCmult1)
+
+#define FUNCdivide0(type0, type1)\
+        function\
+        type0[] divide(\
+            const type0 arr[];\
+            const type1 arg;\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] / arg);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCdivide0)
+
+#define FUNCdivide1(type0, type1)\
+        function\
+        type0[] divide(\
+            const type0 arr[];\
+            const type1 arg[];\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] / arg[i]);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCdivide1)
+
+
+
+
+
+
+
+
+#define FUNCsub0(type0, type1)\
+        function\
+        type0[] sub(\
+            const type0 arr[];\
+            const type1 arg;\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arr[i] - arg);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsub0)
+
+
+#define FUNCsub1(type0, type1)\
+        function\
+        type0[] sub(\
+            const type0 arg;\
+            const type1 arr[];\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr); ++i)\
+                push(result, arg - arr[i]);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsub1)
+
+
+#define FUNCsub2(type0, type1)\
+        function\
+        type0[] sub(\
+            const type0 arr0[];\
+            const type1 arr1[];\
+            ) {\
+            type0 result[];\
+            for(int i = 0; i < len(arr0); ++i)\
+                push(result, arr0[i] - arr1[i]);\
+            return result;\
+        }\
+
+DEFINEFUNCarithmeticifv(FUNCsub2)
+
+
+
+
+
+
+function
+int[] mod(
+    const int arr[];
+    const int arg;
+    ) {
+    int len = len(arr);
+    int result[];
+    resize(result, len);
+    for(int i = 0; i < len; ++i) {
+        result[i] = arr[i] % arg;
+    }
+    return result;
+}
+
+
+
+
+
+
+function
+float modulo(
+    float a,b;
+    ) {
+    float r = a % b;
+    return r<0 ? r+b : r;
+}
+
+function
+vector modulo(
+    vector a,b;
+    ) {
+    return set(modulo(a.x,b.x),
+               modulo(a.y,b.y),
+               modulo(a.z,b.z));
+}
+
+function
+vector modulo(
+    vector a; float b;
+    ) {
+    return set(modulo(a.x,b),
+               modulo(a.y,b),
+               modulo(a.z,b));
+}
+
+function
+vector4 modulo(
+    vector4 a,b;
+    ) {
+    return set(modulo(a.x,b.x),
+               modulo(a.y,b.y),
+               modulo(a.z,b.z),
+               modulo(a.w,b.w));
+}
+
+function
+vector4 modulo(
+    vector4 a; float b;
+    ) {
+    return set(modulo(a.x,b),
+               modulo(a.y,b),
+               modulo(a.z,b),
+               modulo(a.w,b));
+}
+
+
+
+
+
+
+function
+int quotient(
+    int a,b;
+    ) {
+    return a/b;
+}
+
+function
+float quotient(
+    float a,b;
+    ) {
+    return quotient((int)a, (int)b);
+}
+
+function
+vector2 quotient(
+    vector2 a,b;
+    ) {
+    return set(quotient(a.x,b.x), quotient(a.y,b.y));
+}
+
+function
+vector quotient(
+    vector a,b;
+    ) {
+    return set(quotient(a.x,b.x), quotient(a.y,b.y), quotient(a.z,b.z));
+}
+
+function
+vector4 quotient(
+    vector4 a,b;
+    ) {
+    return set(quotient(a.x,b.x), quotient(a.y,b.y), quotient(a.z,b.z), quotient(a.w,b.w));
+}
+
+function
+vector2 quotient(
+    vector2 a;
+    float b;
+    ) {
+    return set(quotient(a.x,b.x), quotient(a.y,b.y));
+}
+
+function
+vector quotient(
+    vector a;
+    float b;
+    ) {
+    return set(quotient(a.x,b.x), quotient(a.y,b.y), quotient(a.z,b.z));
+}
+
+function
+vector4 quotient(
+    vector4 a;
+    float b;
+    ) {
+    return set(quotient(a.x,b.x), quotient(a.y,b.y), quotient(a.z,b.z), quotient(a.w,b.w));
+}
+
+
+
+
+
+
+
+#endif

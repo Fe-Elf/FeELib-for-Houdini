@@ -1,0 +1,251 @@
+
+#ifndef __PC_VFL__
+#define __PC_VFL__
+
+#include <pc.vfl>
+
+
+
+
+#include <bbox.vfl>
+#include <constant.vfl>
+#include <pcdeep.vfl>
+
+
+
+
+function
+int[] nearpoints(
+    const int geo;
+    const vector pos;
+    ) {
+    return nearpoints(geo, pos, getbbox_diameter(geo));
+}
+
+function
+int[] nearpoints(
+    const int geo;
+    const vector pos;
+    const int maxpts;
+    ) {
+    return nearpoints(geo, pos, getbbox_diameter(geo), maxpts);
+}
+
+function
+int[] nearpoints(
+    const int geo;
+    const string ptgroup;
+    const vector pos;
+    ) {
+    return nearpoints(geo, ptgroup, pos, getbbox_diameter(geo));
+}
+
+function
+int[] nearpoints(
+    const int geo;
+    const string ptgroup;
+    const vector pos;
+    const int maxpts;
+    ) {
+    return nearpoints(geo, ptgroup, pos, getbbox_diameter(geo), maxpts);
+}
+
+
+
+
+function
+float farthestdis(
+    const int geo;
+    const int ptnum;
+    ) {
+    vector dir = lP1 - lP0;
+    vector vec = pP - lP0;
+    return pcfarthest(handle);
+}
+
+
+
+
+
+
+function
+float pcfarthest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    const string Nchannel;
+    const vector N;
+    const float radius;
+    const int maxpts;
+    ) {
+    return 1;
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    const float radius;
+    const int maxpts;
+    ) {
+    int handle = pcopen(geo, Pchannel, P, radius, maxpts);
+    float maxdis = 0;
+    while (pciterate(handle)) {
+        float dis;
+        pcimport(handle, "point.distance", dis);
+        maxdis = max(maxdis, dis);
+    }
+    return maxdis;
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const vector P;
+    const float radius;
+    const int maxpts;
+    ) {
+    return pcfarthest(geo, "P", P, radius, MAXINTS32);
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    const int maxpts;
+    ) {
+    return pcfarthest(geo, Pchannel, P, getbbox_diameter(geo), maxpts);
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const vector P;
+    const int maxpts;
+    ) {
+    return pcfarthest(geo, P, getbbox_diameter(geo), maxpts);
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    const float radius;
+    ) {
+    return pcfarthest(geo, Pchannel, P, radius, MAXINTS32);
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const vector P;
+    const float radius;
+    ) {
+    return pcfarthest(geo, P, radius, MAXINTS32);
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    ) {
+    return pcfarthest(geo, Pchannel, P, getbbox_diameter(geo));
+}
+
+function
+float pcfarthest(
+    const int geo;
+    const vector P;
+    ) {
+    if(1)
+        return pcfarthest(geo, "P", P);
+    else
+        return pcfarthest(geo, P, getbbox_diameter(geo));
+}
+
+
+
+
+
+
+
+
+
+
+
+function
+float pcshortest(
+    int handle;
+    ) {
+    float mindis = MAXFS32;
+    while (pciterate(handle)) {
+        float dis;
+        pcimport(handle, "point.distance", dis);
+        if(dis > 0)
+            mindis = min(mindis, dis);
+    }
+    return mindis;
+}
+/*
+function
+float pcshortest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    const string Nchannel;
+    const vector N;
+    const float radius;
+    ) {
+    int handle = pcopen(geo, Pchannel, P, Nchannel, N, radius, 2);
+    return pcshortest(handle);
+}
+*/
+function
+float pcshortest(
+    const int geo;
+    const string Pchannel;
+    const vector P;
+    const float radius;
+    ) {
+    int handle = pcopen(geo, Pchannel, P, radius, 2);
+    return pcshortest(handle);
+    /*
+    float mindis = MAXFS32;
+    while (pciterate(handle)) {
+        float dis;
+        pcimport(handle, "point.distance", dis);
+        if(dis > 0)
+            mindis = max(mindis, dis);
+    }
+    return mindis;
+    */
+}
+
+function
+float pcshortest(
+    const int geo;
+    const vector P;
+    const float radius;
+    ) {
+    return pcshortest(geo, "P", P, radius);
+}
+
+function
+float pcshortest(
+    const int geo;
+    const vector P;
+    ) {
+    return pcshortest(geo, P, getbbox_diameter(geo));
+}
+
+
+
+
+
+
+
+#endif

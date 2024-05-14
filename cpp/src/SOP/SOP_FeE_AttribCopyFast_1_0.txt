@@ -1,0 +1,23 @@
+#type: node
+#context: sop
+#internal: FeE
+#largeicon: /nodes/sop/SOP_attribcopy.png
+
+#tags: shape
+
+= FeE =
+
+""" Builds an FeE """
+
+@parameters
+
+
+
+@locals
+PT:
+    current point number
+NPT:
+    number of points in the FeE
+
+@related
+- [Node:sop/circle]

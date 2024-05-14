@@ -1,0 +1,5 @@
+
+
+python .\buildAll.py 
+
+pause

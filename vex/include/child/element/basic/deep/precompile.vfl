@@ -1,0 +1,242 @@
+
+#ifndef __PRECOMPILE_VFL__
+#define __PRECOMPILE_VFL__
+
+#include <precompile.vfl>
+
+/*
+FUNC(int)
+FUNC(float)
+FUNC(vector2)
+FUNC(vector)
+FUNC(vector4)
+FUNC(matrix2)
+FUNC(matrix3)
+FUNC(matrix)
+FUNC(string)
+#define FUNC(type)\
+        function\
+        type (\
+            ;\
+            ) {\
+            ;\
+        }\
+*/
+#define DEFINEFUNCi(DEFINEFUNCname)\
+        DEFINEFUNCname(int)\
+/*
+DEFINEFUNCi()
+*/
+#define DEFINEFUNCf(DEFINEFUNCname)\
+        DEFINEFUNCname(float)\
+/*
+DEFINEFUNCf()
+*/
+#define DEFINEFUNCv2(DEFINEFUNCname)\
+        DEFINEFUNCname(vector2)\
+/*
+DEFINEFUNCv2()
+*/
+#define DEFINEFUNCv3(DEFINEFUNCname)\
+        DEFINEFUNCname(vector)\
+/*
+DEFINEFUNCv()
+*/
+#define DEFINEFUNCv4(DEFINEFUNCname)\
+        DEFINEFUNCname(vector4)\
+/*
+DEFINEFUNCv4()
+*/
+#define DEFINEFUNCif(DEFINEFUNCname)\
+        DEFINEFUNCname(int)\
+        DEFINEFUNCname(float)\
+/*
+DEFINEFUNCif()
+*/
+#define DEFINEFUNCis(DEFINEFUNCname)\
+        DEFINEFUNCname(int)\
+        DEFINEFUNCname(string)\
+/*
+DEFINEFUNCis()
+*/
+#define DEFINEFUNCv24(DEFINEFUNCname)\
+        DEFINEFUNCname(vector2)\
+        DEFINEFUNCname(vector4)\
+/*
+DEFINEFUNCv4()
+*/
+#define DEFINEFUNCv23(DEFINEFUNCname)\
+        DEFINEFUNCname(vector2)\
+        DEFINEFUNCname(vector)\
+/*
+DEFINEFUNCv23()
+*/
+#define DEFINEFUNCv(DEFINEFUNCname)\
+        DEFINEFUNCname(vector2)\
+        DEFINEFUNCname(vector)\
+        DEFINEFUNCname(vector4)\
+/*
+DEFINEFUNCv()
+*/
+#define DEFINEFUNCm3(DEFINEFUNCname)\
+        DEFINEFUNCname(matrix3)\
+        DEFINEFUNCname(matrix)\
+/*
+DEFINEFUNCm3()
+*/
+#define DEFINEFUNCm(DEFINEFUNCname)\
+        DEFINEFUNCname(matrix2)\
+        DEFINEFUNCname(matrix3)\
+        DEFINEFUNCname(matrix)\
+/*
+DEFINEFUNCm()
+*/
+#define DEFINEFUNCfv(DEFINEFUNCname)\
+        DEFINEFUNCname(float)\
+        DEFINEFUNCv(DEFINEFUNCname)\
+/*
+DEFINEFUNCfv()
+*/
+#define DEFINEFUNCfm(DEFINEFUNCname)\
+        DEFINEFUNCname(float)\
+        DEFINEFUNCm(DEFINEFUNCname)\
+/*
+DEFINEFUNCfm()
+*/
+#define DEFINEFUNCvm(DEFINEFUNCname)\
+        DEFINEFUNCv(DEFINEFUNCname)\
+        DEFINEFUNCm(DEFINEFUNCname)\
+/*
+DEFINEFUNCvm()
+*/
+#define DEFINEFUNCifv(DEFINEFUNCname)\
+        DEFINEFUNCif(DEFINEFUNCname)\
+        DEFINEFUNCv(DEFINEFUNCname)\
+/*
+DEFINEFUNCifv()
+*/
+#define DEFINEFUNCifm(DEFINEFUNCname)\
+        DEFINEFUNCif(DEFINEFUNCname)\
+        DEFINEFUNCm(DEFINEFUNCname)\
+/*
+DEFINEFUNCifm()
+*/
+#define DEFINEFUNCifs(DEFINEFUNCname)\
+        DEFINEFUNCif(DEFINEFUNCname)\
+        DEFINEFUNCname(string)\
+/*
+DEFINEFUNCifs()
+*/
+#define DEFINEFUNCfvm(DEFINEFUNCname)\
+        DEFINEFUNCname(float)\
+        DEFINEFUNCvm(DEFINEFUNCname)\
+/*
+DEFINEFUNCfvm()
+*/
+#define DEFINEFUNCifvm(DEFINEFUNCname)\
+        DEFINEFUNCif(DEFINEFUNCname)\
+        DEFINEFUNCvm(DEFINEFUNCname)\
+/*
+DEFINEFUNCifvm()
+*/
+#define DEFINEFUNCifvs(DEFINEFUNCname)\
+        DEFINEFUNCifv(DEFINEFUNCname)\
+        DEFINEFUNCname(string)\
+/*
+DEFINEFUNCifvs()
+*/
+#define DEFINEFUNCfvms(DEFINEFUNCname)\
+        DEFINEFUNCfvm(DEFINEFUNCname)\
+        DEFINEFUNCname(string)\
+/*
+DEFINEFUNCfvms()
+*/
+#define DEFINEFUNCall(DEFINEFUNCname)\
+        DEFINEFUNCifvm(DEFINEFUNCname)\
+        DEFINEFUNCname(string)\
+/*
+DEFINEFUNCall()
+*/
+
+#define DEFINEFUNCclass(DEFINEFUNCname)\
+        DEFINEFUNCname(point)\
+        DEFINEFUNCname(prim)\
+        DEFINEFUNCname(vertex)\
+/*
+DEFINEFUNCclass()
+*/
+
+#define DEFINEFUNCforeach(DEFINEFUNCname0, DEFINEFUNCname1, DEFINEFUNCname2)\
+        function\
+        int[] DEFINEFUNCname0(\
+            const int geo;\
+            const int elemnums[];\
+            ) {\
+            int result[];\
+            foreach (int elemnum; elemnums) {\
+                DEFINEFUNCname2(result, DEFINEFUNCname1(geo, elemnum));\
+            }\
+            return result;\
+        }\
+/*
+DEFINEFUNCforeach()
+*/
+
+#define DEFINEFUNCuniformpush(DEFINEFUNCname0, DEFINEFUNCname1)\
+        DEFINEFUNCforeach(DEFINEFUNCname0, DEFINEFUNCname1, uniformpush)\
+/*
+DEFINEFUNCuniformpush()
+*/
+#define DEFINEFUNCupush(DEFINEFUNCname0, DEFINEFUNCname1)\
+        DEFINEFUNCforeach(DEFINEFUNCname0, DEFINEFUNCname1, upush)\
+/*
+DEFINEFUNCupush()
+*/
+#define DEFINEFUNCpush(DEFINEFUNCname0, DEFINEFUNCname1)\
+        DEFINEFUNCforeach(DEFINEFUNCname0, DEFINEFUNCname1, push)\
+/*
+DEFINEFUNCpush()
+*/
+
+
+#define DEFINEFUNCuniformpushiter(DEFINEFUNCname0, DEFINEFUNCname1)\
+        function\
+        int[] DEFINEFUNCname0(\
+            const int geo;\
+            const int elemnums[];\
+            const int numiterations;\
+            ) {\
+            int result[];\
+            if (numiterations > -1) {\
+                result = elemnums;\
+                for (int i = 0; i < numiterations; ++i){\
+                    uniformpush(result, DEFINEFUNCname1(geo, result));\
+                }\
+            }\
+            return result;\
+        }\
+/*
+DEFINEFUNCuniformpushiter()
+*/
+#define DEFINEFUNCpushiter(DEFINEFUNCname0, DEFINEFUNCname1)\
+        function\
+        int[] DEFINEFUNCname0(\
+            const int geo;\
+            const int elemnums[];\
+	        const int numiterations;\
+            ) {\
+            int result[];\
+            if (numiterations > -1) {\
+                result = elemnums;\
+                for (int i = 0; i < numiterations; ++i){\
+                    push(result, DEFINEFUNCname1(geo, result));\
+                }\
+            }\
+            return result;\
+        }\
+/*
+DEFINEFUNCpushiter()
+*/
+
+
+#endif

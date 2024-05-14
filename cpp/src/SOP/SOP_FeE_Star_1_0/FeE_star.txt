@@ -1,0 +1,42 @@
+#type: node
+#context: sop
+#internal: star
+#largeicon: /nodes/sop/SOP_hdk_star.png
+
+#tags: shape
+
+= Star =
+
+""" Builds an n-pointed star """
+
+@parameters
+
+Divisions:
+    #channels: /divs
+    Number of points on the star
+
+Radius:
+    #channels: /rad
+    The radius of the star
+
+NegRadius:
+    #channels: /nradius
+    Allows the radius to be negative.  This may result in bowtie
+    polygons.
+
+Center:
+    #channels: /tx /ty /tz
+    The center of the star
+
+Orientation:
+    #channels: /orient
+    The orientation of the star
+
+@locals
+PT:
+    current point number
+NPT:
+    number of points in the star
+
+@related
+- [Node:sop/circle]

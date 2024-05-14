@@ -1,0 +1,80 @@
+
+#ifndef __POSITION_VFL__
+#define __POSITION_VFL__
+
+#include <position.vfl>
+
+
+
+#include <promoteattrib.vfl>
+
+
+
+function
+vector pointP_avg(
+    const int geo;
+    ) {
+    return avg(pointv(geo, "P", naturalnum(npoints(geo))));
+}
+
+function
+vector pointP_avg(
+    const int geo;
+    const string groupname;
+    ) {
+    return avg(pointv(geo, "P", naturalnum(npointsgroup(geo, groupname))));
+}
+
+function
+vector primP_avg(
+    const int geo;
+    const int primnum;
+    ) {
+    return prim(geo, 'P', primnum);
+    //return avg(primpointspos(geo, primnum));
+}
+
+function
+vector primP_bbox(
+    const int geo;
+    const int primnum;
+    ) {
+    return getbbox_center(geo, itoa(primnum));
+}
+
+function
+vector[] primP_avg(
+    const int geo;
+    const int primnums[];
+    ) {
+    vector result[];
+    foreach (int primnum; primnums){
+        push(result, primP_avg(geo, primnum));
+    }
+    return result;
+}
+
+function
+vector[] primP_bbox(
+    const int geo;
+    const int primnums[];
+    ) {
+    vector result[];
+    foreach (int primnum; primnums){
+        push(result, primP_bbox(geo, primnum));
+    }
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+#endif
+
+

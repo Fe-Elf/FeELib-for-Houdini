@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="fee_OPBatch" label="FeE OPBatch">
+    <memberTool name="filecache"/>
+    <memberTool name="refresh all file SOP"/>
+    <memberTool name="extract_all_sub"/>
+    <memberTool name="Reconnect all Path to $HIP"/>
+    <memberTool name="createNodesUnderInput"/>
+  </toolshelf>
+
+  <tool name="filecache" label="File Cache" icon="SOP_filecache">
+    <script scriptType="python"><![CDATA[
+'''
+Houdiniå°èæ¬:æåfilecacheèç¹å°/outä¸
+ææ¶åä¸æ¸¸å¤§æ¹äºï¼éè¦æ ¹æ®ä¾èµå³ç³»æfilecacheä»¬ä¾æ¬¡è¾åºä¸éï¼filecacheå¤äºä¹åä¾æ¬¡ç¹ä¸æ¯å¾æ¹ä¾¿ï¼æä»¥æäºè¿ä¹ä¸ªå°èæ¬ã
+
+ä½¿ç¨æ¹æ³
+
+å°èæ¬å­ä¸ºtoolï¼å¯ä»¥æ¾å¨shelfä¸ï¼éæ©ç»æçèç¹ï¼ç¹å»æ­¤toolå³å¯å¨/outä¸çæææç»æèç¹ä¾èµçfilecache
+
+ç®åå¹¶ä¿çä¾èµå³ç³»
+ä¿çåèç¹é¢è²
+'''
+
+import hou
+
+def isFileCacheNode(node):
+    nodeTypeName = node.type().name()
+    return nodeTypeName == 'filecache' or nodeTypeName == r'FeE::fileCache' or nodeTypeName == 'filecache_fee'
+
+hou.Node.isFileCacheNode = isFileCacheNode
+
+
+
+class NodeChain(object):
+    def __init__(self, node):
+        self.node = node
+        self.inputs = []
+        # if self.isFileCacheNode():
+        #    node.setColor(hou.Color(0.9, 0.8, 0.55))
+
+    def ropName(self):
+        return self.node.path().replace('/', '_')
+
+    def isFileCacheNode(self):
+        return self.node.isFileCacheNode()
+
+    def createRopNodes(self, ropNodeParent):
+        ropNode = ropNodeParent.node(self.ropName())
+
+        if not ropNode:
+            # take the case that first selected node is not filecache into consideration
+            ropNode = ropNodeParent.createNode('fetch' if self.isFileCacheNode() else 'merge')
+            ropNode.setName(self.ropName())
+        else:
+            for idx in range(len(ropNode.inputs())):
+                ropNode.setInput(idx, None)
+        
+        ropNode.setColor(self.node.color())
+        if self.isFileCacheNode():
+            ropNode.parm('source').set(self.node.path() + '/render')
+
+        for idx, input_rop in enumerate([input.createRopNodes(ropNodeParent) for input in self.inputs]):
+            ropNode.setInput(idx, input_rop)
+        ropNode.moveToGoodPosition()
+        return ropNode
+
+
+
+
+def buildNodeChain(node):
+    chain = NodeChain(node)
+    chain.inputs = [buildNodeChain(node) for node in directUpstreamFC(node)]
+    return chain
+
+def directUpstreamFC(node):
+    fileCacheNodes = []
+    for inputNode in node.inputs():
+        if inputNode.isFileCacheNode():
+            fileCacheNodes.append(inputNode)
+        else:
+            fileCacheNodes.extend(directUpstreamFC(inputNode))
+    return fileCacheNodes
+
+
+
+for node in hou.selectedNodes():
+    nodeChain = buildNodeChain(node)
+    nodeChain.createRopNodes(hou.node('/out'))
+
+
+]]></script>
+  </tool>
+
+  <tool name="refresh all file SOP" label="Refresh file SOP" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[
+def foreverychildren(node):
+    nodetype = node.type()
+    if nodetype.name() == 'file' and bool(node.inputs()[0]) and node.evalParm("filemode") == 1:
+        node.setParms({"filemode": 'write'})
+        node.cook()
+        node.setParms({"filemode": 'read'})
+    elif node.isNetwork() and nodetype.category().name() == 'Sop' and not node.isLockedHDA():
+        for child in node.children():
+            foreverychildren(child)
+
+map(foreverychildren, hou.selectedNodes())
+]]></script>
+  </tool>
+
+  <tool name="extract_all_sub" label="Extract All Sub" icon="SHELF_extract_object">
+    <script scriptType="python"><![CDATA[
+import toolutils
+import soptoolutils
+
+'''
+def searchSubNode(node):
+    if node.children()[0]:
+    if(node.type() == hou.nodeType(hou.sopNodeTypeCategory(), "geo")):
+    searchSubNode(node)
+'''
+
+scene_viewer = toolutils.sceneViewer()
+container = soptoolutils.createSopNodeContainer(scene_viewer, "extract_object1")
+object_mergeSOP = container.createNode('object_merge')
+
+object_mergeSOP.parm("xformtype").set(1)
+
+relativePath = []
+for selectedNode in hou.selectedNodes():
+    if(selectedNode.type() == hou.nodeType(hou.objNodeTypeCategory(), "geo")):
+        relativePath.append(object_mergeSOP.relativePathTo(selectedNode))
+    else:
+        for subnode in selectedNode.allSubChildren():
+            if(subnode.type() == hou.nodeType(hou.objNodeTypeCategory(), "geo")):
+                relativePath.append(object_mergeSOP.relativePathTo(subnode))
+
+
+object_mergeSOP.parm("objpath1").set(' '.join(relativePath))
+
+
+'''
+nummerge = 0
+for selectedNode in hou.selectedNodes():
+    if(selectedNode.type() == hou.nodeType(hou.objNodeTypeCategory(), "geo")):
+        nummerge += 1
+        relativePath = object_mergeSOP.relativePathTo(selectedNode)
+        object_mergeSOP.parm("objpath" + str(nummerge)).set(relativePath)
+    else:
+        for subnode in selectedNode.allSubChildren():
+            if(subnode.type() == hou.nodeType(hou.objNodeTypeCategory(), "geo")):
+                nummerge += 1
+                relativePath = object_mergeSOP.relativePathTo(subnode)
+                object_mergeSOP.parm("objpath" + str(nummerge)).set(relativePath)
+
+''']]></script>
+  </tool>
+
+  <tool name="Reconnect all Path to $HIP" label="Reconnect all Path to $HIP" icon="SOP_file">
+    <script scriptType="python"><![CDATA[
+import hou
+import os
+import re
+
+import fee_Utils
+import fee_HDA
+# from importlib import reload
+# reload(fee_Utils)
+
+fee_Utils.displayConfirmation()
+
+
+
+originPath = hou.ui.readInput('OriginPath', buttons=(''), initial_contents='D:/HoudiniWorkSpace/DailyTest/abc/')[1]
+originPath = originPath.lstrip()
+originPath = originPath.rstrip()
+originPath = re.sub('\\\\', '/', originPath)
+originPath = originPath.rstrip('/')
+
+#print(originPath)
+# if not os.path.isdir(originPath):
+#     raise ValueError('invalid path')
+
+selectedNodes = hou.selectedNodes()
+if selectedNodes:
+    print()
+    print('changed parm:')
+
+selectedNodes = hou.selectedNodes()
+for selectedNode in selectedNodes:
+    processNodes = list(selectedNode.allSubChildren())
+    processNodes.append(selectedNode)
+    processNodes = tuple(processNodes)
+    for child in processNodes:
+        for parm in child.parms():
+            parmTemplate = parm.parmTemplate()
+            if not isinstance(parmTemplate, hou.StringParmTemplate) and not isinstance(parmTemplate, hou.MenuParmTemplate):
+                continue
+            try:
+                parm.expressionLanguage()
+                continue
+            except:
+                pass
+            rawValue = parm.rawValue()
+            # if not os.path.isdir(rawValue):
+            #     continue
+            if originPath not in rawValue:
+                continue
+            rawValue = re.sub(originPath, '$HIP/', rawValue)
+            parm.set(rawValue)
+            print(parm)
+]]></script>
+  </tool>
+
+  <tool name="createNodesUnderInput" label="Create Nodes Under Input" icon="SOP_null">
+    <script scriptType="python"><![CDATA[
+import fee_Node
+# from importlib import reload
+# reload(fee_Node)
+
+nodeTypeNames = ('null', )
+#shiftPos = hou.Vector2(0, -1)
+
+selectedNodes = hou.selectedNodes()
+for selectedNode in selectedNodes:
+    
+    inputConnectors = selectedNode.inputConnectors()
+    numInput = len(inputConnectors)
+    for inputnum in range(numInput):
+        subnetInput = selectedNode.item(str(inputnum+1))
+        
+        upstreamNode = subnetInput
+        upstreamPos = upstreamNode.position()
+        
+        for nodesTypeName in nodeTypeNames:
+            upstreamNode = fee_Node.createOutputNode_allItemVer(upstreamNode, nodesTypeName)
+            #upstreamNode = upstreamNode.createOutputNode(nodesTypeName)
+            #upstreamPos += shiftPos
+            #upstreamNode.setPosition(upstreamPos)
+        ]]></script>
+  </tool>
+</shelfDocument>

@@ -1,0 +1,160 @@
+
+#ifndef __COMMON_VFL__
+#define __COMMON_VFL__
+
+#include <common.vfl>
+
+
+#define importpointattrib(importattrib_geo, importattrib_datatype, importattrib_name)\
+        importattrib_datatype importattrib_name[];\
+        for (int i = 0; i < @numpt; ++i){\
+            push(importattrib_name, importattrib_datatype(point(importattrib_geo, "importattrib_name", i)));\
+        }\
+
+#define importprimattrib(importattrib_geo, importattrib_datatype, importattrib_name)\
+        importattrib_datatype importattrib_name[];\
+        for (int i = 0; i < @numprim; ++i){\
+            push(importattrib_name, importattrib_datatype(prim(importattrib_geo, "importattrib_name", i)));\
+        }\
+
+#define importvertexattrib(importattrib_geo, importattrib_datatype, importattrib_name)\
+        importattrib_datatype importattrib_name[];\
+        for (int i = 0; i < @numvtx; ++i){\
+            push(importattrib_name, importattrib_datatype(vertex(importattrib_geo, "importattrib_name", i)));\
+        }\
+
+#define importpointattrib0(importattrib_datatype, importattrib_name)\
+        importattrib_datatype importattrib_name[];\
+        for (int i = 0; i < @numpt; ++i){\
+            push(importattrib_name, importattrib_datatype(point(0, "importattrib_name", i)));\
+        }\
+
+#define importprimattrib0(importattrib_datatype, importattrib_name)\
+        importattrib_datatype importattrib_name[];\
+        for (int i = 0; i < @numprim; ++i){\
+            push(importattrib_name, importattrib_datatype(prim(0, "importattrib_name", i)));\
+        }\
+
+#define importvertexattrib0(importattrib_datatype, importattrib_name)\
+        importattrib_datatype importattrib_name[];\
+        for (int i = 0; i < @numvtx; ++i){\
+            push(importattrib_name, importattrib_datatype(vertex(0, "importattrib_name", i)));\
+        }\
+
+
+
+
+#define exportpointattrib(exportattrib_geo, exportattrib_name)\
+        for (int i = 0; i < @numpt; ++i){\
+            setpointattrib(exportattrib_geo, "exportattrib_name", i, exportattrib_name[i]);\
+        }\
+
+#define exportprimattrib(exportattrib_geo, exportattrib_name)\
+        for (int i = 0; i < @numprim; ++i){\
+            setprimattrib(exportattrib_geo, "exportattrib_name", i, exportattrib_name[i]);\
+        }\
+
+#define exportvertexattrib(exportattrib_geo, exportattrib_name)\
+        for (int i = 0; i < @numvtx; ++i){\
+            setvertexattrib(exportattrib_geo, "exportattrib_name", i, exportattrib_name[i]);\
+        }\
+
+#define exportpointattrib0(exportattrib_name)\
+        for (int i = 0; i < @numpt; ++i){\
+            setpointattrib(0, "exportattrib_name", i, exportattrib_name[i]);\
+        }\
+
+#define exportprimattrib0(exportattrib_name)\
+        for (int i = 0; i < @numprim; ++i){\
+            setprimattrib(0, "exportattrib_name", i, exportattrib_name[i]);\
+        }\
+
+#define exportvertexattrib0(exportattrib_name)\
+        for (int i = 0; i < @numvtx; ++i){\
+            setvertexattrib(0, "exportattrib_name", i, exportattrib_name[i]);\
+        }\
+
+
+
+
+function
+vector pointp(
+    const int geo;
+    const int elemnum;
+    ) {
+    return point(geo, 'P', elemnum);
+}
+
+function
+vector pointp(
+    const int elemnum;
+    ) {
+    return point(0, 'P', elemnum);
+}
+
+function
+vector pointp1(
+    const int elemnum;
+    ) {
+    return point(1, 'P', elemnum);
+}
+
+function
+vector pointp2(
+    const int elemnum;
+    ) {
+    return point(2, 'P', elemnum);
+}
+
+function
+vector pointp3(
+    const int elemnum;
+    ) {
+    return point(3, 'P', elemnum);
+}
+
+
+function
+vector pointn(
+    const int geo;
+    const int elemnum;
+    ) {
+    return point(geo, 'N', elemnum);
+}
+
+function
+vector pointn(
+    const int elemnum;
+    ) {
+    return point(0, 'N', elemnum);
+}
+
+
+
+function
+vector primp(
+    const int geo;
+    const int elemnum;
+    ) {
+    return prim(geo, 'N', elemnum);
+}
+
+function
+vector primp(
+    const int elemnum;
+    ) {
+    return prim(0, 'N', elemnum);
+}
+
+
+
+
+
+#endif
+
+
+
+
+
+
+

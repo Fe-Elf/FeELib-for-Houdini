@@ -1,0 +1,4 @@
+
+python .\delAllBuild.py 
+
+pause

@@ -1,0 +1,233 @@
+
+#ifndef __POLYGON_VFL__
+#define __POLYGON_VFL__
+
+#include <polygon.vfl>
+
+
+
+
+#include <arithmetic.vfl>
+#include <comparedeep.vfl>
+#include <hedge.vfl>
+#include <promoteattrib.vfl>
+#include <vector.vfl>
+
+
+
+
+function
+void reversepoly(
+    int geo;
+    int primnum;
+    ) {
+    int pts[] = primpoints(geo, primnum); //this func is ordered
+    removeprim(geo, primnum, 0);
+    addprim(geo, "poly", reverse(pts));
+}
+
+
+function
+vector centroid(
+    vector pos[];
+    ) {
+    return vector(sum(pos)) / len(pos);
+}
+
+function
+vector centroid(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return centroid(pos);
+}
+
+function
+vector gravity_center(
+    vector pos[];
+    ) {
+    return centroid(pos);
+}
+
+function
+vector gravity_center(
+    const int geo;
+    const int primnum;
+    ) {
+    return centroid(geo, primnum);
+}
+
+
+
+
+
+
+
+
+
+
+
+function
+vector[] poly_dir(
+    const vector pos[];
+    ) {
+    return sub(offset(pos, 1), pos);
+    // vector poly_dir[] = poly_dir(pos);
+}
+
+function
+vector[] poly_dir(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return poly_dir(pos);
+    // vector poly_dir[] = poly_dir(geo, primnum);
+}
+
+function
+float[] poly_length(
+    const vector pos[];
+    ) {
+    return length(poly_dir(pos));
+    // float poly_length[] = poly_length(pos);
+}
+
+function
+float[] poly_length(
+    const int geo;
+    const int primnum;
+    ) {
+    return length(poly_dir(geo, primnum));
+    // float poly_length[] = poly_length(geo, primnum);
+}
+
+
+
+
+
+
+
+
+
+function
+float poly_product(
+    const int geo;
+    const int primnum;
+    ) {
+    return product(poly_length(geo, primnum));
+    // float poly_product[] = poly_product(geo, primnum);
+}
+
+function
+float poly_product(
+    const vector pos[];
+    ) {
+    return product(poly_length(pos));
+    // float poly_product[] = poly_product(pos);
+}
+
+function
+float perimeter(
+    const int geo;
+    const int primnum;
+    ) {
+    if(1)
+        return float(primintrinsic(geo, "measuredperimeter", primnum));
+    else if(0)
+        return sum(poly_length(geo, primnum));
+    else
+        return sum(hedge_length(geo, primhedges(geo, primnum)));
+}
+
+function
+float perimeter(
+    const vector pos[];
+    ) {
+    return sum(poly_length(pos));
+}
+
+
+
+function
+vector directedarea(
+    const vector pos[];
+    ) {
+    vector dir0[] = poly_dir(pos);
+    vector dir1[] = offset(dir0, 1);
+    vector result = 0;
+    for (int i = 0; i < len(pos); ++i)
+        result += cross(dir0[i], dir1[i]);
+    return result / 2;
+}
+
+function
+vector directedarea(
+    const vector pos[];
+    vector up;
+    ) {
+    vector result = directedarea(pos);
+    return result * comparedir(up, result);
+}
+
+function
+vector directedarea(
+    vector pos0, pos1, pos2;
+    ) {
+    vector cross = cross(pos0 - pos1, pos2 - pos1);
+    return cross / 2;
+}
+
+function
+vector directedarea(
+    vector pos0, pos1, pos2;
+    vector up;
+    ) {
+    vector result = directedarea(pos0, pos1, pos2);
+    return result * comparedir(up, result);
+}
+
+
+function
+vector directedarea(
+    const int geo;
+    const int primnum;
+    ) {
+    vector pos[] = primpointspos(geo, primnum);
+    return directedarea(pos);
+}
+
+function
+float area(
+    const vector pos[];
+    ) {
+    return length(directedarea(pos));
+}
+
+function
+float area(
+    const int geo;
+    const int primnum;
+    ) {
+    if(1)
+        return primintrinsic(geo, "measuredarea", primnum);
+    else{
+        vector pos[] = primpointspos(geo, primnum);
+        return area(pos);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

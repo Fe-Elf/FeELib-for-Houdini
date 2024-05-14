@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mainMenu>
+  <menu>
+
+    <addScriptItem id="openHIP">
+      <label>Open $HIP</label>
+      <parent>file_menu</parent>
+      <insertAfter>recent_files</insertAfter>
+      <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?DATATYPES_folder.svg
+import os
+
+start_directory = hou.getenv('HIP')
+os.startfile(start_directory)
+    ]]></scriptCode>
+    </addScriptItem>
+
+    <addScriptItem id="openTEMP">
+      <label>Open $TEMP</label>
+      <parent>file_menu</parent>
+      <insertAfter>openHIP</insertAfter>
+      <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?DATATYPES_folder.svg
+import os
+
+start_directory = hou.getenv('TEMP')
+os.startfile(start_directory)
+    ]]></scriptCode>
+    </addScriptItem>
+
+    <addScriptItem id="openHFS">
+      <label>Open $HFS</label>
+      <parent>file_menu</parent>
+      <insertAfter>openTEMP</insertAfter>
+      <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?DATATYPES_folder.svg
+import os
+
+start_directory = hou.getenv('HFS')
+os.startfile(start_directory)
+    ]]></scriptCode>
+    </addScriptItem>
+
+  </menu>
+
+
+
+
+
+
+  <menuBar>
+    <!-- ======================== FeE Menu ============================== -->
+    <subMenu id="FeELibMainMenu">
+    <label>FeE</label>
+
+      <!-- <separatorItem id="fee_mainMenu_firstSeparatorItem"/> -->
+
+      <scriptItem id="fee_git_pull">
+      <label>Git Pull FeELib(Need Git Bash)</label>
+        <scriptCode><![CDATA[
+#SHELF_download_engine_plugin
+import fee_Utils
+# from importlib import reload
+# reload(fee_Utils)
+FeELib_path = hou.getenv('FeELib')
+if FeELib_path is None:
+    raise ValueError('not exist FeELib env')
+fee_Utils.gitPullByBat(FeELib_path, reloadAllFiles = True)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="fee_hideFeENode">
+      <label>Toggle Hide or Unhide FeE Node</label>
+        <scriptCode><![CDATA[
+#SOP_visibility
+import fee_HDA
+# from importlib import reload
+# reload(fee_HDA)
+#fee_HDA.checkHideFeENode(keepHide = True, detectName = True, detectPath = False)
+fee_HDA.checkHideFeENode(keepHide = False, detectName = True, detectPath = False)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="fee_toggle_updateMode">
+      <label>Toggle Update Mode</label>
+        <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?DESKTOP_application.svg
+if hou.ui.updateMode() == hou.updateMode.AutoUpdate:
+    hou.ui.setUpdateMode(hou.updateMode.Manual)
+else:
+    hou.ui.setUpdateMode(hou.updateMode.AutoUpdate)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="fee_openFeELibFolder">
+      <label>Open FeELib Folder</label>
+        <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?DATATYPES_folder.svg
+import os
+
+FeELib_path = hou.getenv('FeELib')
+if FeELib_path is None:
+    raise ValueError('not exist FeELib env')
+os.startfile(FeELib_path)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <separatorItem id="fee_mainMenu_separatorItem01"/>
+
+
+      <scriptItem id="fee_reverseSaveMode">
+      <label>Toggle Save Mode</label>
+        <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?DESKTOP_application.svg
+hipFile = hou.hipFile
+saveMode = hipFile.saveMode()
+if saveMode == hou.saveMode.Text:
+    hipFile.setSaveMode(hou.saveMode.Binary)
+else:
+    hipFile.setSaveMode(hou.saveMode.Text)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="removeEmbededDefi">
+      <label>Remove Embeded HDA</label>
+        <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?BUTTONS_clear.svg
+import fee_HDA
+fee_HDA.removeEmbeded(displayConfirmation = True)
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="checkAllGeoMemoryUsage">
+      <label>Check All Geo Memory Usage</label>
+        <scriptCode><![CDATA[
+#hicon:/SVGIcons.index?BUTTONS_clear.svg
+import fee_HIP
+# from importlib import reload
+# reload(fee_HIP)
+# fee_HIP.checkAllGeoMemoryUsage()
+fee_HIP.checkAllGeoMemoryUsage_InputMemoryThreshold()
+      ]]></scriptCode>
+      </scriptItem>
+
+      <scriptItem id="fee_clearABCCache">
+      <label>Clear ABC Cache</label>
+        <scriptCode><![CDATA[
+#SOP_alembic
+import _alembic_hom_extensions as abc
+abc.alembicClearArchiveCache()
+      ]]></scriptCode>
+      </scriptItem>
+
+      <!-- <separatorItem id="fee_mainMenu_lastSeparatorItem"/> -->
+
+    </subMenu>
+  </menuBar>
+
+</mainMenu>

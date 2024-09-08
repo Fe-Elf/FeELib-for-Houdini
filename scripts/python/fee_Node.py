@@ -330,8 +330,8 @@ def copyParms_NodetoNode(sourceNode, targetNode, copyNoneExistParms=False, ignor
                 parentFolder.removeMultiParmInstance(0)
             for idx in range(0, parmVal):
                 parentFolder.insertMultiParmInstance(idx)
-            if sourceParmTemplate.type() == hou.parmTemplateType.Folder and sourceParmTemplate.folderType() == hou.folderType.MultiparmBlock:
-                sourceParmTemplate.set
+            # if sourceParmTemplate.type() == hou.parmTemplateType.Folder and sourceParmTemplate.folderType() == hou.folderType.MultiparmBlock:
+            #     sourceParmTemplate.set
             '''
             try:
                 parmVal = parm.evalAsInt()

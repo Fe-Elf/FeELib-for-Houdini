@@ -322,7 +322,11 @@ def isFeENode(nodeType: hou.NodeType, detectName=True, detectPath=False) -> bool
         nameComponents = nodeType.nameComponents()
         if not (nameComponents[0].startswith('FeE::') or
                 nameComponents[0].startswith('FeE_Debug::') or
-                nameComponents[1] == 'FeE' or (
+                nameComponents[1] == 'FeE' or
+                nameComponents[1] == 'ghda' or
+                nameComponents[1] == 'GHDA' or
+                nameComponents[1] == 'yghda' or
+                nameComponents[1] == 'YGHDA' or (
                 nameComponents[1] == 'FeE_Debug' or
                 nameComponents[2].endswith("_fee") and nodeType.description().startswith("FeE"))):
             return False
